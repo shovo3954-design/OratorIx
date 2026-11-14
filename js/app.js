@@ -37,10 +37,11 @@ function say(t) { if ("speechSynthesis" in window) { const u = new SpeechSynthes
 
 /* ===== 4. NAVIGATION (switch between Home, Learn, Flashcards, Quiz) ===== */
 function show(v) {
-  ["home", "learn", "flash", "quiz"].forEach(n => $("#v-" + n).hidden = n !== v);
+  ["home", "learn", "verbs", "flash", "quiz"].forEach(n => $("#v-" + n).hidden = n !== v);
   document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.view === v));
   scrollTo(0, 0);
   if (v === "flash") buildDeck();
+  if (v === "verbs") showVT(VT);
   if (v === "quiz") { $("#qz-setup").hidden = false; $("#qz-play").hidden = true; $("#qz-end").hidden = true; }
 }
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => show(b.dataset.view));
@@ -201,6 +202,99 @@ $("#qz-level").onchange = () => fillClasses("#qz-level", "#qz-class");
 $("#qz-retry").onclick = () => startQuiz(Q.wrong);
 $("#qz-again").onclick = () => show("quiz");
 
+/* ===== 8b. VERBS (learn, flashcards, quiz) ===== */
+const TENSES = ["present", "past", "future"], TLABEL = { present: "Present (now)", past: "Past (before)", future: "Future (later)" };
+const allVerbs = () => DEFAULT_VERBS[lang];
+const verbList = () => allVerbs().filter(v => v.level === VLV && (v.cls || 1) === +VCL); // verbs of the chosen level and class
+const fillS = t => t[0].replace("___", t[1]); // sentence with the answer filled in
+let VT = "learn";
+/* Verbs: pick a level, then a class (applies to Learn, Flashcards and Quiz) */
+let VLV = "", VCL = "";
+function renderVChips() {
+  $("#vlv-chips").innerHTML = ["Beginner", "Intermediate", "Advanced"].map(l => `<button class="chip${l === VLV ? " on" : ""}" data-vlv="${l}">${l}</button>`).join("");
+  const nums = [...new Set(allVerbs().filter(v => v.level === VLV).map(v => v.cls || 1))].sort((a, b) => a - b);
+  if (!nums.includes(+VCL)) VCL = "";
+  $("#vcl-chips").innerHTML = VLV ? nums.map(n => `<button class="chip${n === +VCL ? " on" : ""}" data-vcl="${n}">Class ${n}</button>`).join("") : '<span class="muted">Pick a level first.</span>';
+}
+$("#vlv-chips").onclick = e => { const b = e.target.closest("[data-vlv]"); if (!b) return; VLV = VLV === b.dataset.vlv ? "" : b.dataset.vlv; VCL = ""; showVT(VT); };
+$("#vcl-chips").onclick = e => { const b = e.target.closest("[data-vcl]"); if (!b) return; VCL = +VCL === +b.dataset.vcl ? "" : b.dataset.vcl; showVT(VT); };
+
+function showVT(v) { // switch between the three small tabs
+  VT = v;
+  document.querySelectorAll("[data-vt]").forEach(b => b.classList.toggle("on", b.dataset.vt === v));
+  renderVChips();
+  const ready = VLV && VCL; $("#vb-empty").hidden = !!ready;
+  $("#vb-learn").hidden = !ready || v !== "learn"; $("#vb-flash").hidden = !ready || v !== "flash"; $("#vb-quiz").hidden = !ready || v !== "quiz";
+  if (!ready) return; // nothing until a level and a class are picked
+  if (v === "learn") renderVerbs();
+  if (v === "flash") buildVF();
+  if (v === "quiz") { $("#vq-setup").hidden = false; $("#vq-play").hidden = true; $("#vq-end").hidden = true; }
+}
+document.querySelectorAll("[data-vt]").forEach(b => b.onclick = () => showVT(b.dataset.vt));
+
+/* Verbs: Learn */
+function renderVerbs() {
+  $("#vb-grid").innerHTML = verbList().map(v => `<article class="word"><h3>${esc(v.base)} <small class="muted">${esc(v.meaning)}</small></h3>
+    <div class="acts"><button data-speak="${esc(v.base)}">Listen</button></div>` + TENSES.map(t => `
+    <div class="vrow"><b>${TLABEL[t]}</b><span>${esc(v[t])}</span></div>
+    <p class="ex">${esc(fillS(v.ex[t]))}${v.ex[t][2] ? "<br>" + esc(v.ex[t][2]) : ""} <button class="mini" data-speak="${esc(fillS(v.ex[t]))}">Listen</button></p>`).join("") + "</article>").join("");
+}
+$("#vb-grid").onclick = e => { const b = e.target.closest("[data-speak]"); if (b) say(b.dataset.speak); };
+
+/* Verbs: Flashcards (every verb in every tense) */
+let vdeck = [], vi = 0;
+function buildVF() { vdeck = verbList().flatMap(v => TENSES.map(t => ({ v, t }))); vi = 0; drawVF(); }
+function drawVF() {
+  const { v, t } = vdeck[vi], card = $("#vf-card"), was = card.classList.contains("flipped");
+  card.classList.remove("flipped");
+  $("#vf-count").textContent = `Card ${vi + 1} of ${vdeck.length}`;
+  $("#vf-tense").textContent = TLABEL[t]; $("#vf-term").textContent = v.base; $("#vf-meaning").textContent = v.meaning;
+  clearTimeout(drawVF.t);
+  const back = () => { $("#vf-label").textContent = TLABEL[t]; $("#vf-form").textContent = v[t]; $("#vf-ex").textContent = fillS(v.ex[t]) + (v.ex[t][2] ? ` (${v.ex[t][2]})` : ""); };
+  if (was) drawVF.t = setTimeout(back, 300); else back(); // back is filled after the card has turned away
+}
+$("#vf-card").onclick = () => $("#vf-card").classList.toggle("flipped");
+$("#vf-next").onclick = () => { vi = (vi + 1) % vdeck.length; drawVF(); };
+$("#vf-prev").onclick = () => { vi = (vi - 1 + vdeck.length) % vdeck.length; drawVF(); };
+$("#vf-shuffle").onclick = () => { vdeck = shuffle(vdeck); vi = 0; drawVF(); toast("Cards shuffled"); };
+$("#vf-say").onclick = () => { const { v, t } = vdeck[vi]; say(fillS(v.ex[t])); };
+$("#vf-say-v").onclick = () => say(vdeck[vi].v.base);
+
+/* Verbs: Quiz (fill the blank, 4 choices) */
+let VQ = {};
+function startVQ() {
+  const all = verbList().flatMap(v => TENSES.map(t => ({ v, t })));
+  VQ = { qs: shuffle(all).slice(0, 10), i: 0, score: 0, done: false };
+  $("#vq-setup").hidden = true; $("#vq-end").hidden = true; $("#vq-play").hidden = false; askVQ();
+}
+function askVQ() {
+  const { v, t } = VQ.qs[VQ.i], ans = v.ex[t][1]; VQ.done = false;
+  let pool = [...new Set(TENSES.flatMap(x => [...v[x].split(" / "), v.ex[x][1]]))].filter(f => f !== ans);
+  for (const o of shuffle(allVerbs().filter(x => x !== v)).map(x => x.ex[t][1])) { if (pool.length >= 3) break; if (o !== ans && !pool.includes(o)) pool.push(o); }
+  VQ.opts = shuffle([ans, ...shuffle(pool).slice(0, 3)]);
+  $("#vq-prog").textContent = `Question ${VQ.i + 1} of ${VQ.qs.length} · Score ${VQ.score}`;
+  $("#vq-bar").style.width = (VQ.i / VQ.qs.length * 100) + "%";
+  $("#vq-q").textContent = v.ex[t][0]; $("#vq-hint").textContent = `Verb: ${v.base} (${v.meaning})`;
+  $("#vq-opts").innerHTML = VQ.opts.map((o, k) => `<button data-k="${k}">${esc(o)}</button>`).join("");
+  $("#vq-fb").hidden = true; $("#vq-next").hidden = true;
+}
+$("#vq-opts").onclick = e => {
+  const b = e.target.closest("button"); if (!b || VQ.done) return; VQ.done = true;
+  const { v, t } = VQ.qs[VQ.i], ans = v.ex[t][1], ok = VQ.opts[b.dataset.k] === ans;
+  [...$("#vq-opts").children].forEach((x, k) => { x.disabled = true; if (VQ.opts[k] === ans) x.classList.add("right"); });
+  if (ok) VQ.score++; else b.classList.add("wrong");
+  $("#vq-fb").innerHTML = (ok ? "<b>Correct!</b> " : `<b>Not quite.</b> The answer is “${esc(ans)}”. `) + `<br><em>${esc(fillS(v.ex[t]))}${v.ex[t][2] ? " (" + esc(v.ex[t][2]) + ")" : ""}</em><div class="row left"><button class="btn" data-vsay="form">Listen</button><button class="btn" data-vsay="sentence">Listen sentence</button></div>`;
+  $("#vq-fb").hidden = false; $("#vq-next").hidden = false;
+  $("#vq-next").textContent = VQ.i === VQ.qs.length - 1 ? "See results" : "Next question";
+};
+$("#vq-next").onclick = () => {
+  if (++VQ.i < VQ.qs.length) return askVQ();
+  $("#vq-play").hidden = true; $("#vq-end").hidden = false;
+  $("#vq-score").textContent = `${VQ.score}/${VQ.qs.length} (${Math.round(VQ.score / VQ.qs.length * 100)}%)`; touch();
+};
+$("#vq-start").onclick = startVQ; $("#vq-again").onclick = startVQ;
+$("#vq-fb").onclick = e => { const b = e.target.closest("[data-vsay]"); if (!b) return; const { v, t } = VQ.qs[VQ.i]; say(b.dataset.vsay === "form" ? v.ex[t][1] : fillS(v.ex[t])); }; // Listen buttons in the feedback box
+
 /* ===== 8. HEADER SEARCH AND WORD POP-UP ===== */
 const norm = s => String(s || "").toLowerCase();
 function searchWords(q) { // works both ways: Korean word -> card, English meaning -> card
@@ -240,7 +334,7 @@ $("#wcard").onclick = e => { const b = e.target.closest("[data-say]"); if (b) sa
 $("#wdlg-x").onclick = () => $("#wdlg").close();
 $("#wdlg").onclick = e => { if (e.target.id === "wdlg") $("#wdlg").close(); }; // click outside closes
 
-/* ===== 9. HOME PAGE EXTRAS (word of the day, hero and footer links) ===== */
+/* ===== 10. HOME PAGE EXTRAS (word of the day, hero and footer links) ===== */
 function renderWotd() { // shows a different word each day
   const w = words[Math.floor(Date.now() / 864e5) % words.length], box = $("#wotd");
   if (!w) { box.innerHTML = '<p class="muted">Add a word to see it here.</p>'; return; }
@@ -250,11 +344,11 @@ function renderWotd() { // shows a different word each day
 document.querySelectorAll("[data-go]").forEach(b => b.onclick = e => { e.preventDefault(); show(b.dataset.go); scrollTo(0, 0); }); // hero, footer, logo
 document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { setLang(b.dataset.lang); scrollTo(0, 0); }); // footer language links
 
-/* ===== 10. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
+/* ===== 11. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
 function setLang(l) {
   lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); $("#lang").value = l;
-  LV = ""; CL = ""; gs.value = ""; gr.hidden = true; fillCats(); renderLearn(); stats(); renderWotd();
-  show(["home", "learn", "flash", "quiz"].find(n => !$("#v-" + n).hidden) || "home");
+  LV = ""; CL = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; fillCats(); renderLearn(); stats(); renderWotd();
+  show(["home", "learn", "verbs", "flash", "quiz"].find(n => !$("#v-" + n).hidden) || "home");
 }
 $("#lang").onchange = e => setLang(e.target.value);
 setLang(lang);

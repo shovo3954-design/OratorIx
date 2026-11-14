@@ -133,11 +133,17 @@ dialog h2{margin:10px 0 6px}
 .chip:hover{border-color:var(--green)}
 .chip.on{background:var(--green);border-color:var(--green);color:#0b1020}
 
-/* ===== 15. POP-UP MESSAGE ===== */
+/* ===== 15. VERBS ===== */
+.vrow{display:flex;justify-content:space-between;gap:12px;padding-top:8px;border-top:1px solid var(--line)}
+.vrow span{font-weight:700;color:var(--green);text-align:right}
+.mini{border:1px solid var(--line);background:var(--surface2);border-radius:10px;padding:1px 10px;cursor:pointer;font-size:.8rem;margin-left:6px}
+.word h3 small{display:block;font-size:.9rem;font-weight:400}
+
+/* ===== 16. POP-UP MESSAGE ===== */
 #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--green);color:#0b1020;font-weight:700;padding:8px 18px;border-radius:99px;opacity:0;transition:opacity .2s;pointer-events:none}
 #toast.show{opacity:1}
 
-/* ===== 16. TABLET, PHONE AND REDUCED MOTION ===== */
+/* ===== 17. TABLET, PHONE AND REDUCED MOTION ===== */
 @media(max-width:860px){.hero{grid-template-columns:1fr;padding:22px}.foot-grid{grid-template-columns:1fr 1fr}.hsearch{order:4;max-width:none;flex-basis:100%}}
 @media(max-width:560px){.foot-grid{grid-template-columns:1fr}.card{height:340px}.back .pic-sm{max-height:130px}nav{order:3;width:100%;overflow-x:auto}
   /* shorter header on phones: logo + language on one row, tabs below, CTA hidden (the hero has one) */

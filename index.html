@@ -20,6 +20,7 @@
   <nav aria-label="Main">
     <button class="tab on" data-view="home">Home</button>
     <button class="tab" data-view="learn">Learn</button>
+    <button class="tab" data-view="verbs">Verbs</button>
     <button class="tab" data-view="flash">Flashcards</button>
     <button class="tab" data-view="quiz">Quiz</button>
   </nav>
@@ -78,6 +79,45 @@
     <div id="cl-chips" class="chips" role="group" aria-label="Class"></div>
     <div class="bar"><select id="f-cat" aria-label="Category"></select></div>
     <div id="grid" class="grid"></div>
+  </section>
+
+  <!-- ===== 4b. VERBS TAB: learn, flashcards and quiz about present, past and future ===== -->
+  <section id="v-verbs" hidden>
+    <h1 class="sec">Verbs</h1>
+    <div class="chips" role="group" aria-label="Verb activity">
+      <button class="chip on" data-vt="learn">Learn</button><button class="chip" data-vt="flash">Flashcards</button><button class="chip" data-vt="quiz">Quiz</button>
+    </div>
+    <div id="vlv-chips" class="chips" role="group" aria-label="Verb level"></div>
+    <div id="vcl-chips" class="chips" role="group" aria-label="Verb class"></div>
+    <p id="vb-empty" class="empty">Pick a level and a class to see verbs.</p>
+    <div id="vb-learn">
+      <p class="muted">A verb changes its form to show <b>when</b> something happens: now (present), before (past) or later (future).</p>
+      <div id="vb-grid" class="grid"></div>
+    </div>
+    <div id="vb-flash" hidden>
+      <p class="muted" id="vf-count"></p>
+      <button class="card" id="vf-card" aria-label="Flip card">
+        <span class="inner">
+          <span class="face front"><small id="vf-tense"></small><strong id="vf-term"></strong><em id="vf-meaning"></em><small>Tap to flip</small></span>
+          <span class="face back"><small id="vf-label"></small><strong id="vf-form"></strong><em id="vf-ex"></em></span>
+        </span>
+      </button>
+      <div class="row">
+        <button class="btn" id="vf-prev">Previous</button><button class="btn" id="vf-say-v">Listen verb</button><button class="btn" id="vf-say">Listen sentence</button><button class="btn" id="vf-shuffle">Shuffle</button><button class="btn" id="vf-next">Next</button>
+      </div>
+    </div>
+    <div id="vb-quiz" hidden>
+      <div id="vq-setup" class="panel"><h2>Verb quiz</h2><p>Fill the blank with the right form of the verb. You get feedback after every answer.</p><button class="btn green" id="vq-start">Start quiz</button></div>
+      <div id="vq-play" class="panel" hidden>
+        <div class="meter"><i id="vq-bar"></i></div>
+        <p class="muted" id="vq-prog"></p>
+        <h2 id="vq-q"></h2><p class="muted" id="vq-hint"></p>
+        <div id="vq-opts" class="opts"></div>
+        <div id="vq-fb" class="fb" hidden role="status"></div>
+        <button class="btn green" id="vq-next" hidden>Next</button>
+      </div>
+      <div id="vq-end" class="panel" hidden><h2>Quiz finished</h2><p class="big" id="vq-score"></p><button class="btn green" id="vq-again">New quiz</button></div>
+    </div>
   </section>
 
   <!-- ===== 5. FLASHCARDS TAB ===== -->
@@ -156,6 +196,7 @@
       <ul>
         <li><button class="link" data-go="home">Home</button></li>
         <li><button class="link" data-go="learn">Learn</button></li>
+        <li><button class="link" data-go="verbs">Verbs</button></li>
         <li><button class="link" data-go="flash">Flashcards</button></li>
         <li><button class="link" data-go="quiz">Quiz</button></li>
       </ul>
