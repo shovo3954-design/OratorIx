@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="VocabVibe: learn English and Korean words with flashcards and quizzes.">
-<title>OratorIx – Learn Words</title>
+<title>VocabVibe – Learn Words</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<!-- OratorIx: index.html = page structure. Style: css/style.css · Words: js/data.js · Logic: js/app.js -->
+<!-- VocabVibe: index.html = page structure. Style: css/style.css · Words: js/data.js · Logic: js/app.js -->
 <a class="skip" href="#main">Skip to content</a>
 
 <!-- ===== 1. HEADER: logo, navigation, language picker, call-to-action ===== -->
 <header class="top">
   <a class="brand" href="#" data-go="home" aria-label="VocabVibe home">
     <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#1fd6a0"/><path d="M8 10l9 15 9-15" fill="none" stroke="#0b1020" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span>OratorIx</span>
+    Vocab<span>Vibe</span>
   </a>
   <nav aria-label="Main">
     <button class="tab on" data-view="home">Home</button>
@@ -94,7 +94,7 @@
       <button class="card" id="card" aria-label="Flip card">
         <span class="inner">
           <span class="face front"><small id="fc-meta"></small><strong id="fc-term"></strong><em id="fc-pron"></em><small>Tap to flip</small></span>
-          <span class="face back"><small id="fc-pos"></small><span id="fc-def"></span><em id="fc-ex"></em></span>
+          <span class="face back"><small id="fc-pos"></small><span id="fc-def"></span><em id="fc-ex"></em><img id="fc-pic" class="pic-sm" alt="" hidden></span>
         </span>
       </button>
       <div class="row">
@@ -140,7 +140,7 @@
 <footer class="foot">
   <div class="foot-grid">
     <div>
-      <p class="brand"><span>OratorIx</span></p>
+      <p class="brand">Vocab<span>Vibe</span></p>
       <p class="muted">A simple vocabulary app for English and Korean learners.</p>
       <div class="social">
         <a href="https://www.youtube.com" aria-label="YouTube" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg></a>
@@ -168,12 +168,12 @@
       <h3>Contact</h3>
       <!-- ✏️ Replace the email below with your own -->
       <ul>
-        <li><a class="link" href="mailto:hello@vocabvibe.example">shovoasorator@gmail.com</a></li>
+        <li><a class="link" href="mailto:hello@vocabvibe.example">hello@vocabvibe.example</a></li>
         <li class="muted">Dhaka, Bangladesh</li>
       </ul>
     </div>
   </div>
-  <p class="copy muted">© 2026 OratorIx. Made for learners.</p>
+  <p class="copy muted">© 2026 VocabVibe. Made for learners.</p>
 </footer>
 
 <div id="toast" role="status" aria-live="polite"></div>

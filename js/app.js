@@ -71,6 +71,15 @@ function picErr(img) {
   if (i < types.length) { img.dataset.i = i; img.src = encodeURI(`${img.dataset.n}.${types[i]}`); } else img.remove();
 }
 
+/* ----- SHOW A WORD PICTURE IN AN <img> (used by Flashcards back and Quiz feedback) ----- */
+function setPic(el, w) {
+  const types = ["png", "jpg", "jpeg", "webp"]; let i = 0;
+  el.hidden = true; el.alt = w.term;
+  el.onload = () => { el.hidden = false; };
+  el.onerror = () => { if (++i < types.length) el.src = encodeURI(`${picBase(w)}.${types[i]}`); else el.hidden = true; };
+  el.src = encodeURI(`${picBase(w)}.${types[0]}`);
+}
+
 function renderLearn() {
   const q = $("#search").value.toLowerCase(), lv = $("#f-level").value, ct = $("#f-cat").value, cs = $("#f-class").value;
   const list = words.filter(w => (!lv || w.level === lv) && (!ct || w.category === ct) && (!cs || cl(w) === +cs) &&
@@ -106,11 +115,18 @@ function drawCard() {
   const has = deck.length > 0;
   $("#fc-empty").hidden = has; $("#fc-area").hidden = !has;
   if (!has) { $("#fc-count").textContent = ""; return; }
-  const w = deck[di]; $("#card").classList.remove("flipped");
+  const w = deck[di], card = $("#card"), wasFlipped = card.classList.contains("flipped");
+  card.classList.remove("flipped");
   $("#fc-count").textContent = `Card ${di + 1} of ${deck.length}`;
   $("#fc-meta").textContent = `${w.level} · Class ${cl(w)}${w.category ? " · " + w.category : ""}`;
   $("#fc-term").textContent = w.term; $("#fc-pron").textContent = [w.roman, w.pron].filter(Boolean).join(" · ");
-  $("#fc-pos").textContent = w.pos; $("#fc-def").textContent = w.def; $("#fc-ex").textContent = `"${w.ex}"` + (w.extr ? ` (${w.extr})` : "");
+  // the back of the card is filled in after it has turned away, so the next answer is never seen early
+  clearTimeout(drawCard.t);
+  const fillBack = () => {
+    $("#fc-pos").textContent = w.pos; $("#fc-def").textContent = w.def; $("#fc-ex").textContent = `"${w.ex}"` + (w.extr ? ` (${w.extr})` : "");
+    setPic($("#fc-pic"), w);
+  };
+  if (wasFlipped) drawCard.t = setTimeout(fillBack, 300); else fillBack();
 }
 const step = d => { di = (di + d + deck.length) % deck.length; drawCard(); };
 function rate(s) {
@@ -154,8 +170,8 @@ $("#qz-opts").onclick = e => {
   [...$("#qz-opts").children].forEach((x, k) => { x.disabled = true; if (Q.opts[k].id === w.id) x.classList.add("right"); });
   if (ok) Q.score++; else { b.classList.add("wrong"); Q.wrong.push(w.id); }
   $("#qz-fb").innerHTML = (ok ? `<b>Correct!</b> ` : `<b>Not quite.</b> That meaning belongs to “${esc(pick.term)}”. `) +
-    `“${esc(w.term)}” means: ${esc(w.def)}<br><em>Example: ${esc(w.ex)}${w.extr ? " (" + esc(w.extr) + ")" : ""}</em>`;
-  $("#qz-fb").hidden = false; $("#qz-next").hidden = false;
+    `“${esc(w.term)}” means: ${esc(w.def)}<br><em>Example: ${esc(w.ex)}${w.extr ? " (" + esc(w.extr) + ")" : ""}</em><img id="qz-pic" class="pic-sm" alt="" hidden>`;
+  setPic($("#qz-pic"), w); $("#qz-fb").hidden = false; $("#qz-next").hidden = false;
   $("#qz-next").textContent = Q.i === Q.qs.length - 1 ? "See results" : "Next question";
 };
 $("#qz-next").onclick = () => {
