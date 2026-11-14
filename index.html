@@ -23,6 +23,11 @@
     <button class="tab" data-view="flash">Flashcards</button>
     <button class="tab" data-view="quiz">Quiz</button>
   </nav>
+  <!-- Search: type a Korean or English word; results drop down under the box -->
+  <div class="hsearch" role="search">
+    <input id="gsearch" type="search" placeholder="Search words or meanings" aria-label="Search words" autocomplete="off">
+    <div id="gresults" class="gresults" hidden></div>
+  </div>
   <div class="tools">
     <select id="lang" class="langsel" aria-label="Language"><option value="en">English</option><option value="ko">Korean</option></select>
     <button class="btn green" data-go="flash">Start flashcards</button>
@@ -69,12 +74,9 @@
   <!-- ===== 4. LEARN TAB: word library (search, filters, word cards) ===== -->
   <section id="v-learn" hidden>
     <h1 class="sec">Word library</h1>
-    <div class="bar">
-      <input id="search" type="search" placeholder="Search words, meanings, examples" aria-label="Search">
-      <select id="f-level" aria-label="Level"><option value="">All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
-      <select id="f-class" aria-label="Class"></select>
-      <select id="f-cat" aria-label="Category"></select>
-    </div>
+    <div id="lv-chips" class="chips" role="group" aria-label="Level"></div>
+    <div id="cl-chips" class="chips" role="group" aria-label="Class"></div>
+    <div class="bar"><select id="f-cat" aria-label="Category"></select></div>
     <div id="grid" class="grid"></div>
   </section>
 
@@ -100,6 +102,7 @@
       <div class="row">
         <button class="btn" id="fc-prev">Previous</button>
         <button class="btn" id="fc-say">Listen</button>
+        <button class="btn" id="fc-say-ex">Listen sentence</button>
         <button class="btn" id="fc-next">Next</button>
       </div>
       <div class="row">
@@ -176,6 +179,8 @@
   <p class="copy muted">© 2026 Oratorix. Made for learners.</p>
 </footer>
 
+<!-- Word pop-up: opens when you click a search result -->
+<dialog id="wdlg" aria-label="Word card"><button class="x" id="wdlg-x" aria-label="Close">×</button><div id="wcard"></div></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
 
 <!-- ===== 8. SCRIPTS: data.js = word lists, app.js = all the logic ===== -->

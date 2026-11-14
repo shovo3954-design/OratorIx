@@ -49,13 +49,13 @@ document.querySelectorAll(".tab").forEach(b => b.onclick = () => show(b.dataset.
 function cats() { return [...new Set(words.map(w => w.category).filter(Boolean))].sort(); }
 /* ----- CLASS PICKERS: choose a level, then a class (used by Learn, Flashcards, Quiz) ----- */
 const cl = w => w.cls || 1; // a word with no class is in Class 1
-function fillClasses(levelSel, classSel) {
+function fillClasses(levelSel, classSel, first = "All classes") {
   const lv = $(levelSel).value, sel = $(classSel), cur = sel.value;
   const nums = [...new Set(words.filter(w => !lv || w.level === lv).map(cl))].sort((a, b) => a - b);
-  sel.innerHTML = '<option value="">All classes</option>' + nums.map(n => `<option value="${n}">Class ${n}</option>`).join("");
+  sel.innerHTML = `<option value="">${first}</option>` + nums.map(n => `<option value="${n}">Class ${n}</option>`).join("");
   sel.value = nums.includes(+cur) ? cur : "";
 }
-function fillAllClasses() { fillClasses("#f-level", "#f-class"); fillClasses("#fc-level", "#fc-class"); fillClasses("#qz-level", "#qz-class"); }
+function fillAllClasses() { renderChips(); fillClasses("#fc-level", "#fc-class"); fillClasses("#qz-level", "#qz-class"); }
 
 function fillCats() {
   const cur = $("#f-cat").value;
@@ -80,10 +80,21 @@ function setPic(el, w) {
   el.src = encodeURI(`${picBase(w)}.${types[0]}`);
 }
 
+/* ----- LEARN BUTTONS: tap a level, then a class ----- */
+let LV = "", CL = "";
+function renderChips() {
+  $("#lv-chips").innerHTML = ["Beginner", "Intermediate", "Advanced"].map(l => `<button class="chip${l === LV ? " on" : ""}" data-lv="${l}">${l}</button>`).join("");
+  const nums = [...new Set(words.filter(w => w.level === LV).map(cl))].sort((a, b) => a - b);
+  if (!nums.includes(+CL)) CL = "";
+  $("#cl-chips").innerHTML = LV ? nums.map(n => `<button class="chip${n === +CL ? " on" : ""}" data-cl="${n}">Class ${n}</button>`).join("") : '<span class="muted">Pick a level first.</span>';
+}
+$("#lv-chips").onclick = e => { const b = e.target.closest("[data-lv]"); if (!b) return; LV = LV === b.dataset.lv ? "" : b.dataset.lv; CL = ""; renderChips(); renderLearn(); };
+$("#cl-chips").onclick = e => { const b = e.target.closest("[data-cl]"); if (!b) return; CL = +CL === +b.dataset.cl ? "" : b.dataset.cl; renderChips(); renderLearn(); };
+
 function renderLearn() {
-  const q = $("#search").value.toLowerCase(), lv = $("#f-level").value, ct = $("#f-cat").value, cs = $("#f-class").value;
-  const list = words.filter(w => (!lv || w.level === lv) && (!ct || w.category === ct) && (!cs || cl(w) === +cs) &&
-    [w.term, w.def, w.ex, w.roman || ""].some(t => t.toLowerCase().includes(q))).sort((a, b) => a.term.localeCompare(b.term));
+  const lv = LV, cs = CL, ct = $("#f-cat").value;
+  if (!lv || !cs) { $("#grid").innerHTML = '<p class="empty">Pick a level and a class to see words.</p>'; return; } // nothing until both are chosen
+  const list = words.filter(w => (!lv || w.level === lv) && (!ct || w.category === ct) && (!cs || cl(w) === +cs)).sort((a, b) => a.term.localeCompare(b.term));
   $("#grid").innerHTML = list.length ? list.map(w => `
     <article class="word">
       <img class="pic" src="${esc(encodeURI(picBase(w)))}.png" data-n="${esc(picBase(w))}" data-i="0" onerror="picErr(this)" alt="${esc(w.term)}" loading="lazy">
@@ -91,16 +102,16 @@ function renderLearn() {
         ${w.status !== "new" ? `<span class="tag ${w.status}">${w.status === "known" ? "Known" : "Need practice"}</span>` : ""}</div>
       <h3>${esc(w.term)} <small class="muted">${esc([w.roman, w.pron].filter(Boolean).join(" · "))}</small></h3>
       <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>
-      <div class="acts" data-id="${w.id}"><button data-a="say">Listen</button></div>
-    </article>`).join("") : `<p class="empty">No words match. Clear the filters or add a new word.</p>`;
+      <div class="acts" data-id="${w.id}"><button data-a="say">Listen</button><button data-a="ex">Listen sentence</button></div>
+    </article>`).join("") : `<p class="empty">No words match. Try another category.</p>`;
 }
 $("#grid").onclick = e => {
   const b = e.target.closest("button"); if (!b) return;
   const id = b.parentElement.dataset.id, w = words.find(x => x.id === id);
   if (b.dataset.a === "say") say(w.term);
+  if (b.dataset.a === "ex") say(w.ex);
 };
-["#search", "#f-cat", "#f-class"].forEach(s => $(s).oninput = renderLearn);
-$("#f-level").oninput = () => { fillClasses("#f-level", "#f-class"); renderLearn(); };
+$("#f-cat").oninput = renderLearn;
 
 /* ===== 6. FLASHCARDS (flip, Known, Need practice) ===== */
 let deck = [], di = 0;
@@ -137,6 +148,7 @@ function rate(s) {
 $("#card").onclick = () => $("#card").classList.toggle("flipped");
 $("#fc-next").onclick = () => step(1); $("#fc-prev").onclick = () => step(-1);
 $("#fc-say").onclick = () => say(deck[di].term);
+$("#fc-say-ex").onclick = () => say(deck[di].ex);
 $("#fc-known").onclick = () => rate("known"); $("#fc-practice").onclick = () => rate("practice");
 $("#fc-filter").onchange = buildDeck; $("#fc-class").onchange = buildDeck;
 $("#fc-level").onchange = () => { fillClasses("#fc-level", "#fc-class"); buildDeck(); };
@@ -170,7 +182,7 @@ $("#qz-opts").onclick = e => {
   [...$("#qz-opts").children].forEach((x, k) => { x.disabled = true; if (Q.opts[k].id === w.id) x.classList.add("right"); });
   if (ok) Q.score++; else { b.classList.add("wrong"); Q.wrong.push(w.id); }
   $("#qz-fb").innerHTML = (ok ? `<b>Correct!</b> ` : `<b>Not quite.</b> That meaning belongs to “${esc(pick.term)}”. `) +
-    `“${esc(w.term)}” means: ${esc(w.def)}<br><em>Example: ${esc(w.ex)}${w.extr ? " (" + esc(w.extr) + ")" : ""}</em><img id="qz-pic" class="pic-sm" alt="" hidden>`;
+    `“${esc(w.term)}” means: ${esc(w.def)}<br><em>Example: ${esc(w.ex)}${w.extr ? " (" + esc(w.extr) + ")" : ""}</em><div class="row left"><button class="btn" data-say="term">Listen</button><button class="btn" data-say="ex">Listen sentence</button></div><img id="qz-pic" class="pic-sm" alt="" hidden>`;
   setPic($("#qz-pic"), w); $("#qz-fb").hidden = false; $("#qz-next").hidden = false;
   $("#qz-next").textContent = Q.i === Q.qs.length - 1 ? "See results" : "Next question";
 };
@@ -184,11 +196,51 @@ $("#qz-next").onclick = () => {
   $("#qz-retry").hidden = !Q.wrong.length;
 };
 $("#qz-start").onclick = () => startQuiz();
+$("#qz-fb").onclick = e => { const b = e.target.closest("[data-say]"); if (b) say(Q.qs[Q.i][b.dataset.say]); }; // Listen buttons in the feedback box
 $("#qz-level").onchange = () => fillClasses("#qz-level", "#qz-class");
 $("#qz-retry").onclick = () => startQuiz(Q.wrong);
 $("#qz-again").onclick = () => show("quiz");
 
-/* ===== 8. HOME PAGE EXTRAS (word of the day, hero and footer links) ===== */
+/* ===== 8. HEADER SEARCH AND WORD POP-UP ===== */
+const norm = s => String(s || "").toLowerCase();
+function searchWords(q) { // works both ways: Korean word -> card, English meaning -> card
+  q = norm(q).trim(); if (!q) return [];
+  const score = w => {
+    const t = norm(w.term), r = norm(w.roman), d = norm(w.def);
+    if (t === q || r === q) return 0;
+    if (t.startsWith(q) || r.startsWith(q)) return 1;
+    if (t.includes(q) || r.includes(q)) return 2;
+    if (d.split(/\s*[\/;,.]\s*/).some(x => x === q)) return 3;
+    if (d.includes(q)) return 4;
+    return norm(w.ex).includes(q) || norm(w.extr).includes(q) ? 5 : 9;
+  };
+  return words.map(w => [score(w), w]).filter(x => x[0] < 9).sort((a, b) => a[0] - b[0]).slice(0, 8).map(x => x[1]);
+}
+const gs = $("#gsearch"), gr = $("#gresults");
+function showResults() {
+  if (!gs.value.trim()) { gr.hidden = true; return; }
+  const list = searchWords(gs.value);
+  gr.innerHTML = list.length ? list.map(w => `<button data-id="${esc(w.id)}"><b>${esc(w.term)}</b><span>${esc(w.def)}</span><small>${esc(w.level)} · Class ${cl(w)}</small></button>`).join("") : '<p class="muted">No words found.</p>';
+  gr.hidden = false;
+}
+gs.oninput = showResults; gs.onfocus = showResults;
+gr.onclick = e => { const b = e.target.closest("button"); if (b) { openWord(words.find(w => w.id === b.dataset.id)); gr.hidden = true; } };
+document.addEventListener("click", e => { if (!e.target.closest(".hsearch")) gr.hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") gr.hidden = true; });
+function openWord(w) { // full word card in a pop-up
+  $("#wcard").dataset.id = w.id;
+  $("#wcard").innerHTML = `<img class="pic" id="w-pic" alt="" hidden>
+    <div class="tags"><span class="tag">${esc(w.pos)}</span><span class="tag">${esc(w.level)}</span><span class="tag">Class ${cl(w)}</span>${w.category ? `<span class="tag">${esc(w.category)}</span>` : ""}</div>
+    <h2>${esc(w.term)} <small class="muted">${esc([w.roman, w.pron].filter(Boolean).join(" · "))}</small></h2>
+    <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>
+    <div class="row left"><button class="btn" data-say="term">Listen</button><button class="btn" data-say="ex">Listen sentence</button></div>`;
+  setPic($("#w-pic"), w); $("#wdlg").showModal();
+}
+$("#wcard").onclick = e => { const b = e.target.closest("[data-say]"); if (b) say(words.find(w => w.id === $("#wcard").dataset.id)[b.dataset.say]); };
+$("#wdlg-x").onclick = () => $("#wdlg").close();
+$("#wdlg").onclick = e => { if (e.target.id === "wdlg") $("#wdlg").close(); }; // click outside closes
+
+/* ===== 9. HOME PAGE EXTRAS (word of the day, hero and footer links) ===== */
 function renderWotd() { // shows a different word each day
   const w = words[Math.floor(Date.now() / 864e5) % words.length], box = $("#wotd");
   if (!w) { box.innerHTML = '<p class="muted">Add a word to see it here.</p>'; return; }
@@ -198,10 +250,10 @@ function renderWotd() { // shows a different word each day
 document.querySelectorAll("[data-go]").forEach(b => b.onclick = e => { e.preventDefault(); show(b.dataset.go); scrollTo(0, 0); }); // hero, footer, logo
 document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { setLang(b.dataset.lang); scrollTo(0, 0); }); // footer language links
 
-/* ===== 9. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
+/* ===== 10. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
 function setLang(l) {
   lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); $("#lang").value = l;
-  $("#search").value = ""; $("#f-level").value = ""; fillCats(); renderLearn(); stats(); renderWotd();
+  LV = ""; CL = ""; gs.value = ""; gr.hidden = true; fillCats(); renderLearn(); stats(); renderWotd();
   show(["home", "learn", "flash", "quiz"].find(n => !$("#v-" + n).hidden) || "home");
 }
 $("#lang").onchange = e => setLang(e.target.value);

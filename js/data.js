@@ -1,9 +1,10 @@
-// VocabVibe: data.js = the starter word lists.
+// Oratorix: data.js = the starter word lists.
 // To add a word, copy one line, change the text, and keep every id unique.
 // Fields: term, pos (part of speech), level, category, pron, def (meaning), ex (example).
 // Known / Need practice marks are saved by the app, so you do not need a status field.
 // cls = class number from 1 to 50 (optional). A word with no cls is in Class 1.
 // Korean also uses: roman (romanisation) and extr (English translation of the example).
+// Pictures: images/korean/beginner/class 1/k9.png (named after the word's id).
 
 // ✏️ To add, change or delete a word: edit this file, save it, and refresh the browser.
 // ===== 1. ENGLISH WORDS =====
@@ -25,8 +26,7 @@ const DEFAULT_WORDS = [
 // ===== 2. KOREAN WORDS =====
 // ✏️ Korean starter words. roman = romanisation, pron = learner sound guide, extr = English translation of the example.
 const DEFAULT_KO = [
-  
-  // Beginner
+
   // Class 1
   { id: "k1", term: "가수", pos: "Noun", level: "Beginner", category: "People", roman: "gasu", pron: "gah-soo (approximate)", def: "Singer.", ex: "저는 가수를 좋아해요.", extr: "I like the singer.", status: "new" },
   { id: "k2", term: "아기", pos: "Noun", level: "Beginner", category: "People", roman: "agi", pron: "ah-gee (approximate)", def: "Baby.", ex: "아기가 귀여워요.", extr: "The baby is cute.", status: "new" },
@@ -132,11 +132,11 @@ const DEFAULT_KO = [
   { id: "k90", term: "운동하다", pos: "Verb", level: "Beginner", category: "Daily Activities", cls: 7, roman: "undonghada", pron: "un-dong-ha-da (approximate)", def: "To exercise / To work out.", ex: "공원에서 운동을 해요.", extr: "I exercise at the park.", status: "new", image: "k90 운동하다" },
   { id: "k91", term: "회사에 가다", pos: "Verb", level: "Beginner", category: "Daily Activities", cls: 7, roman: "hoesae gada", pron: "hoe-sa-e ga-da (approximate)", def: "To go to work / To go to the company.", ex: "아침에 회사에 가요.", extr: "I go to work in the morning.", status: "new", image: "k91 회사에 가다" },
   { id: "k92", term: "집에 오다", pos: "Verb", level: "Beginner", category: "Daily Activities", cls: 7, roman: "jibe oda", pron: "ji-be o-da (approximate)", def: "To come home.", ex: "일이 끝나고 집에 와요.", extr: "I come home after finishing work.", status: "new", image: "k92 집에 오다" },
-  { id: "k93", term: "전화하다", pos: "Verb", level: "Beginner", category: "Daily Activities", cls: 7, roman: "jeonhwahada", pron: "jeon-hwa-ha-da (approximate)", def: "To make a phone call / To call.", ex: "친구에게 전화해요.", extr: "I call my friend[cite: 3].", status: "new", image: "k93 전화하다" },
+  { id: "k93", term: "전화하다", pos: "Verb", level: "Beginner", category: "Daily Activities", cls: 7, roman: "jeonhwahada", pron: "jeon-hwa-ha-da (approximate)", def: "To make a phone call / To call.", ex: "친구에게 전화해요.", extr: "I call my friend.", status: "new", image: "k93 전화하다" },
 
   // Class 8
-  { id: "k92", term: "지금", pos: "Noun", level: "Beginner", category: "Time", cls: 8, roman: "jigeum", pron: "ji-geum (approximate)", def: "Now.", ex: "지금 뭐 해요?", extr: "What are you doing now?", status: "new", image: "k92 지금" },
-  { id: "k93", term: "오늘", pos: "Noun", level: "Beginner", category: "Time", cls: 8, roman: "oneul", pron: "o-neul (approximate)", def: "Today.", ex: "오늘 날씨가 좋아요.", extr: "The weather is good today.", status: "new", image: "k93 오늘" },
+  { id: "k104", term: "지금", pos: "Noun", level: "Beginner", category: "Time", cls: 8, roman: "jigeum", pron: "ji-geum (approximate)", def: "Now.", ex: "지금 뭐 해요?", extr: "What are you doing now?", status: "new", image: "k104 지금" },
+  { id: "k105", term: "오늘", pos: "Noun", level: "Beginner", category: "Time", cls: 8, roman: "oneul", pron: "o-neul (approximate)", def: "Today.", ex: "오늘 날씨가 좋아요.", extr: "The weather is good today.", status: "new", image: "k105 오늘" },
   { id: "k94", term: "어제", pos: "Noun", level: "Beginner", category: "Time", cls: 8, roman: "eoje", pron: "eo-je (approximate)", def: "Yesterday.", ex: "어제 친구를 만났어요.", extr: "I met a friend yesterday.", status: "new", image: "k94 어제" },
   { id: "k95", term: "내일", pos: "Noun", level: "Beginner", category: "Time", cls: 8, roman: "naeil", pron: "nae-il (approximate)", def: "Tomorrow.", ex: "내일 회사에 가요.", extr: "I am going to work tomorrow.", status: "new", image: "k95 내일" },
   { id: "k96", term: "오전", pos: "Noun", level: "Beginner", category: "Time", cls: 8, roman: "ojeon", pron: "o-jeon (approximate)", def: "AM / Morning.", ex: "오전에 운동을 해요.", extr: "I exercise in the morning.", status: "new", image: "k96 오전" },
@@ -239,8 +239,5 @@ const DEFAULT_KO = [
   { id: "k181", term: "편하다", pos: "Adjective", level: "Beginner", category: "Adjectives", cls: 15, roman: "pyeonhada", pron: "pyeon-ha-da (approximate)", def: "Comfortable / Convenient.", ex: "이 의자는 편해요.", extr: "This chair is comfortable.", status: "new" },
   { id: "k182", term: "불편하다", pos: "Adjective", level: "Beginner", category: "Adjectives", cls: 15, roman: "bulpyeonhada", pron: "bul-pyeon-ha-da (approximate)", def: "Uncomfortable / Inconvenient.", ex: "이 신발은 불편해요.", extr: "These shoes are uncomfortable.", status: "new" },
   { id: "k183", term: "가능하다", pos: "Adjective", level: "Beginner", category: "Adjectives", cls: 15, roman: "ganeunghada", pron: "ga-neung-ha-da (approximate)", def: "Possible.", ex: "내일 가능해요?", extr: "Is tomorrow possible?", status: "new" },
-  { id: "k184", term: "불가능하다", pos: "Adjective", level: "Beginner", category: "Adjectives", cls: 15, roman: "bulganeunghada", pron: "bul-ga-neung-ha-da (approximate)", def: "Impossible.", ex: "오늘은 불가능해요.", extr: "Today is impossible.", status: "new" },
-
-
+  { id: "k184", term: "불가능하다", pos: "Adjective", level: "Beginner", category: "Adjectives", cls: 15, roman: "bulganeunghada", pron: "bul-ga-neung-ha-da (approximate)", def: "Impossible.", ex: "오늘은 불가능해요.", extr: "Today is impossible.", status: "new" }
 ];
-
