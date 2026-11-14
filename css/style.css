@@ -1,0 +1,119 @@
+/* VocabVibe: style.css = how everything looks. Sections are numbered below. */
+
+/* ===== 1. COLORS (change them here) ===== */
+:root{--bg:#0b1020;--surface:#131a2e;--surface2:#1a2340;--line:#2a3558;--text:#e8ecf6;--muted:#9aa6c4;--green:#1fd6a0;--purple:#7c5cff;--coral:#ff7a6b;--r:16px;--max:1100px;color-scheme:dark}
+
+/* ===== 2. BASIC PAGE STYLES ===== */
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Segoe UI",Tahoma,system-ui,"Malgun Gothic",sans-serif}
+h1,h2,h3{line-height:1.2;margin:0}
+h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.35rem}
+p{margin:0 0 12px}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--green);color:#0b1020;padding:8px 14px;border-radius:8px;z-index:99}
+.skip:focus{left:8px}
+main{max-width:var(--max);margin:0 auto;padding:28px 20px 40px}
+.muted{color:var(--muted)}
+.sec{margin:36px 0 16px}
+
+/* ===== 3. HEADER AND NAVIGATION ===== */
+.top{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(11,16,32,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-size:1.4rem;font-weight:800;color:var(--text);text-decoration:none}
+.brand span{color:var(--green)}
+nav{display:flex;gap:6px}
+.tab{border:0;background:none;color:var(--muted);border-radius:10px;padding:8px 16px;font-weight:600;cursor:pointer}
+.tab:hover{color:var(--text)}
+.tab.on{background:var(--surface2);color:var(--text)}
+.tools{display:flex;gap:10px;align-items:center}
+.langsel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-weight:600;cursor:pointer}
+
+/* ===== 4. BUTTONS ===== */
+.btn{display:inline-block;border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:9px 18px;font-weight:700;cursor:pointer;text-decoration:none;transition:transform .1s,filter .15s}
+.btn:hover{filter:brightness(1.15)}.btn:active{transform:translateY(1px)}
+.btn.green{background:var(--green);border-color:var(--green);color:#0b1020}
+.btn.coral{background:var(--coral);border-color:var(--coral);color:#0b1020}
+.link{background:none;border:0;padding:0;color:var(--text);text-decoration:none;cursor:pointer}
+.link:hover{color:var(--green);text-decoration:underline}
+
+/* ===== 5. HERO ===== */
+.hero{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;padding:32px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,#3a2a8c,#1b1f4d 60%,#131a2e)}
+.hero p{color:#cdd5ee;max-width:52ch;margin:14px 0 20px}
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.row.left{justify-content:flex-start}
+.stats{list-style:none;display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:8px 0 0}
+.stats li{background:rgba(11,16,32,.55);border:1px solid var(--line);border-radius:12px;padding:6px 14px;color:var(--muted)}
+.stats b{color:var(--text);font-size:1.2rem}
+.wotd{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;align-self:stretch}
+.badge{display:inline-block;background:rgba(31,214,160,.15);color:var(--green);border-radius:99px;padding:2px 12px;font-size:.85rem;font-weight:700;margin-bottom:10px}
+.wotd h3{font-size:1.8rem;margin-bottom:2px}
+
+/* ===== 6. HOW IT WORKS ===== */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
+.steps article{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.steps h2{margin-bottom:6px}.steps p{color:var(--muted)}
+
+/* ===== 7. SEARCH AND FILTER BAR ===== */
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.bar input,.bar select{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+.bar input{flex:1;min-width:200px}
+
+/* ===== 8. WORD CARDS ===== */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.word{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:8px}
+.word h3{font-size:1.3rem}
+.pic{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:var(--surface2)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:.78rem;border:1px solid var(--line);border-radius:99px;padding:0 10px;background:var(--surface2);color:var(--muted)}
+.tag.known{background:rgba(31,214,160,.18);color:var(--green);border-color:var(--green)}
+.tag.practice{background:rgba(255,122,107,.18);color:var(--coral);border-color:var(--coral)}
+.word p{margin:0}
+.ex{font-style:italic;color:var(--muted);border-left:3px solid var(--purple);padding-left:10px}
+.acts{display:flex;gap:6px;margin-top:auto;padding-top:6px}
+.acts button{border:1px solid var(--line);background:var(--surface2);border-radius:10px;padding:3px 12px;cursor:pointer;font-size:.85rem}
+.acts button:hover{border-color:var(--green)}
+.empty{text-align:center;background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:30px;color:var(--muted)}
+
+/* ===== 9. FLASHCARDS (flip animation) ===== */
+.card{display:block;width:100%;max-width:520px;height:300px;margin:0 auto 18px;padding:0;border:0;background:none;cursor:pointer;perspective:1000px}
+.inner{display:block;position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.card.flipped .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;border:1px solid var(--line);border-radius:24px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.front{background:var(--surface)}
+.back{background:linear-gradient(135deg,#4b35b5,#2a2470);transform:rotateY(180deg);font-size:1.15rem}
+.front strong{font-size:2.6rem;font-weight:800}
+
+/* ===== 10. QUIZ ===== */
+.panel{max-width:640px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:26px}
+.panel h1,.panel h2{margin-bottom:10px}
+.meter{height:10px;border-radius:99px;overflow:hidden;background:var(--surface2)}
+.meter i{display:block;height:100%;width:0;background:var(--green);transition:width .3s}
+.opts{display:grid;gap:10px;margin:14px 0}
+.opts button{text-align:left;border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:12px 14px;cursor:pointer}
+.opts button:not(:disabled):hover{border-color:var(--green)}
+.opts .right{background:rgba(31,214,160,.2);border-color:var(--green)}
+.opts .wrong{background:rgba(255,122,107,.2);border-color:var(--coral)}
+.fb{border-left:4px solid var(--purple);background:var(--surface2);padding:10px 14px;border-radius:8px;margin-bottom:14px}
+.big{font-size:2.4rem;font-weight:800;margin:4px 0}
+
+/* ===== 11. FOOTER ===== */
+.foot{border-top:1px solid var(--line);background:var(--surface);padding:36px 20px 20px}
+.foot-grid{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1.4fr;gap:28px}
+.foot h3{font-size:1rem;margin-bottom:12px}
+.foot ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.social{display:flex;gap:10px;margin-top:12px}
+.social a{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:var(--surface2);color:var(--text)}
+.social a:hover{color:var(--green)}
+.social svg{width:22px;height:22px}
+.copy{max-width:var(--max);margin:28px auto 0;padding-top:16px;border-top:1px solid var(--line);font-size:.9rem}
+
+/* ===== 12. POP-UP MESSAGE ===== */
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--green);color:#0b1020;font-weight:700;padding:8px 18px;border-radius:99px;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.show{opacity:1}
+
+/* ===== 13. TABLET, PHONE AND REDUCED MOTION ===== */
+@media(max-width:860px){.hero{grid-template-columns:1fr;padding:22px}.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.foot-grid{grid-template-columns:1fr}.card{height:260px}nav{order:3;width:100%;overflow-x:auto}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}

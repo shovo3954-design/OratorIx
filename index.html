@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="VocabVibe: learn English and Korean words with flashcards and quizzes.">
+<title>OratorIx – Learn Words</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- OratorIx: index.html = page structure. Style: css/style.css · Words: js/data.js · Logic: js/app.js -->
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ===== 1. HEADER: logo, navigation, language picker, call-to-action ===== -->
+<header class="top">
+  <a class="brand" href="#" data-go="home" aria-label="VocabVibe home">
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#1fd6a0"/><path d="M8 10l9 15 9-15" fill="none" stroke="#0b1020" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>OratorIx</span>
+  </a>
+  <nav aria-label="Main">
+    <button class="tab on" data-view="home">Home</button>
+    <button class="tab" data-view="learn">Learn</button>
+    <button class="tab" data-view="flash">Flashcards</button>
+    <button class="tab" data-view="quiz">Quiz</button>
+  </nav>
+  <div class="tools">
+    <select id="lang" class="langsel" aria-label="Language"><option value="en">English</option><option value="ko">Korean</option></select>
+    <button class="btn green" data-go="flash">Start flashcards</button>
+  </div>
+</header>
+
+<!-- ===== 2. MAIN CONTENT (one tab is visible at a time) ===== -->
+<main id="main">
+
+  <!-- ===== 3. HOME TAB: hero, progress, word of the day, how it works ===== -->
+  <section id="v-home">
+
+    <!-- 3a. Hero: headline, call-to-action buttons, progress numbers, word of the day -->
+    <div class="hero">
+      <div class="hero-text">
+        <h1>Learn new words, one class at a time</h1>
+        <p>Study English and Korean with word lists, flashcards and quizzes. Your progress is saved on this device.</p>
+        <div class="row left">
+          <button class="btn green" data-go="flash">Start flashcards</button>
+          <button class="btn" data-go="quiz">Take a quiz</button>
+        </div>
+        <ul class="stats" aria-label="Your progress">
+          <li><b id="s-total">0</b> words</li>
+          <li><b id="s-known">0</b> known</li>
+          <li><b id="s-best">0%</b> best quiz</li>
+          <li><b id="s-streak">0</b> day streak</li>
+        </ul>
+      </div>
+      <aside class="wotd" aria-label="Word of the day">
+        <span class="badge">Word of the day</span>
+        <div id="wotd"></div>
+      </aside>
+    </div>
+
+    <!-- 3b. How it works: three steps with buttons -->
+    <div class="steps">
+      <article><h2>1. Learn</h2><p>Browse words with meanings, examples and pronunciation.</p><button class="btn" data-go="learn">Browse words</button></article>
+      <article><h2>2. Practise</h2><p>Flip flashcards and mark what you know.</p><button class="btn" data-go="flash">Open flashcards</button></article>
+      <article><h2>3. Test</h2><p>Take a short quiz and see where to improve.</p><button class="btn" data-go="quiz">Start a quiz</button></article>
+    </div>
+
+    </section>
+
+  <!-- ===== 4. LEARN TAB: word library (search, filters, word cards) ===== -->
+  <section id="v-learn" hidden>
+    <h1 class="sec">Word library</h1>
+    <div class="bar">
+      <input id="search" type="search" placeholder="Search words, meanings, examples" aria-label="Search">
+      <select id="f-level" aria-label="Level"><option value="">All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+      <select id="f-class" aria-label="Class"></select>
+      <select id="f-cat" aria-label="Category"></select>
+    </div>
+    <div id="grid" class="grid"></div>
+  </section>
+
+  <!-- ===== 5. FLASHCARDS TAB ===== -->
+  <section id="v-flash" hidden>
+    <h1 class="sec">Flashcards</h1>
+    <div class="bar">
+      <select id="fc-level" aria-label="Level"><option value="">All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+      <select id="fc-class" aria-label="Class"></select>
+      <select id="fc-filter" aria-label="Which cards">
+        <option value="all">All cards</option><option value="practice">Need practice</option><option value="notknown">Not known yet</option>
+      </select>
+      <span id="fc-count" class="muted"></span>
+    </div>
+    <p id="fc-empty" class="empty" hidden>No cards match these filters. Try “All cards”.</p>
+    <div id="fc-area">
+      <button class="card" id="card" aria-label="Flip card">
+        <span class="inner">
+          <span class="face front"><small id="fc-meta"></small><strong id="fc-term"></strong><em id="fc-pron"></em><small>Tap to flip</small></span>
+          <span class="face back"><small id="fc-pos"></small><span id="fc-def"></span><em id="fc-ex"></em></span>
+        </span>
+      </button>
+      <div class="row">
+        <button class="btn" id="fc-prev">Previous</button>
+        <button class="btn" id="fc-say">Listen</button>
+        <button class="btn" id="fc-next">Next</button>
+      </div>
+      <div class="row">
+        <button class="btn coral" id="fc-practice">Need practice</button>
+        <button class="btn green" id="fc-known">I know it</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 6. QUIZ TAB ===== -->
+  <section id="v-quiz" hidden>
+    <div id="qz-setup" class="panel">
+      <h1>Word meaning quiz</h1>
+      <p>Pick the right meaning. You get feedback after every answer.</p>
+      <div class="bar"><select id="qz-level" aria-label="Quiz level"><option value="">All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+      <select id="qz-class" aria-label="Quiz class"></select>
+      <button class="btn green" id="qz-start">Start quiz</button></div>
+      <p id="qz-msg" class="muted" role="status"></p>
+    </div>
+    <div id="qz-play" class="panel" hidden>
+      <div class="meter"><i id="qz-bar"></i></div>
+      <p class="muted" id="qz-prog"></p>
+      <h2 id="qz-q"></h2>
+      <div id="qz-opts" class="opts"></div>
+      <div id="qz-fb" class="fb" hidden role="status"></div>
+      <button class="btn green" id="qz-next" hidden>Next</button>
+    </div>
+    <div id="qz-end" class="panel" hidden>
+      <h2>Quiz finished</h2>
+      <p class="big" id="qz-score"></p>
+      <p id="qz-note"></p>
+      <div class="row"><button class="btn coral" id="qz-retry">Retry missed words</button><button class="btn green" id="qz-again">New quiz</button></div>
+    </div>
+  </section>
+</main>
+
+<!-- ===== 7. FOOTER: about, quick links, contact, social icons ===== -->
+<footer class="foot">
+  <div class="foot-grid">
+    <div>
+      <p class="brand"><span>OratorIx</span></p>
+      <p class="muted">A simple vocabulary app for English and Korean learners.</p>
+      <div class="social">
+        <a href="https://www.youtube.com" aria-label="YouTube" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg></a>
+        <a href="https://x.com" aria-label="X" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></a>
+        <a href="https://www.instagram.com" aria-label="Instagram" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h3>Quick links</h3>
+      <ul>
+        <li><button class="link" data-go="home">Home</button></li>
+        <li><button class="link" data-go="learn">Learn</button></li>
+        <li><button class="link" data-go="flash">Flashcards</button></li>
+        <li><button class="link" data-go="quiz">Quiz</button></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Languages</h3>
+      <ul>
+        <li><button class="link" data-lang="en">English</button></li>
+        <li><button class="link" data-lang="ko">Korean</button></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <!-- ✏️ Replace the email below with your own -->
+      <ul>
+        <li><a class="link" href="mailto:hello@vocabvibe.example">shovoasorator@gmail.com</a></li>
+        <li class="muted">Dhaka, Bangladesh</li>
+      </ul>
+    </div>
+  </div>
+  <p class="copy muted">© 2026 OratorIx. Made for learners.</p>
+</footer>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ===== 8. SCRIPTS: data.js = word lists, app.js = all the logic ===== -->
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
