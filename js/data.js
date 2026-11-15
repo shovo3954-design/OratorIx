@@ -3,6 +3,9 @@
 // Fields: term, pos (part of speech), level, category, pron, def (meaning), ex (example).
 // Known / Need practice marks are saved by the app, so you do not need a status field.
 // cls = class number from 1 to 50 (optional). A word with no cls is in Class 1.
+// section = the Learn group: "Noun", "Pronoun", "Adjective", "Adverb", "Preposition", "Conjunction", "Interjection" or "Phrase".
+//   A word with no section is in "Mixed vocabulary". Example: { id:"n1", term:"...", pos:"Noun", section:"Noun", cls:1, ... }
+//   Its picture goes in images/korean/noun/class 1/n1.png (Mixed vocabulary words keep the level folder, like beginner).
 // Korean also uses: roman (romanisation) and extr (English translation of the example).
 // Pictures: images/korean/beginner/class 1/k9.png (named after the word's id).
 

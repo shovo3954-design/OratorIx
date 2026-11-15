@@ -48,25 +48,34 @@ document.querySelectorAll(".tab").forEach(b => b.onclick = () => show(b.dataset.
 
 /* ===== 5. LEARN TAB (search, filters, word cards) ===== */
 function cats() { return [...new Set(words.map(w => w.category).filter(Boolean))].sort(); }
-/* ----- CLASS PICKERS: choose a level, then a class (used by Learn, Flashcards, Quiz) ----- */
+/* ----- PICKER: choose a section (Mixed vocabulary, Noun, Pronoun...) then a class. Used by Learn, Flashcards and Quiz ----- */
 const cl = w => w.cls || 1; // a word with no class is in Class 1
-function fillClasses(levelSel, classSel, first = "All classes") {
-  const lv = $(levelSel).value, sel = $(classSel), cur = sel.value;
-  const nums = [...new Set(words.filter(w => !lv || w.level === lv).map(cl))].sort((a, b) => a - b);
-  sel.innerHTML = `<option value="">${first}</option>` + nums.map(n => `<option value="${n}">Class ${n}</option>`).join("");
-  sel.value = nums.includes(+cur) ? cur : "";
+const SECTIONS = ["Mixed vocabulary", "Noun", "Pronoun", "Adjective", "Adverb", "Preposition", "Conjunction", "Interjection", "Phrase"];
+const sec = w => w.section || "Mixed vocabulary"; // a word with no section is in Mixed vocabulary
+function makePicker(secBox, clsBox, onChange) {
+  const P = {
+    sec: "", cls: "",
+    ready() { return !!(P.sec && P.cls); },
+    render() {
+      $(secBox).innerHTML = SECTIONS.map(x => `<button class="chip${x === P.sec ? " on" : ""}" data-sec="${x}">${x}</button>`).join("");
+      const nums = [...new Set(words.filter(w => sec(w) === P.sec).map(cl))].sort((a, b) => a - b);
+      if (!nums.includes(+P.cls)) P.cls = "";
+      $(clsBox).innerHTML = !P.sec ? '<span class="muted">Pick a section first.</span>'
+        : nums.length ? nums.map(n => `<button class="chip${n === +P.cls ? " on" : ""}" data-cls="${n}">Class ${n}</button>`).join("")
+        : `<span class="muted">No words in “${esc(P.sec)}” yet. Add some in data.js.</span>`;
+    }
+  };
+  $(secBox).onclick = e => { const b = e.target.closest("[data-sec]"); if (!b) return; P.sec = P.sec === b.dataset.sec ? "" : b.dataset.sec; P.cls = ""; P.render(); onChange(); };
+  $(clsBox).onclick = e => { const b = e.target.closest("[data-cls]"); if (!b) return; P.cls = +P.cls === +b.dataset.cls ? "" : b.dataset.cls; P.render(); onChange(); };
+  return P;
 }
-function fillAllClasses() { renderChips(); fillClasses("#fc-level", "#fc-class"); fillClasses("#qz-level", "#qz-class"); }
-
-function fillCats() {
-  const cur = $("#f-cat").value;
-  $("#f-cat").innerHTML = '<option value="">All categories</option>' + cats().map(c => `<option>${esc(c)}</option>`).join("");
-  $("#f-cat").value = cats().includes(cur) ? cur : "";
-  fillAllClasses();
-}
+const PL = makePicker("#lv-chips", "#cl-chips", () => renderLearn()); // Learn
+const PF = makePicker("#fc-secs", "#fc-cls", () => buildDeck()); // Flashcards
+const PQ = makePicker("#qz-secs", "#qz-cls", () => { $("#qz-msg").textContent = ""; }); // Quiz
+function renderPickers() { PL.render(); PF.render(); PQ.render(); } // called when the language changes
 /* ----- WORD IMAGES: folder path is images/<language>/<level>/class <number>/<id>.png
    Example: images/korean/beginner/class 1/k9.png. Also tries .jpg, .jpeg, .webp; no picture if none is found ----- */
-function picBase(w) { return `images/${lang === "ko" ? "korean" : "english"}/${w.level.toLowerCase()}/class ${cl(w)}/${w.id}`; }
+function picBase(w) { return `images/${lang === "ko" ? "korean" : "english"}/${(sec(w) !== "Mixed vocabulary" ? sec(w) : w.level || "Beginner").toLowerCase()}/class ${cl(w)}/${w.id}`; }
 function picErr(img) {
   const types = ["png", "jpg", "jpeg", "webp"], i = +img.dataset.i + 1;
   if (i < types.length) { img.dataset.i = i; img.src = encodeURI(`${img.dataset.n}.${types[i]}`); } else img.remove();
@@ -81,30 +90,18 @@ function setPic(el, w) {
   el.src = encodeURI(`${picBase(w)}.${types[0]}`);
 }
 
-/* ----- LEARN BUTTONS: tap a level, then a class ----- */
-let LV = "", CL = "";
-function renderChips() {
-  $("#lv-chips").innerHTML = ["Beginner", "Intermediate", "Advanced"].map(l => `<button class="chip${l === LV ? " on" : ""}" data-lv="${l}">${l}</button>`).join("");
-  const nums = [...new Set(words.filter(w => w.level === LV).map(cl))].sort((a, b) => a - b);
-  if (!nums.includes(+CL)) CL = "";
-  $("#cl-chips").innerHTML = LV ? nums.map(n => `<button class="chip${n === +CL ? " on" : ""}" data-cl="${n}">Class ${n}</button>`).join("") : '<span class="muted">Pick a level first.</span>';
-}
-$("#lv-chips").onclick = e => { const b = e.target.closest("[data-lv]"); if (!b) return; LV = LV === b.dataset.lv ? "" : b.dataset.lv; CL = ""; renderChips(); renderLearn(); };
-$("#cl-chips").onclick = e => { const b = e.target.closest("[data-cl]"); if (!b) return; CL = +CL === +b.dataset.cl ? "" : b.dataset.cl; renderChips(); renderLearn(); };
-
 function renderLearn() {
-  const lv = LV, cs = CL, ct = $("#f-cat").value;
-  if (!lv || !cs) { $("#grid").innerHTML = '<p class="empty">Pick a level and a class to see words.</p>'; return; } // nothing until both are chosen
-  const list = words.filter(w => (!lv || w.level === lv) && (!ct || w.category === ct) && (!cs || cl(w) === +cs)).sort((a, b) => a.term.localeCompare(b.term));
+  if (!PL.ready()) { $("#grid").innerHTML = '<p class="empty">Pick a section and a class to see words.</p>'; return; } // nothing until both are chosen
+  const list = words.filter(w => sec(w) === PL.sec && cl(w) === +PL.cls).sort((a, b) => a.term.localeCompare(b.term));
   $("#grid").innerHTML = list.length ? list.map(w => `
     <article class="word">
       <img class="pic" src="${esc(encodeURI(picBase(w)))}.png" data-n="${esc(picBase(w))}" data-i="0" onerror="picErr(this)" alt="${esc(w.term)}" loading="lazy">
-      <div class="tags"><span class="tag">${esc(w.pos)}</span><span class="tag">${esc(w.level)}</span><span class="tag">Class ${cl(w)}</span>${w.category ? `<span class="tag">${esc(w.category)}</span>` : ""}
+      <div class="tags"><span class="tag">${esc(w.pos)}</span><span class="tag">${esc(sec(w))}</span><span class="tag">Class ${cl(w)}</span>${w.category ? `<span class="tag">${esc(w.category)}</span>` : ""}
         ${w.status !== "new" ? `<span class="tag ${w.status}">${w.status === "known" ? "Known" : "Need practice"}</span>` : ""}</div>
       <h3>${esc(w.term)} <small class="muted">${esc([w.roman, w.pron].filter(Boolean).join(" · "))}</small></h3>
       <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>
       <div class="acts" data-id="${w.id}"><button data-a="say">Listen</button><button data-a="ex">Listen sentence</button></div>
-    </article>`).join("") : `<p class="empty">No words match. Try another category.</p>`;
+    </article>`).join("") : `<p class="empty">No words in this class yet.</p>`;
 }
 $("#grid").onclick = e => {
   const b = e.target.closest("button"); if (!b) return;
@@ -112,14 +109,13 @@ $("#grid").onclick = e => {
   if (b.dataset.a === "say") say(w.term);
   if (b.dataset.a === "ex") say(w.ex);
 };
-$("#f-cat").oninput = renderLearn;
 
 /* ===== 6. FLASHCARDS (flip, Known, Need practice) ===== */
 let deck = [], di = 0;
 function buildDeck() {
   const f = $("#fc-filter").value;
-  const lv = $("#fc-level").value, cs = $("#fc-class").value;
-  deck = words.filter(w => (!lv || w.level === lv) && (!cs || cl(w) === +cs) &&
+  $("#fc-empty").textContent = PF.ready() ? "No cards match this filter. Try “All cards”." : "Pick a section and a class to see cards.";
+  deck = !PF.ready() ? [] : words.filter(w => sec(w) === PF.sec && cl(w) === +PF.cls &&
     (f === "all" || (f === "practice" ? w.status === "practice" : w.status !== "known")));
   di = 0; drawCard();
 }
@@ -130,7 +126,7 @@ function drawCard() {
   const w = deck[di], card = $("#card"), wasFlipped = card.classList.contains("flipped");
   card.classList.remove("flipped");
   $("#fc-count").textContent = `Card ${di + 1} of ${deck.length}`;
-  $("#fc-meta").textContent = `${w.level} · Class ${cl(w)}${w.category ? " · " + w.category : ""}`;
+  $("#fc-meta").textContent = `${sec(w)} · Class ${cl(w)}${w.category ? " · " + w.category : ""}`;
   $("#fc-term").textContent = w.term; $("#fc-pron").textContent = [w.roman, w.pron].filter(Boolean).join(" · ");
   // the back of the card is filled in after it has turned away, so the next answer is never seen early
   clearTimeout(drawCard.t);
@@ -151,8 +147,7 @@ $("#fc-next").onclick = () => step(1); $("#fc-prev").onclick = () => step(-1);
 $("#fc-say").onclick = () => say(deck[di].term);
 $("#fc-say-ex").onclick = () => say(deck[di].ex);
 $("#fc-known").onclick = () => rate("known"); $("#fc-practice").onclick = () => rate("practice");
-$("#fc-filter").onchange = buildDeck; $("#fc-class").onchange = buildDeck;
-$("#fc-level").onchange = () => { fillClasses("#fc-level", "#fc-class"); buildDeck(); };
+$("#fc-filter").onchange = buildDeck;
 document.addEventListener("keydown", e => {
   if ($("#v-flash").hidden || !deck.length || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
   if (e.key === "ArrowRight") step(1); if (e.key === "ArrowLeft") step(-1);
@@ -161,10 +156,11 @@ document.addEventListener("keydown", e => {
 /* ===== 7. QUIZ (questions, feedback, score, retry) ===== */
 let Q = {};
 function startQuiz(ids) {
-  const lv = $("#qz-level").value, cs = $("#qz-class").value, msg = $("#qz-msg"); msg.textContent = "";
+  const msg = $("#qz-msg"); msg.textContent = "";
+  if (!ids && !PQ.ready()) { msg.textContent = "Pick a section and a class first."; return; }
   if (words.length < 4) { msg.textContent = "Add at least 4 words to play."; return; }
-  const pool = ids ? words.filter(w => ids.includes(w.id)) : words.filter(w => (!lv || w.level === lv) && (!cs || cl(w) === +cs));
-  if (!pool.length) { msg.textContent = "No words in this level or class yet."; return; }
+  const pool = ids ? words.filter(w => ids.includes(w.id)) : words.filter(w => sec(w) === PQ.sec && cl(w) === +PQ.cls);
+  if (!pool.length) { msg.textContent = "No words in this class yet."; return; }
   Q = { qs: shuffle(pool).slice(0, 10), i: 0, score: 0, wrong: [], done: false };
   $("#qz-setup").hidden = true; $("#qz-end").hidden = true; $("#qz-play").hidden = false; ask();
 }
@@ -198,7 +194,6 @@ $("#qz-next").onclick = () => {
 };
 $("#qz-start").onclick = () => startQuiz();
 $("#qz-fb").onclick = e => { const b = e.target.closest("[data-say]"); if (b) say(Q.qs[Q.i][b.dataset.say]); }; // Listen buttons in the feedback box
-$("#qz-level").onchange = () => fillClasses("#qz-level", "#qz-class");
 $("#qz-retry").onclick = () => startQuiz(Q.wrong);
 $("#qz-again").onclick = () => show("quiz");
 
@@ -316,7 +311,7 @@ const gs = $("#gsearch"), gr = $("#gresults");
 function showResults() {
   if (!gs.value.trim()) { gr.hidden = true; return; }
   const list = searchWords(gs.value);
-  gr.innerHTML = list.length ? list.map(w => `<button data-id="${esc(w.id)}"><b>${esc(w.term)}</b><span>${esc(w.def)}</span><small>${esc(w.level)} · Class ${cl(w)}</small></button>`).join("") : '<p class="muted">No words found.</p>';
+  gr.innerHTML = list.length ? list.map(w => `<button data-id="${esc(w.id)}"><b>${esc(w.term)}</b><span>${esc(w.def)}</span><small>${esc(sec(w))} · Class ${cl(w)}</small></button>`).join("") : '<p class="muted">No words found.</p>';
   gr.hidden = false;
 }
 gs.oninput = showResults; gs.onfocus = showResults;
@@ -326,7 +321,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") gr.hidden = 
 function openWord(w) { // full word card in a pop-up
   $("#wcard").dataset.id = w.id;
   $("#wcard").innerHTML = `<img class="pic" id="w-pic" alt="" hidden>
-    <div class="tags"><span class="tag">${esc(w.pos)}</span><span class="tag">${esc(w.level)}</span><span class="tag">Class ${cl(w)}</span>${w.category ? `<span class="tag">${esc(w.category)}</span>` : ""}</div>
+    <div class="tags"><span class="tag">${esc(w.pos)}</span><span class="tag">${esc(sec(w))}</span><span class="tag">Class ${cl(w)}</span>${w.category ? `<span class="tag">${esc(w.category)}</span>` : ""}</div>
     <h2>${esc(w.term)} <small class="muted">${esc([w.roman, w.pron].filter(Boolean).join(" · "))}</small></h2>
     <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>
     <div class="row left"><button class="btn" data-say="term">Listen</button><button class="btn" data-say="ex">Listen sentence</button></div>`;
@@ -349,7 +344,7 @@ document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { setLan
 /* ===== 11. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
 function setLang(l) {
   lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); $("#lang").value = l;
-  LV = ""; CL = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; fillCats(); renderLearn(); stats(); renderWotd();
+  PL.sec = PL.cls = PF.sec = PF.cls = PQ.sec = PQ.cls = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; renderPickers(); renderLearn(); stats(); renderWotd();
   show(["home", "learn", "verbs", "flash", "quiz"].find(n => !$("#v-" + n).hidden) || "home");
 }
 $("#lang").onchange = e => setLang(e.target.value);

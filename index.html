@@ -74,10 +74,10 @@
 
   <!-- ===== 4. LEARN TAB: word library (search, filters, word cards) ===== -->
   <section id="v-learn" hidden>
-    <h1 class="sec">Word library</h1>
-    <div id="lv-chips" class="chips" role="group" aria-label="Level"></div>
+    <h1 class="sec">Words by part of speech</h1>
+    <p class="muted">Pick a section, then a class.</p>
+    <div id="lv-chips" class="chips" role="group" aria-label="Section"></div>
     <div id="cl-chips" class="chips" role="group" aria-label="Class"></div>
-    <div class="bar"><select id="f-cat" aria-label="Category"></select></div>
     <div id="grid" class="grid"></div>
   </section>
 
@@ -123,15 +123,15 @@
   <!-- ===== 5. FLASHCARDS TAB ===== -->
   <section id="v-flash" hidden>
     <h1 class="sec">Flashcards</h1>
+    <div id="fc-secs" class="chips" role="group" aria-label="Section"></div>
+    <div id="fc-cls" class="chips" role="group" aria-label="Class"></div>
     <div class="bar">
-      <select id="fc-level" aria-label="Level"><option value="">All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
-      <select id="fc-class" aria-label="Class"></select>
       <select id="fc-filter" aria-label="Which cards">
         <option value="all">All cards</option><option value="practice">Need practice</option><option value="notknown">Not known yet</option>
       </select>
       <span id="fc-count" class="muted"></span>
     </div>
-    <p id="fc-empty" class="empty" hidden>No cards match these filters. Try “All cards”.</p>
+    <p id="fc-empty" class="empty" hidden>Pick a section and a class to see cards.</p>
     <div id="fc-area">
       <button class="card" id="card" aria-label="Flip card">
         <span class="inner">
@@ -157,9 +157,9 @@
     <div id="qz-setup" class="panel">
       <h1>Word meaning quiz</h1>
       <p>Pick the right meaning. You get feedback after every answer.</p>
-      <div class="bar"><select id="qz-level" aria-label="Quiz level"><option value="">All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
-      <select id="qz-class" aria-label="Quiz class"></select>
-      <button class="btn green" id="qz-start">Start quiz</button></div>
+      <div id="qz-secs" class="chips" role="group" aria-label="Section"></div>
+      <div id="qz-cls" class="chips" role="group" aria-label="Class"></div>
+      <div class="bar"><button class="btn green" id="qz-start">Start quiz</button></div>
       <p id="qz-msg" class="muted" role="status"></p>
     </div>
     <div id="qz-play" class="panel" hidden>
