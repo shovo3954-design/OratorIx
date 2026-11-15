@@ -206,15 +206,17 @@ $("#qz-again").onclick = () => show("quiz");
 const TENSES = ["present", "past", "future"], TLABEL = { present: "Present (now)", past: "Past (before)", future: "Future (later)" };
 const allVerbs = () => DEFAULT_VERBS[lang];
 const verbList = () => allVerbs().filter(v => v.level === VLV && (v.cls || 1) === +VCL); // verbs of the chosen level and class
+const vpron = v => [v.roman, v.pron].filter(Boolean).join(" · "); // pronunciation of the main verb
 const fillS = t => t[0].replace("___", t[1]); // sentence with the answer filled in
 let VT = "learn";
 /* Verbs: pick a level, then a class (applies to Learn, Flashcards and Quiz) */
 let VLV = "", VCL = "";
+const className = n => (typeof VERB_CLASS_NAMES !== "undefined" && VERB_CLASS_NAMES[lang]?.[VLV]?.[n]) || ""; // topic name of a class
 function renderVChips() {
   $("#vlv-chips").innerHTML = ["Beginner", "Intermediate", "Advanced"].map(l => `<button class="chip${l === VLV ? " on" : ""}" data-vlv="${l}">${l}</button>`).join("");
   const nums = [...new Set(allVerbs().filter(v => v.level === VLV).map(v => v.cls || 1))].sort((a, b) => a - b);
   if (!nums.includes(+VCL)) VCL = "";
-  $("#vcl-chips").innerHTML = VLV ? nums.map(n => `<button class="chip${n === +VCL ? " on" : ""}" data-vcl="${n}">Class ${n}</button>`).join("") : '<span class="muted">Pick a level first.</span>';
+  $("#vcl-chips").innerHTML = VLV ? nums.map(n => `<button class="chip${n === +VCL ? " on" : ""}" data-vcl="${n}">Class ${n}${className(n) ? " · " + esc(className(n)) : ""}</button>`).join("") : '<span class="muted">Pick a level first.</span>';
 }
 $("#vlv-chips").onclick = e => { const b = e.target.closest("[data-vlv]"); if (!b) return; VLV = VLV === b.dataset.vlv ? "" : b.dataset.vlv; VCL = ""; showVT(VT); };
 $("#vcl-chips").onclick = e => { const b = e.target.closest("[data-vcl]"); if (!b) return; VCL = +VCL === +b.dataset.vcl ? "" : b.dataset.vcl; showVT(VT); };
@@ -234,7 +236,7 @@ document.querySelectorAll("[data-vt]").forEach(b => b.onclick = () => showVT(b.d
 
 /* Verbs: Learn */
 function renderVerbs() {
-  $("#vb-grid").innerHTML = verbList().map(v => `<article class="word"><h3>${esc(v.base)} <small class="muted">${esc(v.meaning)}</small></h3>
+  $("#vb-grid").innerHTML = verbList().map(v => `<article class="word vcard"><h3>${esc(v.base)}${vpron(v) ? `<small class="muted">${esc(vpron(v))}</small>` : ""}<small class="muted">${esc(v.meaning)}</small></h3>
     <div class="acts"><button data-speak="${esc(v.base)}">Listen</button></div>` + TENSES.map(t => `
     <div class="vrow"><b>${TLABEL[t]}</b><span>${esc(v[t])}</span></div>
     <p class="ex">${esc(fillS(v.ex[t]))}${v.ex[t][2] ? "<br>" + esc(v.ex[t][2]) : ""} <button class="mini" data-speak="${esc(fillS(v.ex[t]))}">Listen</button></p>`).join("") + "</article>").join("");
@@ -248,7 +250,7 @@ function drawVF() {
   const { v, t } = vdeck[vi], card = $("#vf-card"), was = card.classList.contains("flipped");
   card.classList.remove("flipped");
   $("#vf-count").textContent = `Card ${vi + 1} of ${vdeck.length}`;
-  $("#vf-tense").textContent = TLABEL[t]; $("#vf-term").textContent = v.base; $("#vf-meaning").textContent = v.meaning;
+  $("#vf-tense").textContent = TLABEL[t]; $("#vf-term").textContent = v.base; $("#vf-pron").textContent = vpron(v); $("#vf-meaning").textContent = v.meaning;
   clearTimeout(drawVF.t);
   const back = () => { $("#vf-label").textContent = TLABEL[t]; $("#vf-form").textContent = v[t]; $("#vf-ex").textContent = fillS(v.ex[t]) + (v.ex[t][2] ? ` (${v.ex[t][2]})` : ""); };
   if (was) drawVF.t = setTimeout(back, 300); else back(); // back is filled after the card has turned away
@@ -270,11 +272,11 @@ function startVQ() {
 function askVQ() {
   const { v, t } = VQ.qs[VQ.i], ans = v.ex[t][1]; VQ.done = false;
   let pool = [...new Set(TENSES.flatMap(x => [...v[x].split(" / "), v.ex[x][1]]))].filter(f => f !== ans);
-  for (const o of shuffle(allVerbs().filter(x => x !== v)).map(x => x.ex[t][1])) { if (pool.length >= 3) break; if (o !== ans && !pool.includes(o)) pool.push(o); }
+  // wrong choices are other forms of the same verb only, so a wrong choice can never also fit the sentence
   VQ.opts = shuffle([ans, ...shuffle(pool).slice(0, 3)]);
   $("#vq-prog").textContent = `Question ${VQ.i + 1} of ${VQ.qs.length} · Score ${VQ.score}`;
   $("#vq-bar").style.width = (VQ.i / VQ.qs.length * 100) + "%";
-  $("#vq-q").textContent = v.ex[t][0]; $("#vq-hint").textContent = `Verb: ${v.base} (${v.meaning})`;
+  $("#vq-q").textContent = v.ex[t][0]; $("#vq-hint").textContent = `Verb: ${[v.base, vpron(v), v.meaning].filter(Boolean).join(" · ")}`;
   $("#vq-opts").innerHTML = VQ.opts.map((o, k) => `<button data-k="${k}">${esc(o)}</button>`).join("");
   $("#vq-fb").hidden = true; $("#vq-next").hidden = true;
 }
