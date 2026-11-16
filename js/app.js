@@ -52,6 +52,7 @@ function cats() { return [...new Set(words.map(w => w.category).filter(Boolean))
 const cl = w => w.cls || 1; // a word with no class is in Class 1
 const SECTIONS = ["Mixed vocabulary", "Noun", "Pronoun", "Adjective", "Adverb", "Preposition", "Conjunction", "Interjection", "Phrase"];
 const sec = w => w.section || "Mixed vocabulary"; // a word with no section is in Mixed vocabulary
+const wordClassName = (s, n) => (typeof CLASS_NAMES !== "undefined" && CLASS_NAMES[lang]?.[s]?.[n]) || ""; // topic name of a class (from CLASS_NAMES in data.js)
 function makePicker(secBox, clsBox, onChange) {
   const P = {
     sec: "", cls: "",
@@ -61,7 +62,7 @@ function makePicker(secBox, clsBox, onChange) {
       const nums = [...new Set(words.filter(w => sec(w) === P.sec).map(cl))].sort((a, b) => a - b);
       if (!nums.includes(+P.cls)) P.cls = "";
       $(clsBox).innerHTML = !P.sec ? '<span class="muted">Pick a section first.</span>'
-        : nums.length ? nums.map(n => `<button class="chip${n === +P.cls ? " on" : ""}" data-cls="${n}">Class ${n}</button>`).join("")
+        : nums.length ? nums.map(n => `<button class="chip${n === +P.cls ? " on" : ""}" data-cls="${n}">Class ${n}${wordClassName(P.sec, n) ? " · " + esc(wordClassName(P.sec, n)) : ""}</button>`).join("")
         : `<span class="muted">No words in “${esc(P.sec)}” yet. Add some in data.js.</span>`;
     }
   };

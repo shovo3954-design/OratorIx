@@ -724,6 +724,122 @@ const DEFAULT_KO = [
 
 
 
+  // ===== PHRASE SECTION (paste at the end of DEFAULT_KO; add a comma after the last entry above first) =====
+
+  // Phrase Class 1: Greetings & Goodbyes
+  { id: "ph1", term: "안녕하세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "annyeonghaseyo", pron: "an-nyeong-ha-se-yo (approximate)", def: "Hello / Hi (polite).", ex: "A: 안녕하세요? B: 안녕하세요, 만나서 반가워요.", extr: "A: Hello? B: Hello, nice to meet you.", status: "new" },
+  { id: "ph2", term: "안녕", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "annyeong", pron: "an-nyeong (approximate)", def: "Hi / Bye (casual).", ex: "A: 안녕! 오늘 어때? B: 안녕! 좋아.", extr: "A: Hi! How are you today? B: Hi! I'm good.", status: "new" },
+  { id: "ph3", term: "안녕히 가세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "annyeonghi gaseyo", pron: "an-nyeong-hi ga-se-yo (approximate)", def: "Goodbye (to someone leaving).", ex: "안녕히 가세요. 또 오세요.", extr: "Goodbye. Please come again. (said by a shopkeeper)", status: "new" },
+  { id: "ph4", term: "안녕히 계세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "annyeonghi gyeseyo", pron: "an-nyeong-hi gye-se-yo (approximate)", def: "Goodbye (to someone staying).", ex: "안녕히 계세요. 감사합니다.", extr: "Goodbye. Thank you. (said when leaving a shop)", status: "new" },
+  { id: "ph5", term: "잘 가요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "jal gayo", pron: "jal ga-yo (approximate)", def: "Bye / Take care (polite, friendly).", ex: "A: 잘 가요! B: 네, 내일 봐요.", extr: "A: Take care! B: Yes, see you tomorrow.", status: "new" },
+  { id: "ph6", term: "또 봐요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "tto bwayo", pron: "tto bwa-yo (approximate)", def: "See you again.", ex: "오늘 즐거웠어요. 또 봐요.", extr: "Today was fun. See you again.", status: "new" },
+  { id: "ph7", term: "내일 봐요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "naeil bwayo", pron: "nae-il bwa-yo (approximate)", def: "See you tomorrow.", ex: "수업이 끝났어요. 내일 봐요.", extr: "Class is over. See you tomorrow.", status: "new" },
+  { id: "ph8", term: "오랜만이에요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "oraenmanieyo", pron: "o-raen-ma-ni-e-yo (approximate)", def: "Long time no see.", ex: "A: 오랜만이에요! B: 정말 오랜만이에요.", extr: "A: Long time no see! B: It really has been a long time.", status: "new" },
+  { id: "ph9", term: "반갑습니다", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "bangapseumnida", pron: "ban-gap-seum-ni-da (approximate)", def: "Nice to meet you (formal).", ex: "A: 김민수입니다. B: 반갑습니다.", extr: "A: I am Kim Minsu. B: Nice to meet you.", status: "new" },
+  { id: "ph10", term: "만나서 반가워요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "mannaseo bangawoyo", pron: "man-na-seo ban-ga-wo-yo (approximate)", def: "Nice to meet you (polite).", ex: "만나서 반가워요. 저는 수지예요.", extr: "Nice to meet you. I am Suzy.", status: "new" },
+  { id: "ph11", term: "잘 지냈어요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "jal jinaesseoyo", pron: "jal ji-nae-sseo-yo (approximate)", def: "How have you been?", ex: "A: 잘 지냈어요? B: 네, 잘 지냈어요.", extr: "A: How have you been? B: Yes, I have been well.", status: "new" },
+  { id: "ph12", term: "네, 잘 지냈어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "ne, jal jinaesseoyo", pron: "ne, jal ji-nae-sseo-yo (approximate)", def: "Yes, I've been doing well.", ex: "A: 요즘 어때요? B: 네, 잘 지냈어요. 고마워요.", extr: "A: How are you these days? B: I have been well, thank you.", status: "new" },
+  { id: "ph13", term: "좋은 아침이에요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "joeun achimieyo", pron: "jo-eun a-chi-mi-e-yo (approximate)", def: "Good morning.", ex: "A: 좋은 아침이에요! B: 안녕하세요!", extr: "A: Good morning! B: Hello!", status: "new" },
+  { id: "ph14", term: "잘 자요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "jal jayo", pron: "jal ja-yo (approximate)", def: "Good night (polite).", ex: "이제 밤이에요. 잘 자요.", extr: "It is night now. Good night.", status: "new" },
+  { id: "ph15", term: "안녕히 주무세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Greetings & Goodbyes", cls: 1, roman: "annyeonghi jumuseyo", pron: "an-nyeong-hi ju-mu-se-yo (approximate)", def: "Good night (honorific).", ex: "할머니, 안녕히 주무세요.", extr: "Grandmother, good night.", status: "new" },
+
+  // Phrase Class 2: Politeness & Apologies
+  { id: "ph16", term: "감사합니다", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "gamsahamnida", pron: "gam-sa-ham-ni-da (approximate)", def: "Thank you (formal).", ex: "A: 제가 도와 드릴게요. B: 감사합니다.", extr: "A: I will help you. B: Thank you.", status: "new" },
+  { id: "ph17", term: "고마워요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "gomawoyo", pron: "go-ma-wo-yo (approximate)", def: "Thank you (polite).", ex: "선물 고마워요.", extr: "Thank you for the gift.", status: "new" },
+  { id: "ph18", term: "고마워", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "gomawo", pron: "go-ma-wo (approximate)", def: "Thanks (casual).", ex: "도와줘서 고마워.", extr: "Thanks for helping me.", status: "new" },
+  { id: "ph19", term: "천만에요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "cheonmaneyo", pron: "cheon-ma-ne-yo (approximate)", def: "You're welcome.", ex: "A: 고마워요. B: 천만에요.", extr: "A: Thank you. B: You are welcome.", status: "new" },
+  { id: "ph20", term: "아니에요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "anieyo", pron: "a-ni-e-yo (approximate)", def: "No / Not at all / You're welcome.", ex: "A: 정말 고마워요. B: 아니에요.", extr: "A: Thank you so much. B: Not at all.", status: "new" },
+  { id: "ph21", term: "죄송합니다", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "joesonghamnida", pron: "joe-song-ham-ni-da (approximate)", def: "I'm sorry (formal).", ex: "늦어서 죄송합니다.", extr: "I am sorry for being late.", status: "new" },
+  { id: "ph22", term: "미안해요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "mianhaeyo", pron: "mi-an-hae-yo (approximate)", def: "I'm sorry (polite).", ex: "기다리게 해서 미안해요.", extr: "I am sorry for making you wait.", status: "new" },
+  { id: "ph23", term: "미안해", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "mianhae", pron: "mi-an-hae (approximate)", def: "Sorry (casual).", ex: "어제 못 가서 미안해.", extr: "Sorry I could not go yesterday.", status: "new" },
+  { id: "ph24", term: "괜찮아요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "gwaenchanayo", pron: "gwaen-cha-na-yo (approximate)", def: "It's okay / I'm okay.", ex: "A: 죄송해요. B: 괜찮아요.", extr: "A: I am sorry. B: It is okay.", status: "new" },
+  { id: "ph25", term: "실례합니다", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "sillyehamnida", pron: "sil-lye-ham-ni-da (approximate)", def: "Excuse me (entering or passing by).", ex: "실례합니다. 지나가도 될까요?", extr: "Excuse me. May I pass?", status: "new" },
+  { id: "ph26", term: "저기요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "jeogiyo", pron: "jeo-gi-yo (approximate)", def: "Excuse me (getting someone's attention).", ex: "저기요, 여기 좀 봐 주세요.", extr: "Excuse me, please look over here.", status: "new" },
+  { id: "ph27", term: "잠시만요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "jamsimanyo", pron: "jam-si-man-yo (approximate)", def: "Just a moment / Excuse me.", ex: "잠시만요. 전화가 왔어요.", extr: "Just a moment. I have a call.", status: "new" },
+  { id: "ph28", term: "부탁합니다", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "butakhamnida", pron: "bu-tak-ham-ni-da (approximate)", def: "Please (asking a favor).", ex: "내일까지 부탁합니다.", extr: "Please do it by tomorrow.", status: "new" },
+  { id: "ph29", term: "수고하셨습니다", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "sugohasyeotseumnida", pron: "su-go-ha-syeot-seum-ni-da (approximate)", def: "Good job / Thank you for your hard work.", ex: "오늘 회의 수고하셨습니다.", extr: "Thank you for your hard work at today's meeting.", status: "new" },
+  { id: "ph30", term: "축하합니다", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Politeness & Apologies", cls: 2, roman: "chukahamnida", pron: "chu-ka-ham-ni-da (approximate)", def: "Congratulations.", ex: "생일 축하합니다.", extr: "Congratulations on your birthday. (Happy birthday.)", status: "new" },
+
+  // Phrase Class 3: Basic Responses & Conversation
+  { id: "ph31", term: "네 / 예", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "ne / ye", pron: "ne / ye (approximate)", def: "Yes.", ex: "A: 학생이에요? B: 네.", extr: "A: Are you a student? B: Yes.", status: "new" },
+  { id: "ph32", term: "아니요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "aniyo", pron: "a-ni-yo (approximate)", def: "No.", ex: "A: 피곤해요? B: 아니요.", extr: "A: Are you tired? B: No.", status: "new" },
+  { id: "ph33", term: "아마도", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "amado", pron: "a-ma-do (approximate)", def: "Maybe.", ex: "A: 내일 와요? B: 아마도요.", extr: "A: Will you come tomorrow? B: Maybe.", status: "new" },
+  { id: "ph34", term: "몰라요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "mollayo", pron: "mol-la-yo (approximate)", def: "I don't know.", ex: "A: 이게 뭐예요? B: 몰라요.", extr: "A: What is this? B: I don't know.", status: "new" },
+  { id: "ph35", term: "알겠어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "algesseoyo", pron: "al-ge-sseo-yo (approximate)", def: "I understand / Got it.", ex: "A: 내일 일찍 오세요. B: 알겠어요.", extr: "A: Please come early tomorrow. B: Got it.", status: "new" },
+  { id: "ph36", term: "이해가 안 돼요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "ihaega an dwaeyo", pron: "i-hae-ga an dwae-yo (approximate)", def: "I don't understand.", ex: "이 문장은 이해가 안 돼요.", extr: "I do not understand this sentence.", status: "new" },
+  { id: "ph37", term: "다시 말해 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "dasi malhae juseyo", pron: "da-si mal-hae ju-se-yo (approximate)", def: "Please say that again.", ex: "잘 못 들었어요. 다시 말해 주세요.", extr: "I did not hear well. Please say that again.", status: "new" },
+  { id: "ph38", term: "천천히 말해 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "cheoncheonhi malhae juseyo", pron: "cheon-cheon-hi mal-hae ju-se-yo (approximate)", def: "Please speak slowly.", ex: "너무 빨라요. 천천히 말해 주세요.", extr: "It is too fast. Please speak slowly.", status: "new" },
+  { id: "ph39", term: "한국어 잘 못해요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "hangugeo jal motaeyo", pron: "han-gu-geo jal mo-tae-yo (approximate)", def: "I don't speak Korean well.", ex: "죄송해요. 저는 한국어 잘 못해요.", extr: "Sorry. I do not speak Korean well.", status: "new" },
+  { id: "ph40", term: "한국어 공부하고 있어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "hangugeo gongbuhago isseoyo", pron: "han-gu-geo gong-bu-ha-go i-sseo-yo (approximate)", def: "I'm studying Korean.", ex: "A: 직업이 뭐예요? B: 한국어 공부하고 있어요.", extr: "A: What do you do? B: I am studying Korean.", status: "new" },
+  { id: "ph41", term: "영어 할 수 있어요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "yeongeo hal su isseoyo", pron: "yeong-eo hal su i-sseo-yo (approximate)", def: "Can you speak English?", ex: "실례합니다. 영어 할 수 있어요?", extr: "Excuse me. Can you speak English?", status: "new" },
+  { id: "ph42", term: "이거 뭐예요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "igeo mwoyeyo", pron: "i-geo mwo-ye-yo (approximate)", def: "What is this?", ex: "이거 뭐예요? 처음 봐요.", extr: "What is this? I see it for the first time.", status: "new" },
+  { id: "ph43", term: "무슨 뜻이에요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "museun tteusieyo", pron: "mu-seun tteu-si-e-yo (approximate)", def: "What does it mean?", ex: "이 단어는 무슨 뜻이에요?", extr: "What does this word mean?", status: "new" },
+  { id: "ph44", term: "이름이 뭐예요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "ireumi mwoyeyo", pron: "i-reu-mi mwo-ye-yo (approximate)", def: "What is your name?", ex: "A: 이름이 뭐예요? B: 수지예요.", extr: "A: What is your name? B: It is Suzy.", status: "new" },
+  { id: "ph45", term: "제 이름은 [이름]이에요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "je ireumeun [ireum]ieyo", pron: "je i-reu-meun [i-reum]-i-e-yo (approximate)", def: "My name is [Name].", ex: "안녕하세요. 제 이름은 [이름]이에요.", extr: "Hello. My name is [Name].", status: "new" },
+  { id: "ph46", term: "어디에서 왔어요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "eodieseo wasseoyo", pron: "eo-di-e-seo wa-sseo-yo (approximate)", def: "Where are you from?", ex: "A: 어디에서 왔어요? B: 미국에서 왔어요.", extr: "A: Where are you from? B: I am from the USA.", status: "new" },
+  { id: "ph47", term: "몇 살이에요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "myeot sarieyo", pron: "myeot sa-ri-e-yo (approximate)", def: "How old are you?", ex: "A: 몇 살이에요? B: 스무 살이에요.", extr: "A: How old are you? B: I am twenty.", status: "new" },
+  { id: "ph48", term: "진짜요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "jinjjayo", pron: "jin-jja-yo (approximate)", def: "Really?", ex: "A: 내일 시험이 없어요. B: 진짜요?", extr: "A: There is no exam tomorrow. B: Really?", status: "new" },
+  { id: "ph49", term: "맞아요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "majayo", pron: "ma-ja-yo (approximate)", def: "That's right.", ex: "A: 학생이죠? B: 맞아요.", extr: "A: You are a student, right? B: That's right.", status: "new" },
+  { id: "ph50", term: "틀렸어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Basic Responses & Conversation", cls: 3, roman: "teullyeosseoyo", pron: "teul-lyeo-sseo-yo (approximate)", def: "That's wrong.", ex: "이 답은 틀렸어요.", extr: "This answer is wrong.", status: "new" },
+
+  // Phrase Class 4: Food & Dining
+  { id: "ph51", term: "잘 먹겠습니다", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "jal meokgetseumnida", pron: "jal meok-get-seum-ni-da (approximate)", def: "Thank you for the meal (before eating).", ex: "와, 맛있겠다. 잘 먹겠습니다.", extr: "Wow, it looks tasty. Thank you for the meal.", status: "new" },
+  { id: "ph52", term: "잘 먹었습니다", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "jal meogeotseumnida", pron: "jal meo-geot-seum-ni-da (approximate)", def: "Thank you for the meal (after eating).", ex: "배불러요. 잘 먹었습니다.", extr: "I am full. Thank you for the meal.", status: "new" },
+  { id: "ph53", term: "맛있어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "masisseoyo", pron: "ma-si-sseo-yo (approximate)", def: "It's delicious.", ex: "이 김치 정말 맛있어요.", extr: "This kimchi is really delicious.", status: "new" },
+  { id: "ph54", term: "맛없어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "maseopseoyo", pron: "ma-seop-seo-yo (approximate)", def: "It's not delicious.", ex: "이 국은 좀 맛없어요.", extr: "This soup is not very tasty.", status: "new" },
+  { id: "ph55", term: "배고파요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "baegopayo", pron: "bae-go-pa-yo (approximate)", def: "I'm hungry.", ex: "아침을 안 먹어서 배고파요.", extr: "I did not eat breakfast, so I am hungry.", status: "new" },
+  { id: "ph56", term: "배불러요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "baebulleoyo", pron: "bae-bul-leo-yo (approximate)", def: "I'm full.", ex: "많이 먹어서 배불러요.", extr: "I ate a lot, so I am full.", status: "new" },
+  { id: "ph57", term: "목말라요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "mongmallayo", pron: "mong-mal-la-yo (approximate)", def: "I'm thirsty.", ex: "물 좀 주세요. 목말라요.", extr: "Please give me some water. I am thirsty.", status: "new" },
+  { id: "ph58", term: "메뉴 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "menyu juseyo", pron: "me-nyu ju-se-yo (approximate)", def: "Menu, please.", ex: "저기요, 메뉴 주세요.", extr: "Excuse me, menu please.", status: "new" },
+  { id: "ph59", term: "물 좀 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "mul jom juseyo", pron: "mul jom ju-se-yo (approximate)", def: "Water, please.", ex: "저기요, 물 좀 주세요.", extr: "Excuse me, water please.", status: "new" },
+  { id: "ph60", term: "이거 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "igeo juseyo", pron: "i-geo ju-se-yo (approximate)", def: "Please give me this.", ex: "이거 주세요. 두 개요.", extr: "Please give me this. Two, please.", status: "new" },
+  { id: "ph61", term: "계산해 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "gyesanhae juseyo", pron: "gye-san-hae ju-se-yo (approximate)", def: "Check / Bill, please.", ex: "다 먹었어요. 계산해 주세요.", extr: "We finished eating. The bill, please.", status: "new" },
+  { id: "ph62", term: "추천해 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "chucheonhae juseyo", pron: "chu-cheon-hae ju-se-yo (approximate)", def: "Please recommend something.", ex: "뭐가 맛있어요? 추천해 주세요.", extr: "What is tasty? Please recommend something.", status: "new" },
+  { id: "ph63", term: "맵지 않게 해 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "maepji anke hae juseyo", pron: "maep-ji an-ke hae ju-se-yo (approximate)", def: "Please make it not spicy.", ex: "매운 음식을 못 먹어요. 맵지 않게 해 주세요.", extr: "I cannot eat spicy food. Please make it not spicy.", status: "new" },
+  { id: "ph64", term: "포장해 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "pojanghae juseyo", pron: "po-jang-hae ju-se-yo (approximate)", def: "To go / Takeout, please.", ex: "남은 음식은 포장해 주세요.", extr: "Please pack the leftover food to go.", status: "new" },
+  { id: "ph65", term: "건배!", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Food & Dining", cls: 4, roman: "geonbae", pron: "geon-bae (approximate)", def: "Cheers!", ex: "우리의 우정을 위해, 건배!", extr: "To our friendship, cheers!", status: "new" },
+
+  // Phrase Class 5: Shopping & Directions
+  { id: "ph66", term: "얼마예요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "eolmayeyo", pron: "eol-ma-ye-yo (approximate)", def: "How much is it?", ex: "이 가방 얼마예요?", extr: "How much is this bag?", status: "new" },
+  { id: "ph67", term: "너무 비싸요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "neomu bissayo", pron: "neo-mu bi-ssa-yo (approximate)", def: "It's too expensive.", ex: "너무 비싸요. 다른 것은 없어요?", extr: "It is too expensive. Don't you have another one?", status: "new" },
+  { id: "ph68", term: "좀 깎아 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "jom kkakka juseyo", pron: "jom kkak-ka ju-se-yo (approximate)", def: "Please give me a discount.", ex: "많이 샀어요. 좀 깎아 주세요.", extr: "I bought a lot. Please give me a discount.", status: "new" },
+  { id: "ph69", term: "카드 돼요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "kadeu dwaeyo", pron: "ka-deu dwae-yo (approximate)", def: "Do you take credit cards?", ex: "여기 카드 돼요?", extr: "Do you take cards here?", status: "new" },
+  { id: "ph70", term: "현금만 돼요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "hyeongeumman dwaeyo", pron: "hyeon-geum-man dwae-yo (approximate)", def: "Cash only.", ex: "죄송해요. 현금만 돼요.", extr: "Sorry. Cash only.", status: "new" },
+  { id: "ph71", term: "영수증 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "yeongsujeung juseyo", pron: "yeong-su-jeung ju-se-yo (approximate)", def: "Receipt, please.", ex: "계산했어요. 영수증 주세요.", extr: "I paid. Receipt, please.", status: "new" },
+  { id: "ph72", term: "봉투 필요해요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "bongtu piryohaeyo", pron: "bong-tu pi-ryo-hae-yo (approximate)", def: "Do you need a bag?", ex: "A: 봉투 필요해요? B: 아니요, 괜찮아요.", extr: "A: Do you need a bag? B: No, I'm fine.", status: "new" },
+  { id: "ph73", term: "그냥 구경하는 거예요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "geunyang gugyeonghaneun geoyeyo", pron: "geu-nyang gu-gyeong-ha-neun geo-ye-yo (approximate)", def: "I'm just looking.", ex: "A: 찾으시는 거 있어요? B: 그냥 구경하는 거예요.", extr: "A: Are you looking for something? B: I am just looking.", status: "new" },
+  { id: "ph74", term: "화장실이 어디예요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "hwajangsiri eodiyeyo", pron: "hwa-jang-si-ri eo-di-ye-yo (approximate)", def: "Where is the bathroom?", ex: "실례합니다. 화장실이 어디예요?", extr: "Excuse me. Where is the bathroom?", status: "new" },
+  { id: "ph75", term: "여기 어떻게 가요?", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "yeogi eotteoke gayo", pron: "yeo-gi eo-tteo-ke ga-yo (approximate)", def: "How do I get here?", ex: "이 주소예요. 여기 어떻게 가요?", extr: "This is the address. How do I get here?", status: "new" },
+  { id: "ph76", term: "왼쪽으로 가세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "oenjjogeuro gaseyo", pron: "oen-jjo-geu-ro ga-se-yo (approximate)", def: "Go left.", ex: "은행은 왼쪽으로 가세요.", extr: "For the bank, go left.", status: "new" },
+  { id: "ph77", term: "오른쪽으로 가세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "oreunjjogeuro gaseyo", pron: "o-reun-jjo-geu-ro ga-se-yo (approximate)", def: "Go right.", ex: "우체국은 오른쪽으로 가세요.", extr: "For the post office, go right.", status: "new" },
+  { id: "ph78", term: "직진하세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "jikjinhaseyo", pron: "jik-jin-ha-se-yo (approximate)", def: "Go straight.", ex: "신호등까지 직진하세요.", extr: "Go straight to the traffic light.", status: "new" },
+  { id: "ph79", term: "여기에서 내려 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "yeogieseo naeryeo juseyo", pron: "yeo-gi-e-seo nae-ryeo ju-se-yo (approximate)", def: "Please let me off here (taxi / bus).", ex: "기사님, 여기에서 내려 주세요.", extr: "Driver, please let me off here.", status: "new" },
+  { id: "ph80", term: "길을 잃었어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Shopping & Directions", cls: 5, roman: "gireul ireosseoyo", pron: "gi-reul i-reo-sseo-yo (approximate)", def: "I'm lost.", ex: "길을 잃었어요. 도와주세요.", extr: "I am lost. Please help me.", status: "new" },
+
+  // Phrase Class 6: Feelings, Daily Life & Emergencies
+  { id: "ph81", term: "좋아요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "joayo", pron: "jo-a-yo (approximate)", def: "I like it / Good.", ex: "A: 같이 갈래요? B: 좋아요.", extr: "A: Shall we go together? B: Sounds good.", status: "new" },
+  { id: "ph82", term: "싫어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "sireoyo", pron: "si-reo-yo (approximate)", def: "I don't like it / No.", ex: "A: 같이 갈래요? B: 싫어요.", extr: "A: Shall we go together? B: I don't want to.", status: "new" },
+  { id: "ph83", term: "사랑해요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "saranghaeyo", pron: "sa-rang-hae-yo (approximate)", def: "I love you.", ex: "엄마, 사랑해요.", extr: "Mom, I love you.", status: "new" },
+  { id: "ph84", term: "보고 싶어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "bogo sipeoyo", pron: "bo-go si-peo-yo (approximate)", def: "I miss you.", ex: "오래 못 봤어요. 보고 싶어요.", extr: "I have not seen you for a long time. I miss you.", status: "new" },
+  { id: "ph85", term: "행복해요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "haengbokaeyo", pron: "haeng-bo-kae-yo (approximate)", def: "I'm happy.", ex: "가족과 있어서 행복해요.", extr: "I am happy to be with my family.", status: "new" },
+  { id: "ph86", term: "슬퍼요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "seulpeoyo", pron: "seul-peo-yo (approximate)", def: "I'm sad.", ex: "영화가 끝나서 슬퍼요.", extr: "I am sad because the movie ended.", status: "new" },
+  { id: "ph87", term: "화났어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "hwanasseoyo", pron: "hwa-na-sseo-yo (approximate)", def: "I'm angry.", ex: "약속을 잊어서 화났어요.", extr: "I am angry because you forgot the appointment.", status: "new" },
+  { id: "ph88", term: "피곤해요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "pigonhaeyo", pron: "pi-gon-hae-yo (approximate)", def: "I'm tired.", ex: "일이 많아서 피곤해요.", extr: "I am tired because I have a lot of work.", status: "new" },
+  { id: "ph89", term: "졸려요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "jollyeoyo", pron: "jol-lyeo-yo (approximate)", def: "I'm sleepy.", ex: "밤새 못 자서 졸려요.", extr: "I did not sleep all night, so I am sleepy.", status: "new" },
+  { id: "ph90", term: "바빠요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "bappayo", pron: "bap-pa-yo (approximate)", def: "I'm busy.", ex: "요즘 너무 바빠요.", extr: "I am very busy these days.", status: "new" },
+  { id: "ph91", term: "심심해요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "simsimhaeyo", pron: "sim-sim-hae-yo (approximate)", def: "I'm bored.", ex: "집에서 혼자 심심해요.", extr: "I am bored at home alone.", status: "new" },
+  { id: "ph92", term: "재미있어요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "jaemiisseoyo", pron: "jae-mi-i-sseo-yo (approximate)", def: "It's fun / interesting.", ex: "한국어 공부가 재미있어요.", extr: "Studying Korean is fun.", status: "new" },
+  { id: "ph93", term: "추워요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "chuwoyo", pron: "chu-wo-yo (approximate)", def: "I'm cold / It's cold.", ex: "겨울이라서 추워요.", extr: "It is cold because it is winter.", status: "new" },
+  { id: "ph94", term: "더워요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "deowoyo", pron: "deo-wo-yo (approximate)", def: "I'm hot / It's hot.", ex: "여름이라서 더워요.", extr: "It is hot because it is summer.", status: "new" },
+  { id: "ph95", term: "아파요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "apayo", pron: "a-pa-yo (approximate)", def: "I'm sick / It hurts.", ex: "머리가 아파요.", extr: "My head hurts.", status: "new" },
+  { id: "ph96", term: "도와주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "dowajuseyo", pron: "do-wa-ju-se-yo (approximate)", def: "Please help me.", ex: "불이 났어요! 도와주세요!", extr: "There is a fire! Please help me!", status: "new" },
+  { id: "ph97", term: "경찰을 불러 주세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "gyeongchareul bulleo juseyo", pron: "gyeong-cha-reul bul-leo ju-se-yo (approximate)", def: "Please call the police.", ex: "도둑이에요! 경찰을 불러 주세요.", extr: "It is a thief! Please call the police.", status: "new" },
+  { id: "ph98", term: "병원에 가야 해요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "byeongwone gaya haeyo", pron: "byeong-won-e ga-ya hae-yo (approximate)", def: "I need to go to the hospital.", ex: "열이 많이 나요. 병원에 가야 해요.", extr: "I have a high fever. I need to go to the hospital.", status: "new" },
+  { id: "ph99", term: "조심하세요", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "josimhaseyo", pron: "jo-sim-ha-se-yo (approximate)", def: "Be careful.", ex: "길이 미끄러워요. 조심하세요.", extr: "The road is slippery. Be careful.", status: "new" },
+  { id: "ph100", term: "화이팅!", pos: "Phrase", section: "Phrase", level: "Beginner", category: "Feelings, Daily Life & Emergencies", cls: 6, roman: "hwaiting", pron: "hwa-i-ting (approximate)", def: "You can do it! / Good luck!", ex: "내일 시험이죠? 화이팅!", extr: "You have an exam tomorrow, right? You can do it!", status: "new" },
+
+
+
 
 
 ];
@@ -864,4 +980,49 @@ const DEFAULT_VERBS = {
 // Class names shown on the class buttons in Verbs. Edit the text to rename a class.
 const VERB_CLASS_NAMES = {
   ko: { Beginner: { 1: "Daily actions", 2: "Food and cooking", 3: "Talking and listening", 4: "Study and work", 5: "Feelings and love", 6: "Thinking and knowing", 7: "Buying, giving and having", 8: "Clothes and home", 9: "Travel and meeting", 10: "Sports, life and more" } }
+};
+
+
+
+// ===== CLASS NAMES (shown on the class buttons in Learn, Flashcards and Quiz) =====
+// Format: CLASS_NAMES[language][section][class number] = "name". Edit any text to rename a class.
+// When you add a new class number to a section, add its name here too (no name = the button just says "Class N").
+const CLASS_NAMES = {
+  ko: {
+    "Mixed vocabulary": {
+      1: "People, animals & things", 2: "Things around us", 3: "School & classroom", 4: "Occupations", 5: "Places",
+      6: "Personal & home items", 7: "Daily activities", 8: "Time & day parts", 9: "Food & drinks", 10: "Money & shopping",
+      11: "Clothes & shoes", 12: "Accessories & wearing", 13: "Positions", 14: "Public offices", 15: "Adjectives & opposites"
+    },
+    "Noun": {
+      1: "People & Family", 2: "Time", 3: "Day Parts & Order", 4: "Body & Health", 5: "Feelings & Ideas",
+      6: "Food & Shopping", 7: "Places & Home", 8: "World & Travel", 9: "Media & Tech", 10: "Position & Basics"
+    },
+    "Pronoun": {
+      1: "Personal Pronouns", 2: "Possessive Pronouns", 3: "Demonstrative Pronouns", 4: "Interrogative & Indefinite", 5: "Reflexive Pronouns"
+    },
+    "Adjective": {
+      1: "Size & Amount", 2: "Weight, Speed & Distance", 3: "Difficulty & Price", 4: "Taste & Looks", 5: "Feelings",
+      6: "Body & Health", 7: "Weather & Senses", 8: "Condition & Comparison", 9: "People & Character", 10: "Quality & Situation"
+    },
+    "Adverb": {
+      1: "Frequency & Time", 2: "Degree & Quantity", 3: "Manner & Action", 4: "Connection & Attitude"
+    },
+    "Preposition": {
+      1: "Core Grammar Particles", 2: "Location & Direction"
+    },
+    "Conjunction": {
+      // 1: "..."
+    },
+    "Interjection": {
+      // 1: "..."
+    },
+    "Phrase": {
+      1: "Greetings & Goodbyes", 2: "Politeness & Apologies", 3: "Basic Responses & Conversation", 4: "Food & Dining",
+      5: "Shopping & Directions", 6: "Feelings, Daily Life & Emergencies"
+    }
+  },
+  en: {
+    "Mixed vocabulary": { 1: "Starter words" }
+  }
 };
