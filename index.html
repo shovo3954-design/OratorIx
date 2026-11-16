@@ -23,6 +23,7 @@
     <button class="tab" data-view="verbs">Verbs</button>
     <button class="tab" data-view="flash">Flashcards</button>
     <button class="tab" data-view="quiz">Quiz</button>
+    <button class="tab" data-view="game">Game</button>
   </nav>
   <!-- Search: type a Korean or English word; results drop down under the box -->
   <div class="hsearch" role="search">
@@ -177,6 +178,32 @@
       <div class="row"><button class="btn coral" id="qz-retry">Retry missed words</button><button class="btn green" id="qz-again">New quiz</button></div>
     </div>
   </section>
+  <!-- ===== 6b. GAME TAB: Guess the Word (English clue, pick the Korean word) ===== -->
+  <section id="v-game" hidden>
+    <div id="gm-setup" class="panel">
+      <h1>Guess the Word</h1>
+      <p>Read the clue and pick the right word. Tap 🔊 to hear an option.</p>
+      <div id="gm-secs" class="chips" role="group" aria-label="Section"></div>
+      <div id="gm-cls" class="chips" role="group" aria-label="Class"></div>
+      <div class="bar"><button class="btn green" id="gm-start">Start game</button></div>
+      <p id="gm-msg" class="muted" role="status"></p>
+    </div>
+    <div id="gm-play" class="panel" hidden>
+      <div class="meter"><i id="gm-bar"></i></div>
+      <p class="muted" id="gm-prog"></p>
+      <p class="muted">Clue</p>
+      <h2 id="gm-clue"></h2>
+      <div id="gm-opts" class="gopts"></div>
+      <div id="gm-fb" class="fb" hidden role="status"></div>
+      <button class="btn green" id="gm-next" hidden>Next</button>
+    </div>
+    <div id="gm-end" class="panel" hidden>
+      <h2>Game finished</h2>
+      <p class="big" id="gm-score"></p>
+      <p id="gm-note"></p>
+      <div class="row"><button class="btn coral" id="gm-retry">Retry missed words</button><button class="btn green" id="gm-again">New game</button></div>
+    </div>
+  </section>
 </main>
 
 <!-- ===== 7. FOOTER: about, quick links, contact, social icons ===== -->
@@ -199,6 +226,7 @@
         <li><button class="link" data-go="verbs">Verbs</button></li>
         <li><button class="link" data-go="flash">Flashcards</button></li>
         <li><button class="link" data-go="quiz">Quiz</button></li>
+        <li><button class="link" data-go="game">Game</button></li>
       </ul>
     </div>
     <div>

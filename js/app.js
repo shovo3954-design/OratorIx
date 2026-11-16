@@ -37,11 +37,12 @@ function say(t) { if ("speechSynthesis" in window) { const u = new SpeechSynthes
 
 /* ===== 4. NAVIGATION (switch between Home, Learn, Flashcards, Quiz) ===== */
 function show(v) {
-  ["home", "learn", "verbs", "flash", "quiz"].forEach(n => $("#v-" + n).hidden = n !== v);
+  ["home", "learn", "verbs", "flash", "quiz", "game"].forEach(n => $("#v-" + n).hidden = n !== v);
   document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.view === v));
   scrollTo(0, 0);
   if (v === "flash") buildDeck();
   if (v === "verbs") showVT(VT);
+  if (v === "game") { $("#gm-setup").hidden = false; $("#gm-play").hidden = true; $("#gm-end").hidden = true; }
   if (v === "quiz") { $("#qz-setup").hidden = false; $("#qz-play").hidden = true; $("#qz-end").hidden = true; }
 }
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => show(b.dataset.view));
@@ -73,7 +74,8 @@ function makePicker(secBox, clsBox, onChange) {
 const PL = makePicker("#lv-chips", "#cl-chips", () => renderLearn()); // Learn
 const PF = makePicker("#fc-secs", "#fc-cls", () => buildDeck()); // Flashcards
 const PQ = makePicker("#qz-secs", "#qz-cls", () => { $("#qz-msg").textContent = ""; }); // Quiz
-function renderPickers() { PL.render(); PF.render(); PQ.render(); } // called when the language changes
+const PG = makePicker("#gm-secs", "#gm-cls", () => { $("#gm-msg").textContent = ""; }); // Game
+function renderPickers() { PL.render(); PF.render(); PQ.render(); PG.render(); } // called when the language changes
 /* ----- WORD IMAGES: folder path is images/<language>/<level>/class <number>/<id>.png
    Example: images/korean/beginner/class 1/k9.png. Also tries .jpg, .jpeg, .webp; no picture if none is found ----- */
 function picBase(w) { return `images/${lang === "ko" ? "korean" : "english"}/${(sec(w) !== "Mixed vocabulary" ? sec(w) : w.level || "Beginner").toLowerCase()}/class ${cl(w)}/${w.id}`; }
@@ -197,6 +199,56 @@ $("#qz-start").onclick = () => startQuiz();
 $("#qz-fb").onclick = e => { const b = e.target.closest("[data-say]"); if (b) say(Q.qs[Q.i][b.dataset.say]); }; // Listen buttons in the feedback box
 $("#qz-retry").onclick = () => startQuiz(Q.wrong);
 $("#qz-again").onclick = () => show("quiz");
+
+/* ===== 8a. GUESS THE WORD GAME (English clue, pick the right word) ===== */
+let G = {};
+const keyOf = t => String(t || "").toLowerCase().replace(/[.\s]+$/g, "");
+function gameOptions(w) { // the right word + 3 wrong words that never repeat a word or a meaning
+  const pick = [w], seenT = new Set([w.term]), seenD = new Set([keyOf(w.def)]);
+  const tiers = [words.filter(x => sec(x) === sec(w) && cl(x) === cl(w)), words.filter(x => sec(x) === sec(w)), words];
+  for (const tier of tiers) for (const x of shuffle(tier)) {
+    if (pick.length >= 4) break;
+    if (seenT.has(x.term) || seenD.has(keyOf(x.def))) continue;
+    pick.push(x); seenT.add(x.term); seenD.add(keyOf(x.def));
+  }
+  return shuffle(pick);
+}
+function startGame(ids) {
+  const msg = $("#gm-msg"); msg.textContent = "";
+  if (!ids && !PG.ready()) { msg.textContent = "Pick a section and a class first."; return; }
+  const pool = ids ? words.filter(w => ids.includes(w.id)) : words.filter(w => sec(w) === PG.sec && cl(w) === +PG.cls);
+  if (!pool.length) { msg.textContent = "No words in this class yet."; return; }
+  G = { qs: shuffle(pool).slice(0, 10), i: 0, score: 0, wrong: [], done: false };
+  $("#gm-setup").hidden = true; $("#gm-end").hidden = true; $("#gm-play").hidden = false; askGame();
+}
+function askGame() {
+  const w = G.qs[G.i]; G.w = w; G.done = false; G.opts = gameOptions(w);
+  $("#gm-prog").textContent = `Question ${G.i + 1} of ${G.qs.length} · Score ${G.score}`;
+  $("#gm-bar").style.width = (G.i / G.qs.length * 100) + "%";
+  $("#gm-clue").textContent = w.def;
+  $("#gm-opts").innerHTML = G.opts.map((o, k) => `<div class="gopt"><button class="gans" data-k="${k}">${esc(o.term)}</button><button class="gspk" data-s="${k}" aria-label="Listen to ${esc(o.term)}">🔊</button></div>`).join("");
+  $("#gm-fb").hidden = true; $("#gm-next").hidden = true;
+}
+$("#gm-opts").onclick = e => {
+  const sp = e.target.closest("[data-s]"); if (sp) { say(G.opts[sp.dataset.s].term); return; } // hear an option
+  const b = e.target.closest("[data-k]"); if (!b || G.done) return; G.done = true;
+  const w = G.w, ok = G.opts[b.dataset.k].id === w.id;
+  document.querySelectorAll("#gm-opts .gans").forEach((x, k) => { x.disabled = true; if (G.opts[k].id === w.id) x.classList.add("right"); });
+  if (ok) G.score++; else { b.classList.add("wrong"); G.wrong.push(w.id); }
+  $("#gm-fb").innerHTML = (ok ? "<b>Correct!</b> " : `<b>Not quite.</b> The answer is “${esc(w.term)}”. `) + esc([w.roman, w.pron].filter(Boolean).join(" · ")) +
+    `<br><em>${esc(w.ex)}${w.extr ? " (" + esc(w.extr) + ")" : ""}</em><div class="row left"><button class="btn" data-gsay="term">Listen</button><button class="btn" data-gsay="ex">Listen sentence</button></div><img id="gm-pic" class="pic-sm" alt="" hidden>`;
+  setPic($("#gm-pic"), w); $("#gm-fb").hidden = false; $("#gm-next").hidden = false;
+  $("#gm-next").textContent = G.i === G.qs.length - 1 ? "See results" : "Next question";
+};
+$("#gm-fb").onclick = e => { const b = e.target.closest("[data-gsay]"); if (b) say(G.w[b.dataset.gsay]); };
+$("#gm-next").onclick = () => {
+  if (++G.i < G.qs.length) return askGame();
+  $("#gm-play").hidden = true; $("#gm-end").hidden = false; touch();
+  $("#gm-score").textContent = `${G.score}/${G.qs.length} (${Math.round(G.score / G.qs.length * 100)}%)`;
+  $("#gm-note").textContent = G.wrong.length ? `Words to review: ${G.wrong.map(id => words.find(w => w.id === id)?.term).join(", ")}` : "Perfect score. Great work!";
+  $("#gm-retry").hidden = !G.wrong.length;
+};
+$("#gm-start").onclick = () => startGame(); $("#gm-retry").onclick = () => startGame(G.wrong); $("#gm-again").onclick = () => show("game");
 
 /* ===== 8b. VERBS (learn, flashcards, quiz) ===== */
 const TENSES = ["present", "past", "future"], TLABEL = { present: "Present (now)", past: "Past (before)", future: "Future (later)" };
@@ -345,8 +397,8 @@ document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { setLan
 /* ===== 11. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
 function setLang(l) {
   lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); $("#lang").value = l;
-  PL.sec = PL.cls = PF.sec = PF.cls = PQ.sec = PQ.cls = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; renderPickers(); renderLearn(); stats(); renderWotd();
-  show(["home", "learn", "verbs", "flash", "quiz"].find(n => !$("#v-" + n).hidden) || "home");
+  PL.sec = PL.cls = PF.sec = PF.cls = PQ.sec = PQ.cls = PG.sec = PG.cls = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; renderPickers(); renderLearn(); stats(); renderWotd();
+  show(["home", "learn", "verbs", "flash", "quiz", "game"].find(n => !$("#v-" + n).hidden) || "home");
 }
 $("#lang").onchange = e => setLang(e.target.value);
 setLang(lang);
