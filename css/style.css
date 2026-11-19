@@ -151,6 +151,11 @@ dialog h2{margin:10px 0 6px}
 .gspk:hover{border-color:var(--green)}
 #gm-clue{font-size:1.8rem}
 
+/* ===== 15c. SPEAK (voice game) ===== */
+#sp-clue{font-size:1.8rem}
+.heard{min-height:1.6em;margin:10px 0;color:var(--green);font-weight:700}
+#sp-input{flex:1}
+
 /* ===== 16. POP-UP MESSAGE ===== */
 #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--green);color:#0b1020;font-weight:700;padding:8px 18px;border-radius:99px;opacity:0;transition:opacity .2s;pointer-events:none}
 #toast.show{opacity:1}

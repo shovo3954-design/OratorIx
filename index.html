@@ -24,6 +24,7 @@
     <button class="tab" data-view="flash">Flashcards</button>
     <button class="tab" data-view="quiz">Quiz</button>
     <button class="tab" data-view="game">Game</button>
+    <button class="tab" data-view="speak">Speak</button>
   </nav>
   <!-- Search: type a Korean or English word; results drop down under the box -->
   <div class="hsearch" role="search">
@@ -204,6 +205,38 @@
       <div class="row"><button class="btn coral" id="gm-retry">Retry missed words</button><button class="btn green" id="gm-again">New game</button></div>
     </div>
   </section>
+  <!-- ===== 6c. SPEAK TAB: say the word out loud (voice game) ===== -->
+  <section id="v-speak" hidden>
+    <div id="sp-setup" class="panel">
+      <h1>Speak the Word</h1>
+      <p>Read the English clue, then say the word out loud. Works best in Chrome or Edge, with the microphone allowed.</p>
+      <div id="sp-secs" class="chips" role="group" aria-label="Section"></div>
+      <div id="sp-cls" class="chips" role="group" aria-label="Class"></div>
+      <div class="bar"><button class="btn green" id="sp-start">Start</button></div>
+      <p id="sp-msg" class="muted" role="status"></p>
+    </div>
+    <div id="sp-play" class="panel" hidden>
+      <div class="meter"><i id="sp-bar"></i></div>
+      <p class="muted" id="sp-prog"></p>
+      <p class="muted">Clue</p>
+      <h2 id="sp-clue"></h2>
+      <p class="muted" id="sp-tries"></p>
+      <div class="row left" id="sp-mic-row"><button class="btn green" id="sp-mic">🎤 Speak</button></div>
+      <p class="heard" id="sp-heard" role="status"></p>
+      <div id="sp-type" hidden>
+        <p class="muted" id="sp-typemsg"></p>
+        <div class="bar"><input id="sp-input" type="text" placeholder="Type the word" aria-label="Type the word" autocomplete="off"><button class="btn" id="sp-check">Check</button></div>
+      </div>
+      <div id="sp-fb" class="fb" hidden role="status"></div>
+      <button class="btn green" id="sp-next" hidden>Next</button>
+    </div>
+    <div id="sp-end" class="panel" hidden>
+      <h2>Speaking practice finished</h2>
+      <p class="big" id="sp-score"></p>
+      <p id="sp-note"></p>
+      <div class="row"><button class="btn coral" id="sp-retry">Retry missed words</button><button class="btn green" id="sp-again">New round</button></div>
+    </div>
+  </section>
 </main>
 
 <!-- ===== 7. FOOTER: about, quick links, contact, social icons ===== -->
@@ -227,6 +260,7 @@
         <li><button class="link" data-go="flash">Flashcards</button></li>
         <li><button class="link" data-go="quiz">Quiz</button></li>
         <li><button class="link" data-go="game">Game</button></li>
+        <li><button class="link" data-go="speak">Speak</button></li>
       </ul>
     </div>
     <div>

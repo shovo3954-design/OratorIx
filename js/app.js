@@ -37,11 +37,12 @@ function say(t) { if ("speechSynthesis" in window) { const u = new SpeechSynthes
 
 /* ===== 4. NAVIGATION (switch between Home, Learn, Flashcards, Quiz) ===== */
 function show(v) {
-  ["home", "learn", "verbs", "flash", "quiz", "game"].forEach(n => $("#v-" + n).hidden = n !== v);
+  ["home", "learn", "verbs", "flash", "quiz", "game", "speak"].forEach(n => $("#v-" + n).hidden = n !== v);
   document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.view === v));
   scrollTo(0, 0);
   if (v === "flash") buildDeck();
   if (v === "verbs") showVT(VT);
+  if (v === "speak") { $("#sp-setup").hidden = false; $("#sp-play").hidden = true; $("#sp-end").hidden = true; }
   if (v === "game") { $("#gm-setup").hidden = false; $("#gm-play").hidden = true; $("#gm-end").hidden = true; }
   if (v === "quiz") { $("#qz-setup").hidden = false; $("#qz-play").hidden = true; $("#qz-end").hidden = true; }
 }
@@ -75,7 +76,8 @@ const PL = makePicker("#lv-chips", "#cl-chips", () => renderLearn()); // Learn
 const PF = makePicker("#fc-secs", "#fc-cls", () => buildDeck()); // Flashcards
 const PQ = makePicker("#qz-secs", "#qz-cls", () => { $("#qz-msg").textContent = ""; }); // Quiz
 const PG = makePicker("#gm-secs", "#gm-cls", () => { $("#gm-msg").textContent = ""; }); // Game
-function renderPickers() { PL.render(); PF.render(); PQ.render(); PG.render(); } // called when the language changes
+const PS = makePicker("#sp-secs", "#sp-cls", () => { $("#sp-msg").textContent = ""; }); // Speak
+function renderPickers() { PL.render(); PF.render(); PQ.render(); PG.render(); PS.render(); } // called when the language changes
 /* ----- WORD IMAGES: folder path is images/<language>/<level>/class <number>/<id>.png
    Example: images/korean/beginner/class 1/k9.png. Also tries .jpg, .jpeg, .webp; no picture if none is found ----- */
 function picBase(w) { return `images/${lang === "ko" ? "korean" : "english"}/${(sec(w) !== "Mixed vocabulary" ? sec(w) : w.level || "Beginner").toLowerCase()}/class ${cl(w)}/${w.id}`; }
@@ -250,6 +252,92 @@ $("#gm-next").onclick = () => {
 };
 $("#gm-start").onclick = () => startGame(); $("#gm-retry").onclick = () => startGame(G.wrong); $("#gm-again").onclick = () => show("game");
 
+/* ===== 8a2. SPEAK THE WORD (voice game: English clue, say the word) ===== */
+let S = {};
+const getSR = () => window.SpeechRecognition || window.webkitSpeechRecognition; // voice recognition (Chrome, Edge...)
+const cleanSp = (t, keepBrackets) => String(t || "").toLowerCase().replace(keepBrackets ? /[~.,!?'"“”‘’\-\s]/g : /\([^)]*\)|[~.,!?'"“”‘’\-\s]/g, "");
+function lev(a, b) { // how many letters differ between two words
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+function targetsOf(w) { // the words that count as right (a term like "이것 / 이거" accepts either part)
+  return [...new Set(String(w.term).split("/").flatMap(p => [cleanSp(p, false), cleanSp(p, true)]).filter(Boolean))];
+}
+function isMatch(w, heard) { // forgiving: close matches count
+  const h = cleanSp(heard, true); if (!h) return false;
+  return targetsOf(w).some(t => h === t || (t.length >= 2 && h.includes(t)) || (t.length >= 4 && lev(h, t) <= 1) || (t.length >= 8 && lev(h, t) <= 2));
+}
+function startSpeak(ids) {
+  const msg = $("#sp-msg"); msg.textContent = "";
+  if (!ids && !PS.ready()) { msg.textContent = "Pick a section and a class first."; return; }
+  const pool = ids ? words.filter(w => ids.includes(w.id)) : words.filter(w => sec(w) === PS.sec && cl(w) === +PS.cls);
+  if (!pool.length) { msg.textContent = "No words in this class yet."; return; }
+  S = { qs: shuffle(pool).slice(0, 10), i: 0, score: 0, wrong: [], typing: !getSR(), reason: getSR() ? "" : "Voice is not supported in this browser. Type the answer instead (try Chrome or Edge for voice)." };
+  $("#sp-setup").hidden = true; $("#sp-end").hidden = true; $("#sp-play").hidden = false; askSpeak();
+}
+function showSpeakMode() { // microphone button, or the Type instead box
+  $("#sp-mic-row").hidden = S.typing || S.done; $("#sp-type").hidden = !S.typing || S.done;
+  $("#sp-typemsg").textContent = S.reason;
+}
+function askSpeak() {
+  const w = S.qs[S.i]; S.w = w; S.tries = 0; S.done = false; S.listening = false;
+  $("#sp-prog").textContent = `Question ${S.i + 1} of ${S.qs.length} · Score ${S.score}`;
+  $("#sp-bar").style.width = (S.i / S.qs.length * 100) + "%";
+  $("#sp-clue").textContent = w.def; $("#sp-tries").textContent = "You have 2 tries."; $("#sp-heard").textContent = "";
+  $("#sp-input").value = ""; $("#sp-fb").hidden = true; $("#sp-next").hidden = true;
+  $("#sp-mic").disabled = false; $("#sp-mic").textContent = "🎤 Speak"; showSpeakMode();
+}
+function listenOnce(done) { // listens once, in Korean or English
+  let finished = false; const fin = (a, e) => { if (!finished) { finished = true; done(a, e); } };
+  try {
+    const r = new (getSR())(); r.lang = lang === "ko" ? "ko-KR" : "en-US"; r.interimResults = false; r.continuous = false; r.maxAlternatives = 5;
+    r.onresult = e => fin([...e.results[0]].map(a => a.transcript));
+    r.onerror = e => fin(null, e.error);
+    r.onend = () => fin([], "no-speech");
+    r.start();
+  } catch (err) { fin(null, "start-failed"); }
+}
+function checkSpeak(alts) { // called with what was heard (or typed)
+  if (S.done) return;
+  const ok = alts.some(a => isMatch(S.w, a));
+  $("#sp-heard").textContent = alts[0] ? `I heard: “${alts[0]}”` : "";
+  if (ok) return endSpeak(true);
+  if (++S.tries >= 2) return endSpeak(false);
+  $("#sp-tries").textContent = "Not quite. You have 1 try left.";
+}
+function endSpeak(ok) {
+  const w = S.w; S.done = true;
+  if (ok) S.score++; else S.wrong.push(w.id);
+  $("#sp-fb").innerHTML = (ok ? "<b>Correct!</b> " : `<b>The answer is “${esc(w.term)}”.</b> `) + esc([w.roman, w.pron].filter(Boolean).join(" · ")) +
+    `<br><em>${esc(w.ex)}${w.extr ? " (" + esc(w.extr) + ")" : ""}</em><div class="row left"><button class="btn" data-ssay="term">Listen</button><button class="btn" data-ssay="ex">Listen sentence</button></div><img id="sp-pic" class="pic-sm" alt="" hidden>`;
+  setPic($("#sp-pic"), w); $("#sp-fb").hidden = false; $("#sp-next").hidden = false; $("#sp-tries").textContent = "";
+  $("#sp-next").textContent = S.i === S.qs.length - 1 ? "See results" : "Next question"; showSpeakMode();
+}
+$("#sp-mic").onclick = () => {
+  if (S.done || S.listening) return; S.listening = true; $("#sp-mic").disabled = true; $("#sp-mic").textContent = "🎤 Listening…";
+  listenOnce((alts, err) => {
+    S.listening = false; $("#sp-mic").disabled = false; $("#sp-mic").textContent = "🎤 Speak";
+    if (err === "no-speech") { $("#sp-heard").textContent = "I did not hear anything. Press Speak and try again."; return; }
+    if (err) { // microphone blocked, no microphone, no internet...
+      S.typing = true; S.reason = err === "not-allowed" || err === "service-not-allowed" ? "The microphone is blocked. Allow it in the browser, or type the answer instead." : "Voice did not work here. Type the answer instead."; showSpeakMode(); return;
+    }
+    checkSpeak(alts);
+  });
+};
+$("#sp-check").onclick = () => { const v = $("#sp-input").value.trim(); if (v) { checkSpeak([v]); $("#sp-input").value = ""; } };
+$("#sp-input").onkeydown = e => { if (e.key === "Enter") $("#sp-check").click(); };
+$("#sp-fb").onclick = e => { const b = e.target.closest("[data-ssay]"); if (b) say(S.w[b.dataset.ssay]); };
+$("#sp-next").onclick = () => {
+  if (++S.i < S.qs.length) return askSpeak();
+  $("#sp-play").hidden = true; $("#sp-end").hidden = false; touch();
+  $("#sp-score").textContent = `${S.score}/${S.qs.length} (${Math.round(S.score / S.qs.length * 100)}%)`;
+  $("#sp-note").textContent = S.wrong.length ? `Words to practise: ${S.wrong.map(id => words.find(w => w.id === id)?.term).join(", ")}` : "Perfect score. Great work!";
+  $("#sp-retry").hidden = !S.wrong.length;
+};
+$("#sp-start").onclick = () => startSpeak(); $("#sp-retry").onclick = () => startSpeak(S.wrong); $("#sp-again").onclick = () => show("speak");
+
 /* ===== 8b. VERBS (learn, flashcards, quiz) ===== */
 const TENSES = ["present", "past", "future"], TLABEL = { present: "Present (now)", past: "Past (before)", future: "Future (later)" };
 const allVerbs = () => DEFAULT_VERBS[lang];
@@ -397,8 +485,8 @@ document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { setLan
 /* ===== 11. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
 function setLang(l) {
   lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); $("#lang").value = l;
-  PL.sec = PL.cls = PF.sec = PF.cls = PQ.sec = PQ.cls = PG.sec = PG.cls = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; renderPickers(); renderLearn(); stats(); renderWotd();
-  show(["home", "learn", "verbs", "flash", "quiz", "game"].find(n => !$("#v-" + n).hidden) || "home");
+  PL.sec = PL.cls = PF.sec = PF.cls = PQ.sec = PQ.cls = PG.sec = PG.cls = PS.sec = PS.cls = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; renderPickers(); renderLearn(); stats(); renderWotd();
+  show(["home", "learn", "verbs", "flash", "quiz", "game", "speak"].find(n => !$("#v-" + n).hidden) || "home");
 }
 $("#lang").onchange = e => setLang(e.target.value);
 setLang(lang);
