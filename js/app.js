@@ -52,7 +52,7 @@ document.querySelectorAll(".tab").forEach(b => b.onclick = () => show(b.dataset.
 function cats() { return [...new Set(words.map(w => w.category).filter(Boolean))].sort(); }
 /* ----- PICKER: choose a section (Mixed vocabulary, Noun, Pronoun...) then a class. Used by Learn, Flashcards and Quiz ----- */
 const cl = w => w.cls || 1; // a word with no class is in Class 1
-const SECTIONS = ["Mixed vocabulary", "Noun", "Pronoun", "Adjective", "Adverb", "Preposition", "Conjunction", "Interjection", "Phrase"];
+const SECTIONS = ["Mixed vocabulary", "Noun", "Pronoun", "Adjective", "Adverb", "Preposition", "Conjunction", "Interjection", "Phrase", "Number"]; // "Number" shows in Korean only
 const sec = w => w.section || "Mixed vocabulary"; // a word with no section is in Mixed vocabulary
 const wordClassName = (s, n) => (typeof CLASS_NAMES !== "undefined" && CLASS_NAMES[lang]?.[s]?.[n]) || ""; // topic name of a class (from CLASS_NAMES in data.js)
 function makePicker(secBox, clsBox, onChange) {
@@ -60,7 +60,7 @@ function makePicker(secBox, clsBox, onChange) {
     sec: "", cls: "",
     ready() { return !!(P.sec && P.cls); },
     render() {
-      $(secBox).innerHTML = SECTIONS.map(x => `<button class="chip${x === P.sec ? " on" : ""}" data-sec="${x}">${x}</button>`).join("");
+      $(secBox).innerHTML = SECTIONS.filter(n => n !== "Number" || lang === "ko").map(x => `<button class="chip${x === P.sec ? " on" : ""}" data-sec="${x}">${x}</button>`).join("");
       const nums = [...new Set(words.filter(w => sec(w) === P.sec).map(cl))].sort((a, b) => a - b);
       if (!nums.includes(+P.cls)) P.cls = "";
       $(clsBox).innerHTML = !P.sec ? '<span class="muted">Pick a section first.</span>'
@@ -263,7 +263,7 @@ function lev(a, b) { // how many letters differ between two words
   return d[a.length][b.length];
 }
 function targetsOf(w) { // the words that count as right (a term like "이것 / 이거" accepts either part)
-  return [...new Set(String(w.term).split("/").flatMap(p => [cleanSp(p, false), cleanSp(p, true)]).filter(Boolean))];
+  return [...new Set([...String(w.term).split("/").flatMap(p => [cleanSp(p, false), cleanSp(p, true)]), ...(w.alt || []).map(a => cleanSp(a, true))].filter(Boolean))];
 }
 function isMatch(w, heard) { // forgiving: close matches count
   const h = cleanSp(heard, true); if (!h) return false;
