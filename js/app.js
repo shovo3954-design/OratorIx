@@ -97,7 +97,7 @@ function setPic(el, w) {
 
 function renderLearn() {
   if (!PL.ready()) { $("#grid").innerHTML = '<p class="empty">Pick a section and a class to see words.</p>'; return; } // nothing until both are chosen
-  const list = words.filter(w => sec(w) === PL.sec && cl(w) === +PL.cls).sort((a, b) => a.term.localeCompare(b.term));
+  const list = words.filter(w => sec(w) === PL.sec && cl(w) === +PL.cls).sort((a, b) => PL.sec === "Number" ? 0 : a.term.localeCompare(b.term)); // Number keeps the data.js order (1, 2, 3...); other sections are A to Z
   $("#grid").innerHTML = list.length ? list.map(w => `
     <article class="word">
       <img class="pic" src="${esc(encodeURI(picBase(w)))}.png" data-n="${esc(picBase(w))}" data-i="0" onerror="picErr(this)" alt="${esc(w.term)}" loading="lazy">
