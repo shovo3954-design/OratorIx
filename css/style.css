@@ -139,6 +139,7 @@ dialog h2{margin:10px 0 6px}
 .mini{border:1px solid var(--line);background:var(--surface2);border-radius:10px;padding:1px 10px;cursor:pointer;font-size:.8rem;margin-left:6px}
 .word h3 small{display:block;font-size:.9rem;font-weight:400}
 .vcard .acts{margin-top:0;padding-top:0}
+.vh small{display:block;font-size:.9rem;font-weight:400}
 
 /* ===== 15b. GAME (Guess the Word) ===== */
 .gopts{display:grid;gap:10px;margin:14px 0}

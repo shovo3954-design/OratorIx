@@ -435,28 +435,43 @@ $("#vq-fb").onclick = e => { const b = e.target.closest("[data-vsay]"); if (!b) 
 
 /* ===== 8. HEADER SEARCH AND WORD POP-UP ===== */
 const norm = s => String(s || "").toLowerCase();
-function searchWords(q) { // works both ways: Korean word -> card, English meaning -> card
+const isLatin = s => /^[\p{Script=Latin}\p{N}\s'’\-]+$/u.test(s);                 // English letters, or Korean?
+const tokensOf = s => norm(s).split(/[^\p{L}\p{N}]+/u).filter(Boolean);            // whole words of a text
+const cleanQ = s => norm(s).replace(/[\s~.,!?'"“”‘’\-]/g, "");
+const meaningParts = d => norm(d).split(/[\/;,()]+/).map(p => p.replace(/^\s*(to|a|an|the)\s+/, "").replace(/[.\s]+$/g, "").trim()).filter(Boolean);
+const hasPhrase = (tokens, qt) => qt.length > 1 ? (" " + tokens.join(" ") + " ").includes(" " + qt.join(" ") + " ") : tokens.includes(qt[0]); // whole-word match
+const termVariants = t => String(t || "").split("/").flatMap(p => [p, p.replace(/\([^)]*\)/g, "")]);
+const wordEntry = w => ({ kind: "w", ref: w, terms: termVariants(w.term), romans: String(w.roman || "").split("/"), alts: w.alt || [], forms: [], meaning: w.def, examples: [w.ex, w.extr] });
+const verbEntry = v => ({ kind: "v", ref: v, terms: [v.base], romans: [v.roman || ""], alts: [], forms: TENSES.flatMap(t => v[t].split("/")), meaning: v.meaning, examples: TENSES.flatMap(t => [fillS(v.ex[t]), v.ex[t][2] || ""]) });
+function scoreEntry(e, q, latin) { // 0 = best, 9 = no match. Matches hidden inside other English words (come in "welcome") do not count.
+  const qc = cleanQ(q), qt = tokensOf(q), terms = e.terms.map(cleanQ), romans = e.romans.map(cleanQ), forms = e.forms.map(cleanQ);
+  if (terms.includes(qc) || romans.includes(qc) || e.alts.map(cleanQ).includes(qc) || meaningParts(e.meaning).includes(norm(q).trim())) return 0; // the exact word, digit or meaning
+  if (forms.includes(qc) || (qt.length && hasPhrase(tokensOf(e.meaning), qt))) return 1;                                                   // a verb form, or the whole word in the meaning
+  if (terms.some(t => t.startsWith(qc)) || forms.some(f => f.startsWith(qc)) || (qc.length >= 3 && romans.some(r => r.startsWith(qc))) || (qt.length === 1 && !/^\d+$/.test(qt[0]) && tokensOf(e.meaning).some(t => t.startsWith(qt[0])))) return 2; // starts with it
+  if (!latin && (terms.some(t => t.includes(qc)) || forms.some(f => f.includes(qc)))) return 3;                                           // Korean text inside a Korean word
+  const ex = e.examples.map(norm);
+  if (latin ? qt.length && ex.some(x => hasPhrase(tokensOf(x), qt)) : ex.some(x => x.replace(/\s/g, "").includes(qc))) return 4;             // used in an example sentence
+  return 9;
+}
+function searchWords(q) { // words AND verbs, best matches first
   q = norm(q).trim(); if (!q) return [];
-  const score = w => {
-    const t = norm(w.term), r = norm(w.roman), d = norm(w.def);
-    if (t === q || r === q) return 0;
-    if (t.startsWith(q) || r.startsWith(q)) return 1;
-    if (t.includes(q) || r.includes(q)) return 2;
-    if (d.split(/\s*[\/;,.]\s*/).some(x => x === q)) return 3;
-    if (d.includes(q)) return 4;
-    return norm(w.ex).includes(q) || norm(w.extr).includes(q) ? 5 : 9;
-  };
-  return words.map(w => [score(w), w]).filter(x => x[0] < 9).sort((a, b) => a[0] - b[0]).slice(0, 8).map(x => x[1]);
+  const latin = isLatin(q), seen = new Set();
+  return [...words.map(wordEntry), ...allVerbs().map(verbEntry)].map(e => [scoreEntry(e, q, latin), e]).filter(x => x[0] < 9).filter((x, _, all) => x[0] < 4 || all.every(y => y[0] >= 4)) // example-sentence matches only show when nothing better matches
+    .sort((a, b) => a[0] - b[0] || String(a[1].meaning).length - String(b[1].meaning).length)
+    .filter(x => { const k = x[1].kind + "|" + (x[1].ref.term || x[1].ref.base) + "|" + keyOf(x[1].meaning); return seen.has(k) ? false : seen.add(k); })
+    .slice(0, 8).map(x => x[1]);
 }
 const gs = $("#gsearch"), gr = $("#gresults");
 function showResults() {
   if (!gs.value.trim()) { gr.hidden = true; return; }
   const list = searchWords(gs.value);
-  gr.innerHTML = list.length ? list.map(w => `<button data-id="${esc(w.id)}"><b>${esc(w.term)}</b><span>${esc(w.def)}</span><small>${esc(sec(w))} · Class ${cl(w)}</small></button>`).join("") : '<p class="muted">No words found.</p>';
+  gr.innerHTML = list.length ? list.map(e => { const r = e.ref;
+    return `<button data-kind="${e.kind}" data-id="${esc(r.id)}"><b>${esc(r.term || r.base)}</b><span>${esc(e.meaning)}</span><small>${e.kind === "v" ? "Verbs · Class " + (r.cls || 1) : esc(sec(r)) + " · Class " + cl(r)}</small></button>`; }).join("") : '<p class="muted">Nothing found.</p>';
   gr.hidden = false;
 }
 gs.oninput = showResults; gs.onfocus = showResults;
-gr.onclick = e => { const b = e.target.closest("button"); if (b) { openWord(words.find(w => w.id === b.dataset.id)); gr.hidden = true; } };
+gr.onclick = e => { const b = e.target.closest("button"); if (!b) return; gr.hidden = true;
+  if (b.dataset.kind === "v") openVerb(allVerbs().find(v => v.id === b.dataset.id)); else openWord(words.find(w => w.id === b.dataset.id)); };
 document.addEventListener("click", e => { if (!e.target.closest(".hsearch")) gr.hidden = true; });
 document.addEventListener("keydown", e => { if (e.key === "Escape") gr.hidden = true; });
 function openWord(w) { // full word card in a pop-up
@@ -468,7 +483,17 @@ function openWord(w) { // full word card in a pop-up
     <div class="row left"><button class="btn" data-say="term">Listen</button><button class="btn" data-say="ex">Listen sentence</button></div>`;
   setPic($("#w-pic"), w); $("#wdlg").showModal();
 }
-$("#wcard").onclick = e => { const b = e.target.closest("[data-say]"); if (b) say(words.find(w => w.id === $("#wcard").dataset.id)[b.dataset.say]); };
+function openVerb(v) { // full verb card in the pop-up: forms and examples
+  $("#wcard").dataset.id = "";
+  const nm = (typeof VERB_CLASS_NAMES !== "undefined" && VERB_CLASS_NAMES[lang]?.[v.level]?.[v.cls || 1]) || "";
+  $("#wcard").innerHTML = `<div class="tags"><span class="tag">Verbs</span><span class="tag">Class ${v.cls || 1}${nm ? " · " + esc(nm) : ""}</span></div>
+    <h2 class="vh">${esc(v.base)}${vpron(v) ? `<small class="muted">${esc(vpron(v))}</small>` : ""}<small class="muted">${esc(v.meaning)}</small></h2>
+    <div class="row left"><button class="btn" data-speak="${esc(v.base)}">Listen</button></div>` + TENSES.map(t => `
+    <div class="vrow"><b>${TLABEL[t]}</b><span>${esc(v[t])}</span></div>
+    <p class="ex">${esc(fillS(v.ex[t]))}${v.ex[t][2] ? "<br>" + esc(v.ex[t][2]) : ""} <button class="mini" data-speak="${esc(fillS(v.ex[t]))}">Listen</button></p>`).join("");
+  $("#wdlg").showModal();
+}
+$("#wcard").onclick = e => { const sp = e.target.closest("[data-speak]"); if (sp) { say(sp.dataset.speak); return; } const b = e.target.closest("[data-say]"); if (b) say(words.find(w => w.id === $("#wcard").dataset.id)[b.dataset.say]); };
 $("#wdlg-x").onclick = () => $("#wdlg").close();
 $("#wdlg").onclick = e => { if (e.target.id === "wdlg") $("#wdlg").close(); }; // click outside closes
 
