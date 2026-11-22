@@ -526,30 +526,41 @@ $("#vf-shuffle").onclick = () => { vdeck = shuffle(vdeck); vi = 0; drawVF(); toa
 $("#vf-say").onclick = () => { const { v, t } = vdeck[vi]; say(fillS(v.ex[t])); };
 $("#vf-say-v").onclick = () => say(vdeck[vi].v.base);
 
-/* Verbs: Quiz (fill the blank, 4 choices) */
+/* Verbs: Quiz (the question is the verb, pick its English meaning from 4 choices) */
 let VQ = {};
+const meaningKeys = m => String(m || "").toLowerCase().split(/[\/;,()]+/).map(p => p.replace(/^\s*(to|a|an|the)\s+/, "").trim()).filter(Boolean);
 function startVQ() {
-  const all = verbList().flatMap(v => TENSES.map(t => ({ v, t })));
-  VQ = { qs: shuffle(all).slice(0, 10), i: 0, score: 0, done: false };
+  const picked = shuffle(verbList()).slice(0, 10); // 10 different verbs of the chosen class
+  VQ = { qs: picked.map(v => ({ v, t: TENSES[Math.floor(Math.random() * TENSES.length)] })), i: 0, score: 0, done: false };
   $("#vq-setup").hidden = true; $("#vq-end").hidden = true; $("#vq-play").hidden = false; askVQ();
 }
+function wrongMeanings(v) { // 3 wrong choices: same class first, then same level, then any verb. Never a meaning that also fits the right answer.
+  const keys = new Set(meaningKeys(v.meaning)), seen = new Set([String(v.meaning).toLowerCase()]), out = [];
+  const same = verbList(), lvl = allVerbs().filter(x => x.level === v.level), rest = allVerbs();
+  for (const x of [...shuffle(same), ...shuffle(lvl), ...shuffle(rest)]) {
+    if (out.length === 3) break; if (x.id === v.id) continue;
+    const m = String(x.meaning).toLowerCase(); if (seen.has(m) || meaningKeys(x.meaning).some(k => keys.has(k))) continue;
+    seen.add(m); out.push(x.meaning);
+  }
+  return out;
+}
 function askVQ() {
-  const { v, t } = VQ.qs[VQ.i], ans = v.ex[t][1]; VQ.done = false;
-  let pool = [...new Set(TENSES.flatMap(x => [...v[x].split(" / "), v.ex[x][1]]))].filter(f => f !== ans);
-  // wrong choices are other forms of the same verb only, so a wrong choice can never also fit the sentence
-  VQ.opts = shuffle([ans, ...shuffle(pool).slice(0, 3)]);
+  const { v, t } = VQ.qs[VQ.i]; VQ.done = false;
+  VQ.opts = shuffle([v.meaning, ...wrongMeanings(v)]);
   $("#vq-prog").textContent = `Question ${VQ.i + 1} of ${VQ.qs.length} · Score ${VQ.score}`;
   $("#vq-bar").style.width = (VQ.i / VQ.qs.length * 100) + "%";
-  $("#vq-q").textContent = v.ex[t][0]; $("#vq-hint").textContent = `Verb: ${[v.base, vpron(v), v.meaning].filter(Boolean).join(" · ")}`;
+  $("#vq-q").textContent = v.base;
+  $("#vq-hint").innerHTML = `${esc(vpron(v))}<br><em>${esc(v.ex[t][0])}</em>`;
   $("#vq-opts").innerHTML = VQ.opts.map((o, k) => `<button data-k="${k}">${esc(o)}</button>`).join("");
   $("#vq-fb").hidden = true; $("#vq-next").hidden = true;
 }
 $("#vq-opts").onclick = e => {
   const b = e.target.closest("button"); if (!b || VQ.done) return; VQ.done = true;
-  const { v, t } = VQ.qs[VQ.i], ans = v.ex[t][1], ok = VQ.opts[b.dataset.k] === ans;
-  [...$("#vq-opts").children].forEach((x, k) => { x.disabled = true; if (VQ.opts[k] === ans) x.classList.add("right"); });
+  const { v, t } = VQ.qs[VQ.i], ok = VQ.opts[b.dataset.k] === v.meaning;
+  [...$("#vq-opts").children].forEach((x, k) => { x.disabled = true; if (VQ.opts[k] === v.meaning) x.classList.add("right"); });
   if (ok) VQ.score++; else b.classList.add("wrong");
-  $("#vq-fb").innerHTML = (ok ? "<b>Correct!</b> " : `<b>Not quite.</b> The answer is “${esc(ans)}”. `) + `<br><em>${esc(fillS(v.ex[t]))}${v.ex[t][2] ? " (" + esc(v.ex[t][2]) + ")" : ""}</em><div class="row left"><button class="btn" data-vsay="form">Listen</button><button class="btn" data-vsay="sentence">Listen sentence</button></div>`;
+  const forms = TENSES.map(x => `${x[0].toUpperCase() + x.slice(1)}: <b>${esc(v[x])}</b>`).join(" · ");
+  $("#vq-fb").innerHTML = (ok ? `<b>Correct!</b> “${esc(v.base)}” means “${esc(v.meaning)}”.` : `<b>Not quite.</b> “${esc(v.base)}” means “${esc(v.meaning)}”.`) + `<br>${forms}<br><em>${esc(fillS(v.ex[t]))}${v.ex[t][2] ? " (" + esc(v.ex[t][2]) + ")" : ""}</em><div class="row left"><button class="btn" data-vsay="verb">Listen verb</button><button class="btn" data-vsay="sentence">Listen sentence</button></div>`;
   $("#vq-fb").hidden = false; $("#vq-next").hidden = false;
   $("#vq-next").textContent = VQ.i === VQ.qs.length - 1 ? "See results" : "Next question";
 };
@@ -559,7 +570,7 @@ $("#vq-next").onclick = () => {
   $("#vq-score").textContent = `${VQ.score}/${VQ.qs.length} (${Math.round(VQ.score / VQ.qs.length * 100)}%)`; touch();
 };
 $("#vq-start").onclick = startVQ; $("#vq-again").onclick = startVQ;
-$("#vq-fb").onclick = e => { const b = e.target.closest("[data-vsay]"); if (!b) return; const { v, t } = VQ.qs[VQ.i]; say(b.dataset.vsay === "form" ? v.ex[t][1] : fillS(v.ex[t])); }; // Listen buttons in the feedback box
+$("#vq-fb").onclick = e => { const b = e.target.closest("[data-vsay]"); if (!b) return; const { v, t } = VQ.qs[VQ.i]; say(b.dataset.vsay === "verb" ? v.base : fillS(v.ex[t])); }; // Listen buttons in the feedback box
 
 /* ===== 8. HEADER SEARCH AND WORD POP-UP ===== */
 const norm = s => String(s || "").toLowerCase();
