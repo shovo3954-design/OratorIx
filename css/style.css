@@ -33,6 +33,41 @@ nav{display:flex;gap:6px}
 .top{transition:transform .25s ease}
 .top.hide{transform:translateY(-100%)}
 
+
+/* ===== 3b. NEW HEADER (hamburger, menu, Practise dropdown, search icon) ===== */
+.top{padding:14px 24px}
+.lhs{display:flex;align-items:center;gap:10px}
+.icon-btn{width:42px;height:42px;display:grid;place-items:center;border:1px solid transparent;background:none;border-radius:12px;color:var(--text);cursor:pointer}
+.icon-btn:hover,.icon-btn[aria-expanded="true"]{background:var(--surface2);border-color:var(--line)}
+.icon-btn svg{width:24px;height:24px}
+nav{align-items:center;gap:4px}
+.tab{border-radius:0;padding:10px 16px;font-size:1.02rem}
+.tab:hover{background:var(--surface2);border-radius:10px}
+.tab.on{background:none;color:var(--text);box-shadow:inset 0 -3px 0 var(--green);border-radius:0}
+.dd{position:relative}
+.ddbtn{display:inline-flex;align-items:center;gap:6px}
+.ddbtn svg{width:16px;height:16px;transition:transform .2s}
+.ddbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.ddmenu,.sbox{position:absolute;top:calc(100% + 8px);background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);z-index:30}
+.ddmenu{left:0;min-width:190px;padding:6px;display:grid;gap:2px}
+.ddmenu button{text-align:left;background:none;border:0;border-radius:10px;padding:10px 12px;cursor:pointer;font-weight:600;color:var(--text)}
+.ddmenu button:hover,.ddmenu button:focus-visible{background:var(--surface2)}
+.ddmenu button.on{color:var(--green)}
+.sbox{right:0;width:min(380px,92vw);padding:10px}
+.sbox input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.dbg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:39}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(320px,86vw);background:var(--surface);border-right:1px solid var(--line);z-index:40;padding:22px 20px;overflow:auto;animation:slidein .22s ease}
+@keyframes slidein{from{transform:translateX(-100%)}}
+.drawer h2{margin-bottom:4px}
+.drawer h3{font-size:1rem;margin:22px 0 10px;color:var(--muted)}
+.drawer ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.dlangs{display:grid;gap:10px;margin-top:8px}
+.dlang{display:grid;text-align:left;border:1px solid var(--line);background:var(--surface2);border-radius:14px;padding:14px 16px;cursor:pointer}
+.dlang b{font-size:1.15rem}
+.dlang small{color:var(--muted)}
+.dlang:hover{border-color:var(--green)}
+.dlang.on{background:rgba(31,214,160,.18);border-color:var(--green)}
+
 /* ===== 4. BUTTONS ===== */
 .btn{display:inline-block;border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:9px 18px;font-weight:700;cursor:pointer;text-decoration:none;transition:transform .1s,filter .15s}
 .btn:hover{filter:brightness(1.15)}.btn:active{transform:translateY(1px)}
@@ -77,6 +112,7 @@ nav{display:flex;gap:6px}
 .acts{display:flex;gap:6px;margin-top:auto;padding-top:6px}
 .acts button{border:1px solid var(--line);background:var(--surface2);border-radius:10px;padding:3px 12px;cursor:pointer;font-size:.85rem}
 .acts button:hover{border-color:var(--green)}
+.btn.on,.acts button.on{background:var(--coral);border-color:var(--coral);color:#0b1020}
 .grid .empty{grid-column:1/-1}
 .empty{text-align:center;background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:30px;color:var(--muted)}
 
@@ -104,6 +140,16 @@ nav{display:flex;gap:6px}
 .fb{border-left:4px solid var(--purple);background:var(--surface2);padding:10px 14px;border-radius:8px;margin-bottom:14px}
 .big{font-size:2.4rem;font-weight:800;margin:4px 0}
 
+/* ===== 10b. QUIZ SPLIT LAYOUT (question on the left, answer and Next on the right) ===== */
+.qhint{color:var(--muted);border:1px dashed var(--line);border-radius:12px;padding:14px;text-align:center}
+.qb:has(.fb:not([hidden])) .qhint{display:none}
+.qb .btn{margin-bottom:6px}
+@media(min-width:861px){
+  .panel.split{display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:1000px;align-items:start}
+  .panel.split[hidden]{display:none}
+  .qb{position:sticky;top:90px}
+}
+
 /* ===== 11. FOOTER ===== */
 .foot{border-top:1px solid var(--line);background:var(--surface);padding:36px 20px 20px}
 .foot-grid{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1.4fr;gap:28px}
@@ -116,9 +162,8 @@ nav{display:flex;gap:6px}
 .copy{max-width:var(--max);margin:28px auto 0;padding-top:16px;border-top:1px solid var(--line);font-size:.9rem}
 
 /* ===== 12. HEADER SEARCH ===== */
-.hsearch{position:relative;flex:1;max-width:320px;min-width:180px}
-.hsearch input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 12px}
-.gresults{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;display:grid;gap:2px;max-height:60vh;overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.hsearch{position:relative}
+.gresults{margin-top:8px;display:grid;gap:2px;max-height:60vh;overflow:auto}
 .gresults button{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;text-align:left;background:none;border:0;border-radius:8px;padding:8px 10px;cursor:pointer}
 .gresults button:hover,.gresults button:focus-visible{background:var(--surface2)}
 .gresults span,.gresults small{color:var(--muted)}.gresults small{grid-column:1/-1}
@@ -165,8 +210,8 @@ dialog h2{margin:10px 0 6px}
 #toast.show{opacity:1}
 
 /* ===== 17. TABLET, PHONE AND REDUCED MOTION ===== */
-@media(max-width:860px){.hero{grid-template-columns:1fr;padding:22px}.foot-grid{grid-template-columns:1fr 1fr}.hsearch{order:4;max-width:none;flex-basis:100%}}
-@media(max-width:560px){.foot-grid{grid-template-columns:1fr}.card{height:340px}.back .pic-sm{max-height:130px}nav{order:3;width:100%;overflow-x:auto}
+@media(max-width:860px){.hero{grid-template-columns:1fr;padding:22px}.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.foot-grid{grid-template-columns:1fr}.card{height:340px}.back .pic-sm{max-height:130px}nav{order:3;width:100%;justify-content:space-around}
   /* shorter header on phones: logo + language on one row, tabs below, CTA hidden (the hero has one) */
-  .top{padding:8px 12px;gap:6px}.tools .btn{display:none}.brand{font-size:1.2rem}.tab{padding:6px 12px}}
+  .top{padding:8px 12px;gap:6px}.hsearch{position:static}.sbox{left:12px;right:12px;width:auto}.ddmenu{left:auto;right:0}.brand{font-size:1.2rem}.tab{padding:6px 12px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}

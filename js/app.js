@@ -33,12 +33,42 @@ function stats() {
   $("#s-best").textContent = prog.best + "%";
   $("#s-streak").textContent = prog.streak;
 }
-function say(t) { if ("speechSynthesis" in window) { const u = new SpeechSynthesisUtterance(t); u.lang = lang === "ko" ? "ko-KR" : "en-US"; u.rate = .9; speechSynthesis.cancel(); speechSynthesis.speak(u); } else toast("Speech is not supported in this browser."); }
+function say(t) { stopLoop(); if ("speechSynthesis" in window) { const u = new SpeechSynthesisUtterance(t); u.lang = lang === "ko" ? "ko-KR" : "en-US"; u.rate = .9; speechSynthesis.cancel(); speechSynthesis.speak(u); } else toast("Speech is not supported in this browser."); }
+
+/* ----- LOOP LISTENING: says "word = meaning" 10 times (word in its own language, meaning in English) ----- */
+const LOOPS = 10;
+let loopRun = 0, loopBtn = null;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function stopLoop() { // stops the loop and puts the button text back
+  loopRun++;
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  if (loopBtn) { loopBtn.textContent = loopBtn.dataset.t; loopBtn.classList.remove("on"); loopBtn = null; }
+}
+function speakPart(text, l) { // speaks one piece and waits until it has finished
+  return new Promise(res => { const u = new SpeechSynthesisUtterance(text); u.lang = l; u.rate = 1.25; u.onend = u.onerror = () => res(); speechSynthesis.speak(u); });
+}
+async function loopWord(w, btn) {
+  if (!("speechSynthesis" in window)) { toast("Speech is not supported in this browser."); return; }
+  const same = btn && loopBtn === btn; stopLoop(); if (same) { toast("Loop stopped"); return; } // click again = stop
+  const run = loopRun, termLang = lang === "ko" ? "ko-KR" : "en-US";
+  if (btn) { btn.dataset.t = btn.dataset.t || btn.textContent; btn.textContent = "Stop loop"; btn.classList.add("on"); loopBtn = btn; }
+  await wait(60);
+  for (let i = 1; i <= LOOPS && run === loopRun; i++) {
+    toast(`Loop ${i} of ${LOOPS}`);
+    await speakPart(w.term, termLang); if (run !== loopRun) return;
+    await wait(60);
+    await speakPart(w.def, "en-US"); if (run !== loopRun) return;
+    await wait(150);
+  }
+  if (run === loopRun) { stopLoop(); toast("Loop finished"); }
+}
 
 /* ===== 4. NAVIGATION (switch between Home, Learn, Flashcards, Quiz) ===== */
 function show(v) {
+  stopLoop();
   ["home", "learn", "verbs", "flash", "quiz", "game", "speak"].forEach(n => $("#v-" + n).hidden = n !== v);
-  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.view === v));
+  document.querySelectorAll("[data-view]").forEach(b => b.classList.toggle("on", b.dataset.view === v));
+  ddBtn.classList.toggle("on", PRACTISE.includes(v)); setDD(false);
   scrollTo(0, 0);
   if (v === "flash") buildDeck();
   if (v === "verbs") showVT(VT);
@@ -46,7 +76,21 @@ function show(v) {
   if (v === "game") { $("#gm-setup").hidden = false; $("#gm-play").hidden = true; $("#gm-end").hidden = true; }
   if (v === "quiz") { $("#qz-setup").hidden = false; $("#qz-play").hidden = true; $("#qz-end").hidden = true; }
 }
-document.querySelectorAll(".tab").forEach(b => b.onclick = () => show(b.dataset.view));
+document.querySelectorAll("[data-view]").forEach(b => b.onclick = () => show(b.dataset.view));
+
+/* ===== 4b. HEADER MENUS (hamburger, Practise dropdown, search icon) ===== */
+const PRACTISE = ["flash", "quiz", "game", "speak"];
+const burger = $("#burger"), drawer = $("#drawer"), dbg = $("#drawer-bg"), ddBtn = $("#dd-btn"), ddMenu = $("#dd-menu"), sbtn = $("#sbtn"), sbox = $("#sbox");
+function setDD(open) { ddMenu.hidden = !open; ddBtn.setAttribute("aria-expanded", open); }
+function setSearch(open) { sbox.hidden = !open; sbtn.setAttribute("aria-expanded", open); if (open) gs.focus(); else gr.hidden = true; }
+function setDrawer(open) { if (open === !drawer.hidden) return; drawer.hidden = dbg.hidden = !open; burger.setAttribute("aria-expanded", open); (open ? drawer.querySelector("button") : burger).focus(); }
+burger.onclick = () => setDrawer(drawer.hidden);
+dbg.onclick = () => setDrawer(false);
+drawer.addEventListener("click", e => { if (e.target.closest("button")) setDrawer(false); }); // picking anything closes the menu
+ddBtn.onclick = () => { setDD(ddMenu.hidden); setSearch(false); };
+sbtn.onclick = () => { setSearch(sbox.hidden); setDD(false); };
+document.addEventListener("click", e => { if (!e.target.closest(".dd")) setDD(false); if (!e.target.closest(".hsearch")) setSearch(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { setDD(false); setSearch(false); setDrawer(false); } });
 
 /* ===== 5. LEARN TAB (search, filters, word cards) ===== */
 function cats() { return [...new Set(words.map(w => w.category).filter(Boolean))].sort(); }
@@ -105,7 +149,7 @@ function renderLearn() {
         ${w.status !== "new" ? `<span class="tag ${w.status}">${w.status === "known" ? "Known" : "Need practice"}</span>` : ""}</div>
       <h3>${esc(w.term)} <small class="muted">${esc([w.roman, w.pron].filter(Boolean).join(" · "))}</small></h3>
       <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>
-      <div class="acts" data-id="${w.id}"><button data-a="say">Listen</button><button data-a="ex">Listen sentence</button></div>
+      <div class="acts" data-id="${w.id}"><button data-a="say">Listen</button><button data-a="ex">Listen sentence</button><button data-a="loop">Loop ×10</button></div>
     </article>`).join("") : `<p class="empty">No words in this class yet.</p>`;
 }
 $("#grid").onclick = e => {
@@ -113,6 +157,7 @@ $("#grid").onclick = e => {
   const id = b.parentElement.dataset.id, w = words.find(x => x.id === id);
   if (b.dataset.a === "say") say(w.term);
   if (b.dataset.a === "ex") say(w.ex);
+  if (b.dataset.a === "loop") loopWord(w, b);
 };
 
 /* ===== 6. FLASHCARDS (flip, Known, Need practice) ===== */
@@ -128,6 +173,7 @@ function drawCard() {
   const has = deck.length > 0;
   $("#fc-empty").hidden = has; $("#fc-area").hidden = !has;
   if (!has) { $("#fc-count").textContent = ""; return; }
+  stopLoop();
   const w = deck[di], card = $("#card"), wasFlipped = card.classList.contains("flipped");
   card.classList.remove("flipped");
   $("#fc-count").textContent = `Card ${di + 1} of ${deck.length}`;
@@ -151,6 +197,7 @@ $("#card").onclick = () => $("#card").classList.toggle("flipped");
 $("#fc-next").onclick = () => step(1); $("#fc-prev").onclick = () => step(-1);
 $("#fc-say").onclick = () => say(deck[di].term);
 $("#fc-say-ex").onclick = () => say(deck[di].ex);
+$("#fc-loop").onclick = e => loopWord(deck[di], e.currentTarget);
 $("#fc-known").onclick = () => rate("known"); $("#fc-practice").onclick = () => rate("practice");
 $("#fc-filter").onchange = buildDeck;
 document.addEventListener("keydown", e => {
@@ -470,7 +517,7 @@ function showResults() {
   gr.hidden = false;
 }
 gs.oninput = showResults; gs.onfocus = showResults;
-gr.onclick = e => { const b = e.target.closest("button"); if (!b) return; gr.hidden = true;
+gr.onclick = e => { const b = e.target.closest("button"); if (!b) return; gr.hidden = true; setSearch(false);
   if (b.dataset.kind === "v") openVerb(allVerbs().find(v => v.id === b.dataset.id)); else openWord(words.find(w => w.id === b.dataset.id)); };
 document.addEventListener("click", e => { if (!e.target.closest(".hsearch")) gr.hidden = true; });
 document.addEventListener("keydown", e => { if (e.key === "Escape") gr.hidden = true; });
@@ -480,7 +527,7 @@ function openWord(w) { // full word card in a pop-up
     <div class="tags"><span class="tag">${esc(w.pos)}</span><span class="tag">${esc(sec(w))}</span><span class="tag">Class ${cl(w)}</span>${w.category ? `<span class="tag">${esc(w.category)}</span>` : ""}</div>
     <h2>${esc(w.term)} <small class="muted">${esc([w.roman, w.pron].filter(Boolean).join(" · "))}</small></h2>
     <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>
-    <div class="row left"><button class="btn" data-say="term">Listen</button><button class="btn" data-say="ex">Listen sentence</button></div>`;
+    <div class="row left"><button class="btn" data-say="term">Listen</button><button class="btn" data-say="ex">Listen sentence</button><button class="btn" data-say="loop">Loop ×10</button></div>`;
   setPic($("#w-pic"), w); $("#wdlg").showModal();
 }
 function openVerb(v) { // full verb card in the pop-up: forms and examples
@@ -493,8 +540,9 @@ function openVerb(v) { // full verb card in the pop-up: forms and examples
     <p class="ex">${esc(fillS(v.ex[t]))}${v.ex[t][2] ? "<br>" + esc(v.ex[t][2]) : ""} <button class="mini" data-speak="${esc(fillS(v.ex[t]))}">Listen</button></p>`).join("");
   $("#wdlg").showModal();
 }
-$("#wcard").onclick = e => { const sp = e.target.closest("[data-speak]"); if (sp) { say(sp.dataset.speak); return; } const b = e.target.closest("[data-say]"); if (b) say(words.find(w => w.id === $("#wcard").dataset.id)[b.dataset.say]); };
+$("#wcard").onclick = e => { const sp = e.target.closest("[data-speak]"); if (sp) { say(sp.dataset.speak); return; } const b = e.target.closest("[data-say]"); if (!b) return; const w = words.find(w => w.id === $("#wcard").dataset.id); if (b.dataset.say === "loop") loopWord(w, b); else say(w[b.dataset.say]); };
 $("#wdlg-x").onclick = () => $("#wdlg").close();
+$("#wdlg").addEventListener("close", stopLoop);
 $("#wdlg").onclick = e => { if (e.target.id === "wdlg") $("#wdlg").close(); }; // click outside closes
 
 /* ===== 10. HOME PAGE EXTRAS (word of the day, hero and footer links) ===== */
@@ -518,7 +566,8 @@ topBar.addEventListener("focusin", () => topBar.classList.remove("hide")); // ke
 
 /* ===== 11. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
 function setLang(l) {
-  lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); $("#lang").value = l;
+  stopLoop();
+  lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); $("#lang").value = l; document.querySelectorAll(".dlang").forEach(b => b.classList.toggle("on", b.dataset.lang === l));
   PL.sec = PL.cls = PF.sec = PF.cls = PQ.sec = PQ.cls = PG.sec = PG.cls = PS.sec = PS.cls = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; renderPickers(); renderLearn(); stats(); renderWotd();
   show(["home", "learn", "verbs", "flash", "quiz", "game", "speak"].find(n => !$("#v-" + n).hidden) || "home");
 }

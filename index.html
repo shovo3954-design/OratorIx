@@ -13,29 +13,62 @@
 
 <!-- ===== 1. HEADER: logo, navigation, language picker, call-to-action ===== -->
 <header class="top">
-  <a class="brand" href="#" data-go="home" aria-label="Oratorix home">
-    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#1fd6a0"/><circle cx="17" cy="17" r="7" fill="none" stroke="#0b1020" stroke-width="4"/></svg>
-    <span>Orator<em>ix</em></span>
-  </a>
+  <div class="lhs">
+    <!-- Hamburger: opens the side menu where you pick English or Korean -->
+    <button class="icon-btn" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="drawer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></button>
+    <a class="brand" href="#" data-go="home" aria-label="Oratorix home">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#1fd6a0"/><circle cx="17" cy="17" r="7" fill="none" stroke="#0b1020" stroke-width="4"/></svg>
+      <span>Orator<em>ix</em></span>
+    </a>
+  </div>
   <nav aria-label="Main">
     <button class="tab on" data-view="home">Home</button>
     <button class="tab" data-view="learn">Learn</button>
     <button class="tab" data-view="verbs">Verbs</button>
-    <button class="tab" data-view="flash">Flashcards</button>
-    <button class="tab" data-view="quiz">Quiz</button>
-    <button class="tab" data-view="game">Game</button>
-    <button class="tab" data-view="speak">Speak</button>
+    <!-- Practise: dropdown with Flashcards, Quiz, Game and Speak -->
+    <div class="dd">
+      <button class="tab ddbtn" id="dd-btn" aria-haspopup="true" aria-expanded="false" aria-controls="dd-menu">Practise <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></button>
+      <div class="ddmenu" id="dd-menu" hidden>
+        <button data-view="flash">Flashcards</button>
+        <button data-view="quiz">Quiz</button>
+        <button data-view="game">Game</button>
+        <button data-view="speak">Speak</button>
+      </div>
+    </div>
   </nav>
-  <!-- Search: type a Korean or English word; results drop down under the box -->
-  <div class="hsearch" role="search">
-    <input id="gsearch" type="search" placeholder="Search words, verbs or meanings" aria-label="Search words and verbs" autocomplete="off">
-    <div id="gresults" class="gresults" hidden></div>
-  </div>
   <div class="tools">
+    <!-- Search icon: opens the search box; results drop down inside it -->
+    <div class="hsearch" role="search">
+      <button class="icon-btn" id="sbtn" aria-label="Search" aria-expanded="false" aria-controls="sbox"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+      <div class="sbox" id="sbox" hidden>
+        <input id="gsearch" type="search" placeholder="Search words, verbs or meanings" aria-label="Search words and verbs" autocomplete="off">
+        <div id="gresults" class="gresults" hidden></div>
+      </div>
+    </div>
     <select id="lang" class="langsel" aria-label="Language"><option value="en">English</option><option value="ko">Korean</option></select>
-    <button class="btn green" data-go="flash">Start flashcards</button>
   </div>
 </header>
+
+<!-- Side menu (hamburger): pick the language, or jump to a page -->
+<div id="drawer-bg" class="dbg" hidden></div>
+<aside id="drawer" class="drawer" hidden aria-label="Menu">
+  <h2>Choose a language</h2>
+  <p class="muted">Pick what you want to learn.</p>
+  <div class="dlangs">
+    <button class="dlang" data-lang="en"><b>English</b><small>Learn English words</small></button>
+    <button class="dlang" data-lang="ko"><b>한국어 · Korean</b><small>Learn Korean words</small></button>
+  </div>
+  <h3>Go to</h3>
+  <ul>
+    <li><button class="link" data-go="home">Home</button></li>
+    <li><button class="link" data-go="learn">Learn</button></li>
+    <li><button class="link" data-go="verbs">Verbs</button></li>
+    <li><button class="link" data-go="flash">Flashcards</button></li>
+    <li><button class="link" data-go="quiz">Quiz</button></li>
+    <li><button class="link" data-go="game">Game</button></li>
+    <li><button class="link" data-go="speak">Speak</button></li>
+  </ul>
+</aside>
 
 <!-- ===== 2. MAIN CONTENT (one tab is visible at a time) ===== -->
 <main id="main">
@@ -110,13 +143,13 @@
     </div>
     <div id="vb-quiz" hidden>
       <div id="vq-setup" class="panel"><h2>Verb quiz</h2><p>Fill the blank with the right form of the verb. You get feedback after every answer.</p><button class="btn green" id="vq-start">Start quiz</button></div>
-      <div id="vq-play" class="panel" hidden>
+      <div id="vq-play" class="panel split" hidden><div class="qa">
         <div class="meter"><i id="vq-bar"></i></div>
         <p class="muted" id="vq-prog"></p>
         <h2 id="vq-q"></h2><p class="muted" id="vq-hint"></p>
         <div id="vq-opts" class="opts"></div>
-        <div id="vq-fb" class="fb" hidden role="status"></div>
-        <button class="btn green" id="vq-next" hidden>Next</button>
+        </div><div class="qb"><p class="qhint">Your answer, the meaning and the Next button will appear here.</p><div id="vq-fb" class="fb" hidden role="status"></div>
+        <button class="btn green" id="vq-next" hidden>Next</button></div>
       </div>
       <div id="vq-end" class="panel" hidden><h2>Quiz finished</h2><p class="big" id="vq-score"></p><button class="btn green" id="vq-again">New quiz</button></div>
     </div>
@@ -145,6 +178,7 @@
         <button class="btn" id="fc-prev">Previous</button>
         <button class="btn" id="fc-say">Listen</button>
         <button class="btn" id="fc-say-ex">Listen sentence</button>
+        <button class="btn" id="fc-loop">Loop ×10</button>
         <button class="btn" id="fc-next">Next</button>
       </div>
       <div class="row">
@@ -164,13 +198,13 @@
       <div class="bar"><button class="btn green" id="qz-start">Start quiz</button></div>
       <p id="qz-msg" class="muted" role="status"></p>
     </div>
-    <div id="qz-play" class="panel" hidden>
+    <div id="qz-play" class="panel split" hidden><div class="qa">
       <div class="meter"><i id="qz-bar"></i></div>
       <p class="muted" id="qz-prog"></p>
       <h2 id="qz-q"></h2>
       <div id="qz-opts" class="opts"></div>
-      <div id="qz-fb" class="fb" hidden role="status"></div>
-      <button class="btn green" id="qz-next" hidden>Next</button>
+      </div><div class="qb"><p class="qhint">Your answer, the meaning and the Next button will appear here.</p><div id="qz-fb" class="fb" hidden role="status"></div>
+      <button class="btn green" id="qz-next" hidden>Next</button></div>
     </div>
     <div id="qz-end" class="panel" hidden>
       <h2>Quiz finished</h2>
@@ -189,14 +223,14 @@
       <div class="bar"><button class="btn green" id="gm-start">Start game</button></div>
       <p id="gm-msg" class="muted" role="status"></p>
     </div>
-    <div id="gm-play" class="panel" hidden>
+    <div id="gm-play" class="panel split" hidden><div class="qa">
       <div class="meter"><i id="gm-bar"></i></div>
       <p class="muted" id="gm-prog"></p>
       <p class="muted">Clue</p>
       <h2 id="gm-clue"></h2>
       <div id="gm-opts" class="gopts"></div>
-      <div id="gm-fb" class="fb" hidden role="status"></div>
-      <button class="btn green" id="gm-next" hidden>Next</button>
+      </div><div class="qb"><p class="qhint">Your answer, the meaning and the Next button will appear here.</p><div id="gm-fb" class="fb" hidden role="status"></div>
+      <button class="btn green" id="gm-next" hidden>Next</button></div>
     </div>
     <div id="gm-end" class="panel" hidden>
       <h2>Game finished</h2>
@@ -215,7 +249,7 @@
       <div class="bar"><button class="btn green" id="sp-start">Start</button></div>
       <p id="sp-msg" class="muted" role="status"></p>
     </div>
-    <div id="sp-play" class="panel" hidden>
+    <div id="sp-play" class="panel split" hidden><div class="qa">
       <div class="meter"><i id="sp-bar"></i></div>
       <p class="muted" id="sp-prog"></p>
       <p class="muted">Clue</p>
@@ -227,8 +261,8 @@
         <p class="muted" id="sp-typemsg"></p>
         <div class="bar"><input id="sp-input" type="text" placeholder="Type the word" aria-label="Type the word" autocomplete="off"><button class="btn" id="sp-check">Check</button></div>
       </div>
-      <div id="sp-fb" class="fb" hidden role="status"></div>
-      <button class="btn green" id="sp-next" hidden>Next</button>
+      </div><div class="qb"><p class="qhint">Your answer, the meaning and the Next button will appear here.</p><div id="sp-fb" class="fb" hidden role="status"></div>
+      <button class="btn green" id="sp-next" hidden>Next</button></div>
     </div>
     <div id="sp-end" class="panel" hidden>
       <h2>Speaking practice finished</h2>
