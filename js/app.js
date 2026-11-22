@@ -468,7 +468,9 @@ $("#sp-next").onclick = () => {
 $("#sp-start").onclick = () => startSpeak(); $("#sp-retry").onclick = () => startSpeak(S.wrong); $("#sp-again").onclick = () => show("speak", true);
 
 /* ===== 8b. VERBS (learn, flashcards, quiz) ===== */
-const TENSES = ["present", "past", "future"], TLABEL = { present: "Present (now)", past: "Past (before)", future: "Future (later)" };
+const TENSES_KO = ["present", "past", "future"], TENSES_EN = ["present", "past", "future", "participle"]; // English verbs also have a past participle (go, went, gone)
+let TENSES = TENSES_KO;
+const TLABEL = { present: "Present (now)", past: "Past (before)", future: "Future (later)", participle: "Past participle (with have or has)" };
 const allVerbs = () => DEFAULT_VERBS[lang];
 const verbList = () => allVerbs().filter(v => v.level === VLV && (v.cls || 1) === +VCL); // verbs of the chosen level and class
 const vpron = v => [v.roman, v.pron].filter(Boolean).join(" · "); // pronunciation of the main verb
@@ -568,7 +570,7 @@ $("#vq-opts").onclick = e => {
   const { v, t } = VQ.qs[VQ.i], ok = VQ.opts[b.dataset.k] === v.meaning;
   [...$("#vq-opts").children].forEach((x, k) => { x.disabled = true; if (VQ.opts[k] === v.meaning) x.classList.add("right"); });
   if (ok) VQ.score++; else b.classList.add("wrong");
-  const forms = TENSES.map(x => `${x[0].toUpperCase() + x.slice(1)}: <b>${esc(v[x])}</b>`).join(" · ");
+  const forms = TENSES.map(x => `${TLABEL[x].split(" (")[0]}: <b>${esc(v[x])}</b>`).join(" · ");
   $("#vq-fb").innerHTML = (ok ? `<b>Correct!</b> “${esc(v.base)}” means “${esc(v.meaning)}”.` : `<b>Not quite.</b> “${esc(v.base)}” means “${esc(v.meaning)}”.`) + `<br>${forms}<br><em>${esc(fillS(v.ex[t]))}${v.ex[t][2] ? " (" + esc(v.ex[t][2]) + ")" : ""}</em><div class="row left"><button class="btn" data-vsay="verb">Listen verb</button><button class="btn" data-vsay="sentence">Listen sentence</button></div>`;
   $("#vq-fb").hidden = false; $("#vq-next").hidden = false;
   $("#vq-next").textContent = VQ.i === VQ.qs.length - 1 ? "See results" : "Next question";
@@ -668,7 +670,7 @@ topBar.addEventListener("focusin", () => topBar.classList.remove("hide")); // ke
 /* ===== 11. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
 function setLang(l) {
   stopLoop();
-  lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); $("#lang").value = l; document.querySelectorAll(".dlang").forEach(b => b.classList.toggle("on", b.dataset.lang === l));
+  lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); TENSES = lang === "en" ? TENSES_EN : TENSES_KO; document.querySelectorAll(".pp-note").forEach(e => e.hidden = lang !== "en"); $("#lang").value = l; document.querySelectorAll(".dlang").forEach(b => b.classList.toggle("on", b.dataset.lang === l));
   PL.sec = PL.cls = PF.sec = PF.cls = PQ.sec = PQ.cls = PG.sec = PG.cls = PS.sec = PS.cls = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; renderPickers(); renderLearn(); stats(); renderWotd();
   const cur = ["home", "learn", "verbs", "flash", "quiz", "game", "speak", "class"].find(n => !$("#v-" + n).hidden) || "home";
   show(cur === "class" ? CP.from : cur);
