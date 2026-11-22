@@ -38,6 +38,8 @@ function say(t) { stopLoop(); if ("speechSynthesis" in window) { const u = new S
 /* ----- LOOP LISTENING: says "word = meaning" 10 times (word in its own language, meaning in English) ----- */
 const LOOPS = 10;
 let loopRun = 0, loopBtn = null;
+const VERB_LOOPS = 5;
+const loopVerb = (v, btn) => loopWord(null, btn, { term: v.base, def: v.meaning, n: VERB_LOOPS }); // verb loop: verb, then its meaning, 5 times
 const wait = ms => new Promise(r => setTimeout(r, ms));
 function stopLoop() { // stops the loop and puts the button text back
   loopRun++;
@@ -45,20 +47,21 @@ function stopLoop() { // stops the loop and puts the button text back
   if (loopBtn) { loopBtn.textContent = loopBtn.dataset.t; loopBtn.classList.remove("on"); loopBtn = null; }
 }
 function speakPart(text, l) { // speaks one piece and waits until it has finished
-  return new Promise(res => { const u = new SpeechSynthesisUtterance(text); u.lang = l; u.rate = 1.25; u.onend = u.onerror = () => res(); speechSynthesis.speak(u); });
+  return new Promise(res => { const u = new SpeechSynthesisUtterance(text); u.lang = l; u.rate = 1.35; u.onend = u.onerror = () => res(); speechSynthesis.speak(u); });
 }
-async function loopWord(w, btn) {
+async function loopWord(w, btn, opt) { // opt = { term, def, n } lets verbs use their own text and repeat count
+  const term = opt ? opt.term : w.term, def = opt ? opt.def : w.def, N = opt ? opt.n : LOOPS;
   if (!("speechSynthesis" in window)) { toast("Speech is not supported in this browser."); return; }
   const same = btn && loopBtn === btn; stopLoop(); if (same) { toast("Loop stopped"); return; } // click again = stop
   const run = loopRun, termLang = lang === "ko" ? "ko-KR" : "en-US";
   if (btn) { btn.dataset.t = btn.dataset.t || btn.textContent; btn.textContent = "Stop loop"; btn.classList.add("on"); loopBtn = btn; }
-  await wait(60);
-  for (let i = 1; i <= LOOPS && run === loopRun; i++) {
-    toast(`Loop ${i} of ${LOOPS}`);
-    await speakPart(w.term, termLang); if (run !== loopRun) return;
-    await wait(60);
-    await speakPart(w.def, "en-US"); if (run !== loopRun) return;
-    await wait(150);
+  await wait(40);
+  for (let i = 1; i <= N && run === loopRun; i++) {
+    toast(`Loop ${i} of ${N}`);
+    await speakPart(term, termLang); if (run !== loopRun) return;
+    await wait(40);
+    await speakPart(def, "en-US"); if (run !== loopRun) return;
+    await wait(100);
   }
   if (run === loopRun) { stopLoop(); toast("Loop finished"); }
 }
@@ -205,6 +208,7 @@ window.addEventListener("popstate", e => {
 });
 $("#cp-grid").onclick = e => {
   const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.loop) { const v = allVerbs().find(x => x.id === b.dataset.loop); if (v) loopVerb(v, b); return; } // verb cards: Loop button
   if (b.dataset.speak !== undefined) { say(b.dataset.speak); return; } // verb cards
   const w = words.find(x => x.id === b.parentElement.dataset.id); if (!w) return;
   if (b.dataset.a === "say") say(w.term);
@@ -501,16 +505,20 @@ document.querySelectorAll("[data-vt]").forEach(b => b.onclick = () => showVT(b.d
 
 /* Verbs: Learn */
 const verbCardHTML = v => `<article class="word vcard"><h3>${esc(v.base)}${vpron(v) ? `<small class="muted">${esc(vpron(v))}</small>` : ""}<small class="muted">${esc(v.meaning)}</small></h3>
-    <div class="acts"><button data-speak="${esc(v.base)}">Listen</button></div>` + TENSES.map(t => `
+    <div class="acts"><button data-speak="${esc(v.base)}">Listen</button><button data-loop="${esc(v.id)}">Loop ×5</button></div>` + TENSES.map(t => `
     <div class="vrow"><b>${TLABEL[t]}</b><span>${esc(v[t])}</span></div>
     <p class="ex">${esc(fillS(v.ex[t]))}${v.ex[t][2] ? "<br>" + esc(v.ex[t][2]) : ""} <button class="mini" data-speak="${esc(fillS(v.ex[t]))}">Listen</button></p>`).join("") + "</article>";
 function renderVerbs() { $("#vb-grid").innerHTML = verbList().map(verbCardHTML).join(""); }
-$("#vb-grid").onclick = e => { const b = e.target.closest("[data-speak]"); if (b) say(b.dataset.speak); };
+$("#vb-grid").onclick = e => {
+  const l = e.target.closest("[data-loop]"); if (l) { const v = allVerbs().find(x => x.id === l.dataset.loop); if (v) loopVerb(v, l); return; }
+  const b = e.target.closest("[data-speak]"); if (b) say(b.dataset.speak);
+};
 
 /* Verbs: Flashcards (every verb in every tense) */
 let vdeck = [], vi = 0;
 function buildVF() { vdeck = verbList().flatMap(v => TENSES.map(t => ({ v, t }))); vi = 0; drawVF(); }
 function drawVF() {
+  stopLoop();
   const { v, t } = vdeck[vi], card = $("#vf-card"), was = card.classList.contains("flipped");
   card.classList.remove("flipped");
   $("#vf-count").textContent = `Card ${vi + 1} of ${vdeck.length}`;
@@ -525,6 +533,7 @@ $("#vf-prev").onclick = () => { vi = (vi - 1 + vdeck.length) % vdeck.length; dra
 $("#vf-shuffle").onclick = () => { vdeck = shuffle(vdeck); vi = 0; drawVF(); toast("Cards shuffled"); };
 $("#vf-say").onclick = () => { const { v, t } = vdeck[vi]; say(fillS(v.ex[t])); };
 $("#vf-say-v").onclick = () => say(vdeck[vi].v.base);
+$("#vf-loop").onclick = e => loopVerb(vdeck[vi].v, e.currentTarget);
 
 /* Verbs: Quiz (the question is the verb, pick its English meaning from 4 choices) */
 let VQ = {};
