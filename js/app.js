@@ -507,6 +507,15 @@ function renderWotd() { // shows a different word each day
 document.querySelectorAll("[data-go]").forEach(b => b.onclick = e => { e.preventDefault(); show(b.dataset.go); scrollTo(0, 0); }); // hero, footer, logo
 document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { setLang(b.dataset.lang); scrollTo(0, 0); }); // footer language links
 
+/* ===== 10b. HEADER: hides when you scroll down, slides back when you scroll up ===== */
+const topBar = $(".top"); let lastY = window.scrollY || 0;
+window.addEventListener("scroll", () => {
+  const y = window.scrollY, keep = y < 80 || document.activeElement === gs || !gr.hidden; // always visible near the top or while searching
+  if (keep || y < lastY - 4) topBar.classList.remove("hide"); else if (y > lastY + 4) topBar.classList.add("hide");
+  lastY = y;
+}, { passive: true });
+topBar.addEventListener("focusin", () => topBar.classList.remove("hide")); // keyboard users always reach the menu
+
 /* ===== 11. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
 function setLang(l) {
   lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); $("#lang").value = l;
