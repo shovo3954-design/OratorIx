@@ -64,11 +64,12 @@ async function loopWord(w, btn) {
 }
 
 /* ===== 4. NAVIGATION (switch between Home, Learn, Flashcards, Quiz) ===== */
-function show(v) {
-  stopLoop();
-  ["home", "learn", "verbs", "flash", "quiz", "game", "speak"].forEach(n => $("#v-" + n).hidden = n !== v);
-  document.querySelectorAll("[data-view]").forEach(b => b.classList.toggle("on", b.dataset.view === v));
-  ddBtn.classList.toggle("on", PRACTISE.includes(v)); setDD(false);
+function show(v, keep) { // keep = true: stay inside a class page (used by "New quiz" style buttons)
+  stopLoop(); if (!keep) leaveAllCM();
+  ["home", "learn", "verbs", "flash", "quiz", "game", "speak", "class"].forEach(n => $("#v-" + n).hidden = n !== v);
+  const hl = v === "class" ? CP.from : v; // on a class page the tab you came from stays lit
+  document.querySelectorAll("[data-view]").forEach(b => b.classList.toggle("on", b.dataset.view === hl));
+  ddBtn.classList.toggle("on", PRACTISE.includes(hl)); setDD(false);
   scrollTo(0, 0);
   if (v === "flash") buildDeck();
   if (v === "verbs") showVT(VT);
@@ -99,28 +100,43 @@ const cl = w => w.cls || 1; // a word with no class is in Class 1
 const SECTIONS = ["Mixed vocabulary", "Noun", "Pronoun", "Adjective", "Adverb", "Preposition", "Conjunction", "Interjection", "Phrase", "Number"]; // "Number" shows in Korean only
 const sec = w => w.section || "Mixed vocabulary"; // a word with no section is in Mixed vocabulary
 const wordClassName = (s, n) => (typeof CLASS_NAMES !== "undefined" && CLASS_NAMES[lang]?.[s]?.[n]) || ""; // topic name of a class (from CLASS_NAMES in data.js)
-function makePicker(secBox, clsBox, onChange) {
+/* ----- LIST PICKER helpers: a vertical list of sections; the chosen one opens its classes underneath ----- */
+const CHEV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+const clsLabel = (n, nm) => `Class ${n}.${nm ? " " + esc(String(nm).replace(/&/g, "and")) : ""}`; // "Class 1. People, animals and things"
+function pickerHTML(groups, openKey, nums, curCls, nameOf, none, dataKey) { // groups = section (or level) names
+  return groups.map(g => { const open = g === openKey;
+    return `<div class="pgroup${open ? " open" : ""}"><button class="psec" data-${dataKey}="${g}" aria-expanded="${open}"><span>${g}</span>${CHEV}</button>` +
+      (open ? `<ul class="psub">${nums.length ? nums.map(n => `<li><button class="pcls${n === +curCls ? " on" : ""}" data-cls="${n}">${clsLabel(n, nameOf(n))}</button></li>`).join("") : `<li class="muted">${none}</li>`}</ul>` : "") + `</div>`; }).join("");
+}
+function keepFocus(box, sel) { const el = $(box).querySelector(sel); if (el) el.focus(); }
+function scrollToContent(el) { // after a class is picked, bring the words or the Start button into view
+  if (!el) return; el.style.scrollMarginTop = "90px";
+  el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+}
+function makePicker(secBox, clsBox, onChange, pageMode) { // pageMode: choosing a class opens its own page
   const P = {
     sec: "", cls: "",
     ready() { return !!(P.sec && P.cls); },
     render() {
-      $(secBox).innerHTML = SECTIONS.filter(n => n !== "Number" || lang === "ko").map(x => `<button class="chip${x === P.sec ? " on" : ""}" data-sec="${x}">${x}</button>`).join("");
       const nums = [...new Set(words.filter(w => sec(w) === P.sec).map(cl))].sort((a, b) => a - b);
       if (!nums.includes(+P.cls)) P.cls = "";
-      $(clsBox).innerHTML = !P.sec ? '<span class="muted">Pick a section first.</span>'
-        : nums.length ? nums.map(n => `<button class="chip${n === +P.cls ? " on" : ""}" data-cls="${n}">Class ${n}${wordClassName(P.sec, n) ? " · " + esc(wordClassName(P.sec, n)) : ""}</button>`).join("")
-        : `<span class="muted">No words in “${esc(P.sec)}” yet. Add some in data.js.</span>`;
+      $(secBox).innerHTML = pickerHTML(SECTIONS.filter(n => n !== "Number" || lang === "ko"), P.sec, nums, P.cls, n => wordClassName(P.sec, n), `No words in “${esc(P.sec)}” yet. Add some in data.js.`, "sec");
+      $(clsBox).innerHTML = ""; $(clsBox).hidden = true; // classes now open inside the section list
     }
   };
-  $(secBox).onclick = e => { const b = e.target.closest("[data-sec]"); if (!b) return; P.sec = P.sec === b.dataset.sec ? "" : b.dataset.sec; P.cls = ""; P.render(); onChange(); };
-  $(clsBox).onclick = e => { const b = e.target.closest("[data-cls]"); if (!b) return; P.cls = +P.cls === +b.dataset.cls ? "" : b.dataset.cls; P.render(); onChange(); };
+  $(secBox).onclick = e => {
+    const c = e.target.closest("[data-cls]");
+    if (c) { P.cls = pageMode || +P.cls !== +c.dataset.cls ? c.dataset.cls : ""; P.render(); keepFocus(secBox, `[data-cls="${c.dataset.cls}"]`); onChange(); if (P.cls && !pageMode) scrollToContent($(clsBox).nextElementSibling); return; }
+    const b = e.target.closest("[data-sec]"); if (!b) return;
+    P.sec = P.sec === b.dataset.sec ? "" : b.dataset.sec; P.cls = ""; P.render(); keepFocus(secBox, `[data-sec="${b.dataset.sec}"]`); onChange();
+  };
   return P;
 }
-const PL = makePicker("#lv-chips", "#cl-chips", () => renderLearn()); // Learn
-const PF = makePicker("#fc-secs", "#fc-cls", () => buildDeck()); // Flashcards
-const PQ = makePicker("#qz-secs", "#qz-cls", () => { $("#qz-msg").textContent = ""; }); // Quiz
-const PG = makePicker("#gm-secs", "#gm-cls", () => { $("#gm-msg").textContent = ""; }); // Game
-const PS = makePicker("#sp-secs", "#sp-cls", () => { $("#sp-msg").textContent = ""; }); // Speak
+const PL = makePicker("#lv-chips", "#cl-chips", () => PL.ready() ? openClass("word", PL.sec, PL.cls) : renderLearn(), true); // Learn: a class opens its own page
+const PF = makePicker("#fc-secs", "#fc-cls", () => PF.ready() ? enterCM("flash", PF.sec, PF.cls) : buildDeck(), true); // Flashcards: a class opens its own page
+const PQ = makePicker("#qz-secs", "#qz-cls", () => { $("#qz-msg").textContent = ""; if (PQ.ready()) enterCM("quiz", PQ.sec, PQ.cls); }, true); // Quiz
+const PG = makePicker("#gm-secs", "#gm-cls", () => { $("#gm-msg").textContent = ""; if (PG.ready()) enterCM("game", PG.sec, PG.cls); }, true); // Game
+const PS = makePicker("#sp-secs", "#sp-cls", () => { $("#sp-msg").textContent = ""; if (PS.ready()) enterCM("speak", PS.sec, PS.cls); }, true); // Speak
 function renderPickers() { PL.render(); PF.render(); PQ.render(); PG.render(); PS.render(); } // called when the language changes
 /* ----- WORD IMAGES: folder path is images/<language>/<level>/class <number>/<id>.png
    Example: images/korean/beginner/class 1/k9.png. Also tries .jpg, .jpeg, .webp; no picture if none is found ----- */
@@ -139,10 +155,7 @@ function setPic(el, w) {
   el.src = encodeURI(`${picBase(w)}.${types[0]}`);
 }
 
-function renderLearn() {
-  if (!PL.ready()) { $("#grid").innerHTML = '<p class="empty">Pick a section and a class to see words.</p>'; return; } // nothing until both are chosen
-  const list = words.filter(w => sec(w) === PL.sec && cl(w) === +PL.cls).sort((a, b) => PL.sec === "Number" ? 0 : a.term.localeCompare(b.term)); // Number keeps the data.js order (1, 2, 3...); other sections are A to Z
-  $("#grid").innerHTML = list.length ? list.map(w => `
+const wordCardHTML = w => `
     <article class="word">
       <img class="pic" src="${esc(encodeURI(picBase(w)))}.png" data-n="${esc(picBase(w))}" data-i="0" onerror="picErr(this)" alt="${esc(w.term)}" loading="lazy">
       <div class="tags"><span class="tag">${esc(w.pos)}</span><span class="tag">${esc(sec(w))}</span><span class="tag">Class ${cl(w)}</span>${w.category ? `<span class="tag">${esc(w.category)}</span>` : ""}
@@ -150,7 +163,9 @@ function renderLearn() {
       <h3>${esc(w.term)} <small class="muted">${esc([w.roman, w.pron].filter(Boolean).join(" · "))}</small></h3>
       <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>
       <div class="acts" data-id="${w.id}"><button data-a="say">Listen</button><button data-a="ex">Listen sentence</button><button data-a="loop">Loop ×10</button></div>
-    </article>`).join("") : `<p class="empty">No words in this class yet.</p>`;
+    </article>`;
+function renderLearn() { // the Learn tab is now only the picker; each class opens its own page (see CLASS PAGE below)
+  $("#grid").innerHTML = '<p class="empty">Pick a section, then a class to open its page.</p>';
 }
 $("#grid").onclick = e => {
   const b = e.target.closest("button"); if (!b) return;
@@ -159,6 +174,69 @@ $("#grid").onclick = e => {
   if (b.dataset.a === "ex") say(w.ex);
   if (b.dataset.a === "loop") loopWord(w, b);
 };
+
+/* ===== 5b. CLASS PAGE (a separate page for one class: its vocabulary). Back button and browser Back both return to the list ===== */
+const CP = { kind: "", group: "", cls: 1, from: "learn" };
+function classList() { // the words or verbs of the open class
+  if (CP.kind === "verb") return allVerbs().filter(v => v.level === CP.group && (v.cls || 1) === +CP.cls);
+  return words.filter(w => sec(w) === CP.group && cl(w) === +CP.cls).sort((a, b) => CP.group === "Number" ? 0 : a.term.localeCompare(b.term));
+}
+function renderClassPage() {
+  const verb = CP.kind === "verb", n = +CP.cls, list = classList();
+  const nm = verb ? ((typeof VERB_CLASS_NAMES !== "undefined" && VERB_CLASS_NAMES[lang]?.[CP.group]?.[n]) || "") : wordClassName(CP.group, n);
+  $("#cp-crumb").textContent = (verb ? "Verbs · " : "") + CP.group;
+  $("#cp-title").innerHTML = clsLabel(n, nm);
+  $("#cp-count").textContent = list.length + (verb ? (list.length === 1 ? " verb" : " verbs") : (list.length === 1 ? " word" : " words"));
+  $("#cp-note").hidden = !verb;
+  $("#cp-grid").innerHTML = list.length ? list.map(verb ? verbCardHTML : wordCardHTML).join("") : `<p class="empty">No ${verb ? "verbs" : "words"} in this class yet.</p>`;
+}
+function openClass(kind, group, cls) {
+  Object.assign(CP, { kind, group, cls: +cls, from: kind === "verb" ? "verbs" : "learn" });
+  try { history.pushState({ cls: 1, kind, group, n: +cls }, ""); } catch (e) {} // lets the browser Back button close the page
+  renderClassPage(); show("class"); $("#cp-back").focus({ preventScroll: true });
+}
+$("#cp-back").onclick = () => { if (history.state && history.state.cls) history.back(); else show(CP.from); };
+window.addEventListener("popstate", e => {
+  const s = e.state;
+  if (s && s.cls) { Object.assign(CP, { kind: s.kind, group: s.group, cls: s.n, from: s.kind === "verb" ? "verbs" : "learn" }); renderClassPage(); show("class"); }
+  else if (s && s.cm) applyCM(s.cm, s.group, s.n);
+  else if (CM) show(CM);
+  else if (!$("#v-class").hidden) show(CP.from);
+});
+$("#cp-grid").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.speak !== undefined) { say(b.dataset.speak); return; } // verb cards
+  const w = words.find(x => x.id === b.parentElement.dataset.id); if (!w) return;
+  if (b.dataset.a === "say") say(w.term);
+  if (b.dataset.a === "ex") say(w.ex);
+  if (b.dataset.a === "loop") loopWord(w, b);
+};
+
+/* ===== 5c. CLASS PAGES FOR FLASHCARDS, QUIZ, GAME, SPEAK AND VERBS ===== */
+/* Picking a class hides the list and shows that class on its own page (Back button and browser Back return to the list). */
+let CM = ""; // which view is currently showing a class page ("" = none)
+const CMP = { flash: () => PF, quiz: () => PQ, game: () => PG, speak: () => PS };
+function leaveAllCM() {
+  document.querySelectorAll("section.cm").forEach(el => { el.classList.remove("cm"); el.querySelector(".cbar").hidden = true; });
+  CM = "";
+}
+function applyCM(v, group, cls) {
+  const n = +cls, verbs = v === "verbs";
+  if (verbs) { VLV = group; VCL = n; } else { const P = CMP[v](); P.sec = group; P.cls = n; P.render(); }
+  show(v); // resets the view and leaves any older class page
+  const el = $("#v-" + v), nm = verbs ? ((typeof VERB_CLASS_NAMES !== "undefined" && VERB_CLASS_NAMES[lang]?.[group]?.[n]) || "") : wordClassName(group, n);
+  el.classList.add("cm"); CM = v;
+  el.querySelector(".cb-crumb").textContent = (verbs ? "Verbs · " : "") + group;
+  el.querySelector(".cb-title").innerHTML = clsLabel(n, nm);
+  el.querySelector(".cbar").hidden = false;
+  if (verbs) showVT(VT);
+  scrollTo(0, 0); el.querySelector(".cb-back").focus({ preventScroll: true });
+}
+function enterCM(v, group, cls) {
+  try { history.pushState({ cm: v, group, n: +cls }, ""); } catch (e) {}
+  applyCM(v, group, cls);
+}
+document.querySelectorAll(".cb-back").forEach(b => b.onclick = () => { if (history.state && history.state.cm) history.back(); else if (CM) show(CM); });
 
 /* ===== 6. FLASHCARDS (flip, Known, Need practice) ===== */
 let deck = [], di = 0;
@@ -247,7 +325,7 @@ $("#qz-next").onclick = () => {
 $("#qz-start").onclick = () => startQuiz();
 $("#qz-fb").onclick = e => { const b = e.target.closest("[data-say]"); if (b) say(Q.qs[Q.i][b.dataset.say]); }; // Listen buttons in the feedback box
 $("#qz-retry").onclick = () => startQuiz(Q.wrong);
-$("#qz-again").onclick = () => show("quiz");
+$("#qz-again").onclick = () => show("quiz", true);
 
 /* ===== 8a. GUESS THE WORD GAME (English clue, pick the right word) ===== */
 let G = {};
@@ -297,7 +375,7 @@ $("#gm-next").onclick = () => {
   $("#gm-note").textContent = G.wrong.length ? `Words to review: ${G.wrong.map(id => words.find(w => w.id === id)?.term).join(", ")}` : "Perfect score. Great work!";
   $("#gm-retry").hidden = !G.wrong.length;
 };
-$("#gm-start").onclick = () => startGame(); $("#gm-retry").onclick = () => startGame(G.wrong); $("#gm-again").onclick = () => show("game");
+$("#gm-start").onclick = () => startGame(); $("#gm-retry").onclick = () => startGame(G.wrong); $("#gm-again").onclick = () => show("game", true);
 
 /* ===== 8a2. SPEAK THE WORD (voice game: English clue, say the word) ===== */
 let S = {};
@@ -383,7 +461,7 @@ $("#sp-next").onclick = () => {
   $("#sp-note").textContent = S.wrong.length ? `Words to practise: ${S.wrong.map(id => words.find(w => w.id === id)?.term).join(", ")}` : "Perfect score. Great work!";
   $("#sp-retry").hidden = !S.wrong.length;
 };
-$("#sp-start").onclick = () => startSpeak(); $("#sp-retry").onclick = () => startSpeak(S.wrong); $("#sp-again").onclick = () => show("speak");
+$("#sp-start").onclick = () => startSpeak(); $("#sp-retry").onclick = () => startSpeak(S.wrong); $("#sp-again").onclick = () => show("speak", true);
 
 /* ===== 8b. VERBS (learn, flashcards, quiz) ===== */
 const TENSES = ["present", "past", "future"], TLABEL = { present: "Present (now)", past: "Past (before)", future: "Future (later)" };
@@ -396,19 +474,23 @@ let VT = "learn";
 let VLV = "", VCL = "";
 const className = n => (typeof VERB_CLASS_NAMES !== "undefined" && VERB_CLASS_NAMES[lang]?.[VLV]?.[n]) || ""; // topic name of a class
 function renderVChips() {
-  $("#vlv-chips").innerHTML = ["Beginner", "Intermediate", "Advanced"].map(l => `<button class="chip${l === VLV ? " on" : ""}" data-vlv="${l}">${l}</button>`).join("");
   const nums = [...new Set(allVerbs().filter(v => v.level === VLV).map(v => v.cls || 1))].sort((a, b) => a - b);
   if (!nums.includes(+VCL)) VCL = "";
-  $("#vcl-chips").innerHTML = VLV ? nums.map(n => `<button class="chip${n === +VCL ? " on" : ""}" data-vcl="${n}">Class ${n}${className(n) ? " · " + esc(className(n)) : ""}</button>`).join("") : '<span class="muted">Pick a level first.</span>';
+  $("#vlv-chips").innerHTML = pickerHTML(["Beginner", "Intermediate", "Advanced"], VLV, nums, VCL, className, "No verbs in this level yet.", "vlv");
+  $("#vcl-chips").innerHTML = ""; $("#vcl-chips").hidden = true; // classes open inside the level list
 }
-$("#vlv-chips").onclick = e => { const b = e.target.closest("[data-vlv]"); if (!b) return; VLV = VLV === b.dataset.vlv ? "" : b.dataset.vlv; VCL = ""; showVT(VT); };
-$("#vcl-chips").onclick = e => { const b = e.target.closest("[data-vcl]"); if (!b) return; VCL = +VCL === +b.dataset.vcl ? "" : b.dataset.vcl; showVT(VT); };
+$("#vlv-chips").onclick = e => {
+  const c = e.target.closest("[data-cls]");
+  if (c) { enterCM("verbs", VLV, c.dataset.cls); return; } // a class opens its own page
+  const b = e.target.closest("[data-vlv]"); if (!b) return;
+  VLV = VLV === b.dataset.vlv ? "" : b.dataset.vlv; VCL = ""; showVT(VT); keepFocus("#vlv-chips", `[data-vlv="${b.dataset.vlv}"]`);
+};
 
 function showVT(v) { // switch between the three small tabs
   VT = v;
   document.querySelectorAll("[data-vt]").forEach(b => b.classList.toggle("on", b.dataset.vt === v));
   renderVChips();
-  const ready = VLV && VCL; $("#vb-empty").hidden = !!ready;
+  const ready = VLV && VCL && $("#v-verbs").classList.contains("cm"); $("#vb-empty").hidden = !!ready; // verbs show only inside a class page
   $("#vb-learn").hidden = !ready || v !== "learn"; $("#vb-flash").hidden = !ready || v !== "flash"; $("#vb-quiz").hidden = !ready || v !== "quiz";
   if (!ready) return; // nothing until a level and a class are picked
   if (v === "learn") renderVerbs();
@@ -418,12 +500,11 @@ function showVT(v) { // switch between the three small tabs
 document.querySelectorAll("[data-vt]").forEach(b => b.onclick = () => showVT(b.dataset.vt));
 
 /* Verbs: Learn */
-function renderVerbs() {
-  $("#vb-grid").innerHTML = verbList().map(v => `<article class="word vcard"><h3>${esc(v.base)}${vpron(v) ? `<small class="muted">${esc(vpron(v))}</small>` : ""}<small class="muted">${esc(v.meaning)}</small></h3>
+const verbCardHTML = v => `<article class="word vcard"><h3>${esc(v.base)}${vpron(v) ? `<small class="muted">${esc(vpron(v))}</small>` : ""}<small class="muted">${esc(v.meaning)}</small></h3>
     <div class="acts"><button data-speak="${esc(v.base)}">Listen</button></div>` + TENSES.map(t => `
     <div class="vrow"><b>${TLABEL[t]}</b><span>${esc(v[t])}</span></div>
-    <p class="ex">${esc(fillS(v.ex[t]))}${v.ex[t][2] ? "<br>" + esc(v.ex[t][2]) : ""} <button class="mini" data-speak="${esc(fillS(v.ex[t]))}">Listen</button></p>`).join("") + "</article>").join("");
-}
+    <p class="ex">${esc(fillS(v.ex[t]))}${v.ex[t][2] ? "<br>" + esc(v.ex[t][2]) : ""} <button class="mini" data-speak="${esc(fillS(v.ex[t]))}">Listen</button></p>`).join("") + "</article>";
+function renderVerbs() { $("#vb-grid").innerHTML = verbList().map(verbCardHTML).join(""); }
 $("#vb-grid").onclick = e => { const b = e.target.closest("[data-speak]"); if (b) say(b.dataset.speak); };
 
 /* Verbs: Flashcards (every verb in every tense) */
@@ -569,7 +650,9 @@ function setLang(l) {
   stopLoop();
   lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); $("#lang").value = l; document.querySelectorAll(".dlang").forEach(b => b.classList.toggle("on", b.dataset.lang === l));
   PL.sec = PL.cls = PF.sec = PF.cls = PQ.sec = PQ.cls = PG.sec = PG.cls = PS.sec = PS.cls = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; renderPickers(); renderLearn(); stats(); renderWotd();
-  show(["home", "learn", "verbs", "flash", "quiz", "game", "speak"].find(n => !$("#v-" + n).hidden) || "home");
+  const cur = ["home", "learn", "verbs", "flash", "quiz", "game", "speak", "class"].find(n => !$("#v-" + n).hidden) || "home";
+  show(cur === "class" ? CP.from : cur);
 }
 $("#lang").onchange = e => setLang(e.target.value);
+try { history.replaceState({ base: 1 }, ""); } catch (e) {}
 setLang(lang);

@@ -110,21 +110,22 @@
   <!-- ===== 4. LEARN TAB: word library (search, filters, word cards) ===== -->
   <section id="v-learn" hidden>
     <h1 class="sec">Words by part of speech</h1>
-    <p class="muted">Pick a section, then a class.</p>
-    <div id="lv-chips" class="chips" role="group" aria-label="Section"></div>
-    <div id="cl-chips" class="chips" role="group" aria-label="Class"></div>
+    <p class="muted">Pick a section, then a class to open its page.</p>
+    <div id="lv-chips" class="plist" role="group" aria-label="Section"></div>
+    <div id="cl-chips" hidden role="group" aria-label="Class"></div>
     <div id="grid" class="grid"></div>
   </section>
 
   <!-- ===== 4b. VERBS TAB: learn, flashcards and quiz about present, past and future ===== -->
   <section id="v-verbs" hidden>
+    <div class="cbar" hidden><button class="btn cb-back">← Back to list</button><p class="muted cb-crumb"></p><h1 class="cb-title"></h1></div>
     <h1 class="sec">Verbs</h1>
     <div class="chips" role="group" aria-label="Verb activity">
       <button class="chip on" data-vt="learn">Learn</button><button class="chip" data-vt="flash">Flashcards</button><button class="chip" data-vt="quiz">Quiz</button>
     </div>
-    <div id="vlv-chips" class="chips" role="group" aria-label="Verb level"></div>
-    <div id="vcl-chips" class="chips" role="group" aria-label="Verb class"></div>
-    <p id="vb-empty" class="empty">Pick a level and a class to see verbs.</p>
+    <div id="vlv-chips" class="plist" role="group" aria-label="Verb level"></div>
+    <div id="vcl-chips" hidden role="group" aria-label="Verb class"></div>
+    <p id="vb-empty" class="empty">Pick a level, then a class to open its page.</p>
     <div id="vb-learn">
       <p class="muted">A verb changes its form to show <b>when</b> something happens: now (present), before (past) or later (future).</p>
       <div id="vb-grid" class="grid"></div>
@@ -155,11 +156,22 @@
     </div>
   </section>
 
+  <!-- ===== 4c. CLASS PAGE: one class on its own page (opens from Learn and Verbs) ===== -->
+  <section id="v-class" hidden>
+    <button class="btn" id="cp-back">← Back to list</button>
+    <p class="muted cp-crumb" id="cp-crumb"></p>
+    <h1 class="cp-title" id="cp-title"></h1>
+    <p class="muted" id="cp-count"></p>
+    <p class="muted" id="cp-note" hidden>A verb changes its form to show <b>when</b> something happens: now (present), before (past) or later (future).</p>
+    <div id="cp-grid" class="grid"></div>
+  </section>
+
   <!-- ===== 5. FLASHCARDS TAB ===== -->
   <section id="v-flash" hidden>
+    <div class="cbar" hidden><button class="btn cb-back">← Back to list</button><p class="muted cb-crumb"></p><h1 class="cb-title"></h1></div>
     <h1 class="sec">Flashcards</h1>
-    <div id="fc-secs" class="chips" role="group" aria-label="Section"></div>
-    <div id="fc-cls" class="chips" role="group" aria-label="Class"></div>
+    <div id="fc-secs" class="plist" role="group" aria-label="Section"></div>
+    <div id="fc-cls" hidden role="group" aria-label="Class"></div>
     <div class="bar">
       <select id="fc-filter" aria-label="Which cards">
         <option value="all">All cards</option><option value="practice">Need practice</option><option value="notknown">Not known yet</option>
@@ -190,11 +202,12 @@
 
   <!-- ===== 6. QUIZ TAB ===== -->
   <section id="v-quiz" hidden>
+    <div class="cbar" hidden><button class="btn cb-back">← Back to list</button><p class="muted cb-crumb"></p><h1 class="cb-title"></h1></div>
     <div id="qz-setup" class="panel">
       <h1>Word meaning quiz</h1>
       <p>Pick the right meaning. You get feedback after every answer.</p>
-      <div id="qz-secs" class="chips" role="group" aria-label="Section"></div>
-      <div id="qz-cls" class="chips" role="group" aria-label="Class"></div>
+      <div id="qz-secs" class="plist" role="group" aria-label="Section"></div>
+      <div id="qz-cls" hidden role="group" aria-label="Class"></div>
       <div class="bar"><button class="btn green" id="qz-start">Start quiz</button></div>
       <p id="qz-msg" class="muted" role="status"></p>
     </div>
@@ -215,11 +228,12 @@
   </section>
   <!-- ===== 6b. GAME TAB: Guess the Word (English clue, pick the Korean word) ===== -->
   <section id="v-game" hidden>
+    <div class="cbar" hidden><button class="btn cb-back">← Back to list</button><p class="muted cb-crumb"></p><h1 class="cb-title"></h1></div>
     <div id="gm-setup" class="panel">
       <h1>Guess the Word</h1>
       <p>Read the clue and pick the right word. Tap 🔊 to hear an option.</p>
-      <div id="gm-secs" class="chips" role="group" aria-label="Section"></div>
-      <div id="gm-cls" class="chips" role="group" aria-label="Class"></div>
+      <div id="gm-secs" class="plist" role="group" aria-label="Section"></div>
+      <div id="gm-cls" hidden role="group" aria-label="Class"></div>
       <div class="bar"><button class="btn green" id="gm-start">Start game</button></div>
       <p id="gm-msg" class="muted" role="status"></p>
     </div>
@@ -241,11 +255,12 @@
   </section>
   <!-- ===== 6c. SPEAK TAB: say the word out loud (voice game) ===== -->
   <section id="v-speak" hidden>
+    <div class="cbar" hidden><button class="btn cb-back">← Back to list</button><p class="muted cb-crumb"></p><h1 class="cb-title"></h1></div>
     <div id="sp-setup" class="panel">
       <h1>Speak the Word</h1>
       <p>Read the English clue, then say the word out loud. Works best in Chrome or Edge, with the microphone allowed.</p>
-      <div id="sp-secs" class="chips" role="group" aria-label="Section"></div>
-      <div id="sp-cls" class="chips" role="group" aria-label="Class"></div>
+      <div id="sp-secs" class="plist" role="group" aria-label="Section"></div>
+      <div id="sp-cls" hidden role="group" aria-label="Class"></div>
       <div class="bar"><button class="btn green" id="sp-start">Start</button></div>
       <p id="sp-msg" class="muted" role="status"></p>
     </div>
