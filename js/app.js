@@ -593,7 +593,7 @@ const cleanQ = s => norm(s).replace(/[\s~.,!?'"“”‘’\-]/g, "");
 const meaningParts = d => norm(d).split(/[\/;,()]+/).map(p => p.replace(/^\s*(to|a|an|the)\s+/, "").replace(/[.\s]+$/g, "").trim()).filter(Boolean);
 const hasPhrase = (tokens, qt) => qt.length > 1 ? (" " + tokens.join(" ") + " ").includes(" " + qt.join(" ") + " ") : tokens.includes(qt[0]); // whole-word match
 const termVariants = t => String(t || "").split("/").flatMap(p => [p, p.replace(/\([^)]*\)/g, "")]);
-const wordEntry = w => ({ kind: "w", ref: w, terms: termVariants(w.term), romans: String(w.roman || "").split("/"), alts: w.alt || [], forms: [], meaning: w.def, examples: [w.ex, w.extr, w.col, w.syn] });
+const wordEntry = w => ({ kind: "w", ref: w, terms: termVariants(w.term), romans: String(w.roman || "").split("/"), alts: w.alt || [], forms: [], meaning: w.def, examples: [w.ex, w.extr, w.col], syns: w.syn || "" });
 const verbEntry = v => ({ kind: "v", ref: v, terms: [v.base], romans: [v.roman || ""], alts: [], forms: TENSES.flatMap(t => v[t].split("/")), meaning: v.meaning, examples: TENSES.flatMap(t => [fillS(v.ex[t]), v.ex[t][2] || ""]) });
 function scoreEntry(e, q, latin) { // 0 = best, 9 = no match. Matches hidden inside other English words (come in "welcome") do not count.
   const qc = cleanQ(q), qt = tokensOf(q), terms = e.terms.map(cleanQ), romans = e.romans.map(cleanQ), forms = e.forms.map(cleanQ);
@@ -601,6 +601,7 @@ function scoreEntry(e, q, latin) { // 0 = best, 9 = no match. Matches hidden ins
   if (forms.includes(qc) || (qt.length && hasPhrase(tokensOf(e.meaning), qt))) return 1;                                                   // a verb form, or the whole word in the meaning
   if (terms.some(t => t.startsWith(qc)) || forms.some(f => f.startsWith(qc)) || (qc.length >= 3 && romans.some(r => r.startsWith(qc))) || (qt.length === 1 && !/^\d+$/.test(qt[0]) && tokensOf(e.meaning).some(t => t.startsWith(qt[0])))) return 2; // starts with it
   if (!latin && (terms.some(t => t.includes(qc)) || forms.some(f => f.includes(qc)))) return 3;                                           // Korean text inside a Korean word
+  if (latin && qt.length && e.syns && hasPhrase(tokensOf(e.syns), qt)) return 3; // a synonym of the word (searching "huge" also shows "big")
   const ex = e.examples.map(norm);
   if (latin ? qt.length && ex.some(x => hasPhrase(tokensOf(x), qt)) : ex.some(x => x.replace(/\s/g, "").includes(qc))) return 4;             // used in an example sentence
   return 9;
