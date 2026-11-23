@@ -158,13 +158,14 @@ function setPic(el, w) {
   el.src = encodeURI(`${picBase(w)}.${types[0]}`);
 }
 
+const moreHTML = w => (w.col ? `<p class="more"><b>Collocations:</b> ${esc(w.col)}</p>` : "") + (w.syn ? `<p class="more"><b>Synonyms:</b> ${esc(w.syn)}</p>` : ""); // collocations and synonyms (English adjectives)
 const wordCardHTML = w => `
     <article class="word">
       <img class="pic" src="${esc(encodeURI(picBase(w)))}.png" data-n="${esc(picBase(w))}" data-i="0" onerror="picErr(this)" alt="${esc(w.term)}" loading="lazy">
       <div class="tags"><span class="tag">${esc(w.pos)}</span><span class="tag">${esc(sec(w))}</span><span class="tag">Class ${cl(w)}</span>${w.category ? `<span class="tag">${esc(w.category)}</span>` : ""}
         ${w.status !== "new" ? `<span class="tag ${w.status}">${w.status === "known" ? "Known" : "Need practice"}</span>` : ""}</div>
       <h3>${esc(w.term)} <small class="muted">${esc([w.roman, w.pron].filter(Boolean).join(" · "))}</small></h3>
-      <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>
+      <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>${moreHTML(w)}
       <div class="acts" data-id="${w.id}"><button data-a="say">Listen</button><button data-a="ex">Listen sentence</button><button data-a="loop">Loop ×10</button></div>
     </article>`;
 function renderLearn() { // the Learn tab is now only the picker; each class opens its own page (see CLASS PAGE below)
@@ -265,6 +266,7 @@ function drawCard() {
   clearTimeout(drawCard.t);
   const fillBack = () => {
     $("#fc-pos").textContent = w.pos; $("#fc-def").textContent = w.def; $("#fc-ex").textContent = `"${w.ex}"` + (w.extr ? ` (${w.extr})` : "");
+    $("#fc-more").innerHTML = [w.col ? "<b>Collocations:</b> " + esc(w.col) : "", w.syn ? "<b>Synonyms:</b> " + esc(w.syn) : ""].filter(Boolean).join("<br>");
     setPic($("#fc-pic"), w);
   };
   if (wasFlipped) drawCard.t = setTimeout(fillBack, 300); else fillBack();
@@ -313,7 +315,7 @@ $("#qz-opts").onclick = e => {
   [...$("#qz-opts").children].forEach((x, k) => { x.disabled = true; if (Q.opts[k].id === w.id) x.classList.add("right"); });
   if (ok) Q.score++; else { b.classList.add("wrong"); Q.wrong.push(w.id); }
   $("#qz-fb").innerHTML = (ok ? `<b>Correct!</b> ` : `<b>Not quite.</b> That meaning belongs to “${esc(pick.term)}”. `) +
-    `“${esc(w.term)}” means: ${esc(w.def)}<br><em>Example: ${esc(w.ex)}${w.extr ? " (" + esc(w.extr) + ")" : ""}</em><div class="row left"><button class="btn" data-say="term">Listen</button><button class="btn" data-say="ex">Listen sentence</button></div><img id="qz-pic" class="pic-sm" alt="" hidden>`;
+    `“${esc(w.term)}” means: ${esc(w.def)}<br><em>Example: ${esc(w.ex)}${w.extr ? " (" + esc(w.extr) + ")" : ""}</em>${moreHTML(w)}<div class="row left"><button class="btn" data-say="term">Listen</button><button class="btn" data-say="ex">Listen sentence</button></div><img id="qz-pic" class="pic-sm" alt="" hidden>`;
   setPic($("#qz-pic"), w); $("#qz-fb").hidden = false; $("#qz-next").hidden = false;
   $("#qz-next").textContent = Q.i === Q.qs.length - 1 ? "See results" : "Next question";
 };
@@ -591,7 +593,7 @@ const cleanQ = s => norm(s).replace(/[\s~.,!?'"“”‘’\-]/g, "");
 const meaningParts = d => norm(d).split(/[\/;,()]+/).map(p => p.replace(/^\s*(to|a|an|the)\s+/, "").replace(/[.\s]+$/g, "").trim()).filter(Boolean);
 const hasPhrase = (tokens, qt) => qt.length > 1 ? (" " + tokens.join(" ") + " ").includes(" " + qt.join(" ") + " ") : tokens.includes(qt[0]); // whole-word match
 const termVariants = t => String(t || "").split("/").flatMap(p => [p, p.replace(/\([^)]*\)/g, "")]);
-const wordEntry = w => ({ kind: "w", ref: w, terms: termVariants(w.term), romans: String(w.roman || "").split("/"), alts: w.alt || [], forms: [], meaning: w.def, examples: [w.ex, w.extr] });
+const wordEntry = w => ({ kind: "w", ref: w, terms: termVariants(w.term), romans: String(w.roman || "").split("/"), alts: w.alt || [], forms: [], meaning: w.def, examples: [w.ex, w.extr, w.col, w.syn] });
 const verbEntry = v => ({ kind: "v", ref: v, terms: [v.base], romans: [v.roman || ""], alts: [], forms: TENSES.flatMap(t => v[t].split("/")), meaning: v.meaning, examples: TENSES.flatMap(t => [fillS(v.ex[t]), v.ex[t][2] || ""]) });
 function scoreEntry(e, q, latin) { // 0 = best, 9 = no match. Matches hidden inside other English words (come in "welcome") do not count.
   const qc = cleanQ(q), qt = tokensOf(q), terms = e.terms.map(cleanQ), romans = e.romans.map(cleanQ), forms = e.forms.map(cleanQ);
@@ -629,7 +631,7 @@ function openWord(w) { // full word card in a pop-up
   $("#wcard").innerHTML = `<img class="pic" id="w-pic" alt="" hidden>
     <div class="tags"><span class="tag">${esc(w.pos)}</span><span class="tag">${esc(sec(w))}</span><span class="tag">Class ${cl(w)}</span>${w.category ? `<span class="tag">${esc(w.category)}</span>` : ""}</div>
     <h2>${esc(w.term)} <small class="muted">${esc([w.roman, w.pron].filter(Boolean).join(" · "))}</small></h2>
-    <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>
+    <p>${esc(w.def)}</p><p class="ex">${esc(w.ex)}${w.extr ? "<br>" + esc(w.extr) : ""}</p>${moreHTML(w)}
     <div class="row left"><button class="btn" data-say="term">Listen</button><button class="btn" data-say="ex">Listen sentence</button><button class="btn" data-say="loop">Loop ×10</button></div>`;
   setPic($("#w-pic"), w); $("#wdlg").showModal();
 }

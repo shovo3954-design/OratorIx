@@ -116,6 +116,10 @@ nav{align-items:center;gap:4px}
 .grid .empty{grid-column:1/-1}
 .empty{text-align:center;background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:30px;color:var(--muted)}
 
+.more{margin:0;font-size:.92rem;color:var(--muted)}
+.more b{color:var(--text)}
+.fb .more{margin-top:6px}
+
 /* ===== 9. FLASHCARDS (flip animation) ===== */
 .card{display:block;width:100%;max-width:520px;height:380px;margin:0 auto 18px;padding:0;border:0;background:none;cursor:pointer;perspective:1000px}
 .inner{display:block;position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
@@ -126,6 +130,7 @@ nav{align-items:center;gap:4px}
 .pic-sm{max-width:100%;max-height:170px;border-radius:10px;object-fit:cover}
 .fb .pic-sm{display:block;margin-top:10px}
 .front strong{font-size:2.6rem;font-weight:800}
+.fc-more{font-size:.9rem;font-weight:400;line-height:1.45;color:#e2defa}
 
 /* ===== 10. QUIZ ===== */
 .panel{max-width:640px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:26px}
