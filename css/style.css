@@ -337,6 +337,32 @@ body[data-lang="ko"] .hxd-play{margin-top:0;background:var(--surface2);border-ra
 }
 @media(max-width:560px){.hx-sec{padding:28px 18px 22px}.hxp-nums{grid-template-columns:repeat(2,1fr)}.hxl{grid-template-columns:90px 1fr auto}body[data-lang="ko"] .hxc-grid{grid-template-columns:1fr}body[data-lang="ko"] .hxc:first-child{grid-column:span 1}}
 
+
+/* ===== 19. SIGN IN / ACCOUNT ===== */
+.authbtn{display:inline-flex;align-items:center;gap:8px;padding:8px 16px}
+.authbtn svg{width:20px;height:20px}
+.acct{position:relative}
+.acct-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 14px 4px 4px;cursor:pointer;font-weight:600}
+.acct-btn:hover,.acct-btn[aria-expanded="true"]{border-color:var(--green)}
+.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--green) center/cover no-repeat;color:#0b1020;font-weight:800}
+.acct-menu{position:absolute;right:0;top:calc(100% + 8px);min-width:230px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);z-index:30;display:grid;gap:12px}
+.acct-who{margin:0;display:grid}
+.acct-who small{color:var(--muted);overflow-wrap:anywhere}
+#authdlg{max-width:420px}
+#authdlg h2{margin:0 0 4px;padding-right:40px}
+#authdlg form{display:grid;gap:12px}
+#authdlg label{display:grid;gap:4px;font-weight:600;font-size:.92rem}
+#authdlg input[type=text],#authdlg input[type=email],#authdlg input[type=password]{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-weight:400;font-size:1rem}
+#authdlg .chk{display:flex;align-items:center;gap:8px;font-weight:400}
+#authdlg .chips{margin:12px 0}
+.gbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#1f1f1f;border-color:#fff}
+.gbtn svg{width:20px;height:20px}
+.or{text-align:center;margin:12px 0}
+.auth-msg{margin:0;padding:10px 12px;border-radius:10px;background:rgba(255,122,107,.16);border-left:4px solid var(--coral)}
+.auth-msg.good{background:rgba(31,214,160,.16);border-left-color:var(--green)}
+#auth-forgot{justify-self:center;color:var(--muted);text-decoration:underline}
+@media(max-width:560px){.authbtn span,.acct-name{display:none}.authbtn{padding:8px 10px}.acct-btn{padding:3px}.tools{gap:6px}}
+
 /* ===== 17. TABLET, PHONE AND REDUCED MOTION ===== */
 @media(max-width:860px){.hero{grid-template-columns:1fr;padding:22px}.foot-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.foot-grid{grid-template-columns:1fr}.card{height:340px}.back .pic-sm{max-height:130px}nav{order:3;width:100%;justify-content:space-around}

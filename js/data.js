@@ -795,6 +795,125 @@ const DEFAULT_KO = [
   { id: "n100", term: "나이", pos: "Noun", section: "Noun", level: "Beginner", category: "Position & Basics", cls: 10, roman: "nai", pron: "na-i (approximate)", def: "Age.", ex: "나이가 어떻게 되세요?", extr: "How old are you?", status: "new" },
 
 
+  // Noun Class 11: Home & Furniture
+  { id: "n101", term: "침대", pos: "Noun", section: "Noun", level: "Beginner", category: "Home & Furniture", cls: 11, roman: "chimdae", pron: "chim-dae (approximate)", def: "Bed.", ex: "침대에서 자요.", extr: "I sleep in the bed.", status: "new" },
+  { id: "n102", term: "책상", pos: "Noun", section: "Noun", level: "Beginner", category: "Home & Furniture", cls: 11, roman: "chaeksang", pron: "chaek-sang (approximate)", def: "Desk.", ex: "책상에서 공부해요.", extr: "I study at the desk.", status: "new" },
+  { id: "n103", term: "소파", pos: "Noun", section: "Noun", level: "Beginner", category: "Home & Furniture", cls: 11, roman: "sopa", pron: "so-pa (approximate)", def: "Sofa.", ex: "소파에 앉아요.", extr: "I sit on the sofa.", status: "new" },
+  { id: "n104", term: "냉장고", pos: "Noun", section: "Noun", level: "Beginner", category: "Home & Furniture", cls: 11, roman: "naengjanggo", pron: "naeng-jang-go (approximate)", def: "Refrigerator.", ex: "냉장고에 우유가 있어요.", extr: "There is milk in the refrigerator.", status: "new" },
+  { id: "n105", term: "텔레비전", pos: "Noun", section: "Noun", level: "Beginner", category: "Home & Furniture", cls: 11, roman: "tellebijeon", pron: "tel-le-bi-jeon (approximate)", def: "Television.", ex: "텔레비전을 봐요.", extr: "I watch television.", status: "new" },
+  { id: "n106", term: "욕실", pos: "Noun", section: "Noun", level: "Beginner", category: "Home & Furniture", cls: 11, roman: "yoksil", pron: "yok-sil (approximate)", def: "Bathroom.", ex: "욕실에서 씻어요.", extr: "I wash in the bathroom.", status: "new" },
+  { id: "n107", term: "부엌", pos: "Noun", section: "Noun", level: "Beginner", category: "Home & Furniture", cls: 11, roman: "bueok", pron: "bu-eok (approximate)", def: "Kitchen.", ex: "부엌에서 요리해요.", extr: "I cook in the kitchen.", status: "new" },
+  { id: "n108", term: "거실", pos: "Noun", section: "Noun", level: "Beginner", category: "Home & Furniture", cls: 11, roman: "geosil", pron: "geo-sil (approximate)", def: "Living room.", ex: "거실에 가족이 있어요.", extr: "My family is in the living room.", status: "new" },
+  { id: "n109", term: "계단", pos: "Noun", section: "Noun", level: "Beginner", category: "Home & Furniture", cls: 11, roman: "gyedan", pron: "gye-dan (approximate)", def: "Stairs.", ex: "계단으로 올라가요.", extr: "I go up the stairs.", status: "new" },
+  { id: "n110", term: "지붕", pos: "Noun", section: "Noun", level: "Beginner", category: "Home & Furniture", cls: 11, roman: "jibung", pron: "ji-bung (approximate)", def: "Roof.", ex: "지붕이 높아요.", extr: "The roof is high.", status: "new" },
+
+  // Noun Class 12: Kitchen & Tableware
+  { id: "n111", term: "그릇", pos: "Noun", section: "Noun", level: "Beginner", category: "Kitchen & Tableware", cls: 12, roman: "geureut", pron: "geu-reut (approximate)", def: "Bowl / Dish.", ex: "그릇에 밥을 담아요.", extr: "I put rice in the bowl.", status: "new" },
+  { id: "n112", term: "접시", pos: "Noun", section: "Noun", level: "Beginner", category: "Kitchen & Tableware", cls: 12, roman: "jeopsi", pron: "jeop-si (approximate)", def: "Plate.", ex: "접시가 깨끗해요.", extr: "The plate is clean.", status: "new" },
+  { id: "n113", term: "컵", pos: "Noun", section: "Noun", level: "Beginner", category: "Kitchen & Tableware", cls: 12, roman: "keop", pron: "keop (approximate)", def: "Cup.", ex: "컵에 물이 있어요.", extr: "There is water in the cup.", status: "new" },
+  { id: "n114", term: "숟가락", pos: "Noun", section: "Noun", level: "Beginner", category: "Kitchen & Tableware", cls: 12, roman: "sutgarak", pron: "sut-ga-rak (approximate)", def: "Spoon.", ex: "숟가락으로 국을 먹어요.", extr: "I eat soup with a spoon.", status: "new" },
+  { id: "n115", term: "젓가락", pos: "Noun", section: "Noun", level: "Beginner", category: "Kitchen & Tableware", cls: 12, roman: "jeotgarak", pron: "jeot-ga-rak (approximate)", def: "Chopsticks.", ex: "젓가락으로 먹어요.", extr: "I eat with chopsticks.", status: "new" },
+  { id: "n116", term: "칼", pos: "Noun", section: "Noun", level: "Beginner", category: "Kitchen & Tableware", cls: 12, roman: "kal", pron: "kal (approximate)", def: "Knife.", ex: "칼로 빵을 잘라요.", extr: "I cut bread with a knife.", status: "new" },
+  { id: "n117", term: "냄비", pos: "Noun", section: "Noun", level: "Beginner", category: "Kitchen & Tableware", cls: 12, roman: "naembi", pron: "naem-bi (approximate)", def: "Pot.", ex: "냄비에 물을 끓여요.", extr: "I boil water in the pot.", status: "new" },
+  { id: "n118", term: "프라이팬", pos: "Noun", section: "Noun", level: "Beginner", category: "Kitchen & Tableware", cls: 12, roman: "peuraipaen", pron: "peu-ra-i-paen (approximate)", def: "Frying pan.", ex: "프라이팬에 달걀을 구워요.", extr: "I fry an egg in the frying pan.", status: "new" },
+  { id: "n119", term: "병", pos: "Noun", section: "Noun", level: "Beginner", category: "Kitchen & Tableware", cls: 12, roman: "byeong", pron: "byeong (approximate)", def: "Bottle.", ex: "병에 우유가 있어요.", extr: "There is milk in the bottle.", status: "new" },
+  { id: "n120", term: "쟁반", pos: "Noun", section: "Noun", level: "Beginner", category: "Kitchen & Tableware", cls: 12, roman: "jaengban", pron: "jaeng-ban (approximate)", def: "Tray.", ex: "쟁반에 컵을 놓아요.", extr: "I put cups on the tray.", status: "new" },
+
+  // Noun Class 13: School & Study
+  { id: "n121", term: "교실", pos: "Noun", section: "Noun", level: "Beginner", category: "School & Study", cls: 13, roman: "gyosil", pron: "gyo-sil (approximate)", def: "Classroom.", ex: "교실에 학생이 많아요.", extr: "There are many students in the classroom.", status: "new" },
+  { id: "n122", term: "수업", pos: "Noun", section: "Noun", level: "Beginner", category: "School & Study", cls: 13, roman: "sueop", pron: "su-eop (approximate)", def: "Class / Lesson.", ex: "수업이 아홉 시에 시작해요.", extr: "The class starts at nine.", status: "new" },
+  { id: "n123", term: "숙제", pos: "Noun", section: "Noun", level: "Beginner", category: "School & Study", cls: 13, roman: "sukje", pron: "suk-je (approximate)", def: "Homework.", ex: "숙제를 해요.", extr: "I do my homework.", status: "new" },
+  { id: "n124", term: "시험", pos: "Noun", section: "Noun", level: "Beginner", category: "School & Study", cls: 13, roman: "siheom", pron: "si-heom (approximate)", def: "Exam / Test.", ex: "내일 시험이 있어요.", extr: "I have an exam tomorrow.", status: "new" },
+  { id: "n125", term: "공책", pos: "Noun", section: "Noun", level: "Beginner", category: "School & Study", cls: 13, roman: "gongchaek", pron: "gong-chaek (approximate)", def: "Notebook.", ex: "공책에 써요.", extr: "I write in the notebook.", status: "new" },
+  { id: "n126", term: "연필", pos: "Noun", section: "Noun", level: "Beginner", category: "School & Study", cls: 13, roman: "yeonpil", pron: "yeon-pil (approximate)", def: "Pencil.", ex: "연필로 그려요.", extr: "I draw with a pencil.", status: "new" },
+  { id: "n127", term: "지우개", pos: "Noun", section: "Noun", level: "Beginner", category: "School & Study", cls: 13, roman: "jiugae", pron: "ji-u-gae (approximate)", def: "Eraser.", ex: "지우개가 작아요.", extr: "The eraser is small.", status: "new" },
+  { id: "n128", term: "교과서", pos: "Noun", section: "Noun", level: "Beginner", category: "School & Study", cls: 13, roman: "gyogwaseo", pron: "gyo-gwa-seo (approximate)", def: "Textbook.", ex: "교과서를 읽어요.", extr: "I read the textbook.", status: "new" },
+  { id: "n129", term: "도서관", pos: "Noun", section: "Noun", level: "Beginner", category: "School & Study", cls: 13, roman: "doseogwan", pron: "do-seo-gwan (approximate)", def: "Library.", ex: "도서관에서 책을 빌려요.", extr: "I borrow books at the library.", status: "new" },
+  { id: "n130", term: "운동장", pos: "Noun", section: "Noun", level: "Beginner", category: "School & Study", cls: 13, roman: "undongjang", pron: "un-dong-jang (approximate)", def: "Playground / Sports field.", ex: "운동장에서 놀아요.", extr: "We play on the playground.", status: "new" },
+
+  // Noun Class 14: Transportation
+  { id: "n131", term: "버스", pos: "Noun", section: "Noun", level: "Beginner", category: "Transportation", cls: 14, roman: "beoseu", pron: "beo-seu (approximate)", def: "Bus.", ex: "버스를 타요.", extr: "I ride the bus.", status: "new" },
+  { id: "n132", term: "지하철", pos: "Noun", section: "Noun", level: "Beginner", category: "Transportation", cls: 14, roman: "jihacheol", pron: "ji-ha-cheol (approximate)", def: "Subway.", ex: "지하철이 빨라요.", extr: "The subway is fast.", status: "new" },
+  { id: "n133", term: "택시", pos: "Noun", section: "Noun", level: "Beginner", category: "Transportation", cls: 14, roman: "taeksi", pron: "taek-si (approximate)", def: "Taxi.", ex: "택시를 불러요.", extr: "I call a taxi.", status: "new" },
+  { id: "n134", term: "기차", pos: "Noun", section: "Noun", level: "Beginner", category: "Transportation", cls: 14, roman: "gicha", pron: "gi-cha (approximate)", def: "Train.", ex: "기차가 출발해요.", extr: "The train departs.", status: "new" },
+  { id: "n135", term: "비행기", pos: "Noun", section: "Noun", level: "Beginner", category: "Transportation", cls: 14, roman: "bihaenggi", pron: "bi-haeng-gi (approximate)", def: "Airplane.", ex: "비행기가 하늘을 날아요.", extr: "The airplane flies in the sky.", status: "new" },
+  { id: "n136", term: "자전거", pos: "Noun", section: "Noun", level: "Beginner", category: "Transportation", cls: 14, roman: "jajeongeo", pron: "ja-jeon-geo (approximate)", def: "Bicycle.", ex: "자전거를 타요.", extr: "I ride a bicycle.", status: "new" },
+  { id: "n137", term: "배", pos: "Noun", section: "Noun", level: "Beginner", category: "Transportation", cls: 14, roman: "bae", pron: "bae (approximate)", def: "Ship / Boat.", ex: "배가 바다에 있어요.", extr: "The ship is on the sea.", status: "new" },
+  { id: "n138", term: "공항", pos: "Noun", section: "Noun", level: "Beginner", category: "Transportation", cls: 14, roman: "gonghang", pron: "gong-hang (approximate)", def: "Airport.", ex: "공항에 가요.", extr: "I go to the airport.", status: "new" },
+  { id: "n139", term: "역", pos: "Noun", section: "Noun", level: "Beginner", category: "Transportation", cls: 14, roman: "yeok", pron: "yeok (approximate)", def: "Station.", ex: "역이 가까워요.", extr: "The station is near.", status: "new" },
+  { id: "n140", term: "정류장", pos: "Noun", section: "Noun", level: "Beginner", category: "Transportation", cls: 14, roman: "jeongnyujang", pron: "jeong-nyu-jang (approximate)", def: "Bus stop.", ex: "정류장에서 기다려요.", extr: "I wait at the bus stop.", status: "new" },
+
+  // Noun Class 15: Nature & Landscape
+  { id: "n141", term: "하늘", pos: "Noun", section: "Noun", level: "Beginner", category: "Nature & Landscape", cls: 15, roman: "haneul", pron: "ha-neul (approximate)", def: "Sky.", ex: "하늘이 파래요.", extr: "The sky is blue.", status: "new" },
+  { id: "n142", term: "땅", pos: "Noun", section: "Noun", level: "Beginner", category: "Nature & Landscape", cls: 15, roman: "ttang", pron: "ttang (approximate)", def: "Ground / Land.", ex: "땅이 넓어요.", extr: "The land is wide.", status: "new" },
+  { id: "n143", term: "강", pos: "Noun", section: "Noun", level: "Beginner", category: "Nature & Landscape", cls: 15, roman: "gang", pron: "gang (approximate)", def: "River.", ex: "강이 깊어요.", extr: "The river is deep.", status: "new" },
+  { id: "n144", term: "호수", pos: "Noun", section: "Noun", level: "Beginner", category: "Nature & Landscape", cls: 15, roman: "hosu", pron: "ho-su (approximate)", def: "Lake.", ex: "호수가 예뻐요.", extr: "The lake is pretty.", status: "new" },
+  { id: "n145", term: "나무", pos: "Noun", section: "Noun", level: "Beginner", category: "Nature & Landscape", cls: 15, roman: "namu", pron: "na-mu (approximate)", def: "Tree / Wood.", ex: "나무가 커요.", extr: "The tree is big.", status: "new" },
+  { id: "n146", term: "꽃", pos: "Noun", section: "Noun", level: "Beginner", category: "Nature & Landscape", cls: 15, roman: "kkot", pron: "kkot (approximate)", def: "Flower.", ex: "꽃이 피어요.", extr: "The flowers bloom.", status: "new" },
+  { id: "n147", term: "풀", pos: "Noun", section: "Noun", level: "Beginner", category: "Nature & Landscape", cls: 15, roman: "pul", pron: "pul (approximate)", def: "Grass.", ex: "풀이 푸르러요.", extr: "The grass is green.", status: "new" },
+  { id: "n148", term: "숲", pos: "Noun", section: "Noun", level: "Beginner", category: "Nature & Landscape", cls: 15, roman: "sup", pron: "sup (approximate)", def: "Forest.", ex: "숲에서 걸어요.", extr: "I walk in the forest.", status: "new" },
+  { id: "n149", term: "돌", pos: "Noun", section: "Noun", level: "Beginner", category: "Nature & Landscape", cls: 15, roman: "dol", pron: "dol (approximate)", def: "Stone / Rock.", ex: "돌이 무거워요.", extr: "The stone is heavy.", status: "new" },
+  { id: "n150", term: "섬", pos: "Noun", section: "Noun", level: "Beginner", category: "Nature & Landscape", cls: 15, roman: "seom", pron: "seom (approximate)", def: "Island.", ex: "섬에 배로 가요.", extr: "I go to the island by boat.", status: "new" },
+
+  // Noun Class 16: Weather & Seasons
+  { id: "n151", term: "비", pos: "Noun", section: "Noun", level: "Beginner", category: "Weather & Seasons", cls: 16, roman: "bi", pron: "bi (approximate)", def: "Rain.", ex: "비가 와요.", extr: "It rains.", status: "new" },
+  { id: "n152", term: "바람", pos: "Noun", section: "Noun", level: "Beginner", category: "Weather & Seasons", cls: 16, roman: "baram", pron: "ba-ram (approximate)", def: "Wind.", ex: "바람이 불어요.", extr: "The wind blows.", status: "new" },
+  { id: "n153", term: "구름", pos: "Noun", section: "Noun", level: "Beginner", category: "Weather & Seasons", cls: 16, roman: "gureum", pron: "gu-reum (approximate)", def: "Cloud.", ex: "구름이 많아요.", extr: "There are many clouds.", status: "new" },
+  { id: "n154", term: "해", pos: "Noun", section: "Noun", level: "Beginner", category: "Weather & Seasons", cls: 16, roman: "hae", pron: "hae (approximate)", def: "Sun.", ex: "해가 떠요.", extr: "The sun rises.", status: "new" },
+  { id: "n155", term: "별", pos: "Noun", section: "Noun", level: "Beginner", category: "Weather & Seasons", cls: 16, roman: "byeol", pron: "byeol (approximate)", def: "Star.", ex: "별이 반짝여요.", extr: "The stars twinkle.", status: "new" },
+  { id: "n156", term: "봄", pos: "Noun", section: "Noun", level: "Beginner", category: "Weather & Seasons", cls: 16, roman: "bom", pron: "bom (approximate)", def: "Spring.", ex: "봄은 따뜻해요.", extr: "Spring is warm.", status: "new" },
+  { id: "n157", term: "여름", pos: "Noun", section: "Noun", level: "Beginner", category: "Weather & Seasons", cls: 16, roman: "yeoreum", pron: "yeo-reum (approximate)", def: "Summer.", ex: "여름은 더워요.", extr: "Summer is hot.", status: "new" },
+  { id: "n158", term: "가을", pos: "Noun", section: "Noun", level: "Beginner", category: "Weather & Seasons", cls: 16, roman: "gaeul", pron: "ga-eul (approximate)", def: "Autumn / Fall.", ex: "가을은 시원해요.", extr: "Autumn is cool.", status: "new" },
+  { id: "n159", term: "겨울", pos: "Noun", section: "Noun", level: "Beginner", category: "Weather & Seasons", cls: 16, roman: "gyeoul", pron: "gyeo-ul (approximate)", def: "Winter.", ex: "겨울은 추워요.", extr: "Winter is cold.", status: "new" },
+  { id: "n160", term: "안개", pos: "Noun", section: "Noun", level: "Beginner", category: "Weather & Seasons", cls: 16, roman: "angae", pron: "an-gae (approximate)", def: "Fog.", ex: "안개가 많아요.", extr: "There is a lot of fog.", status: "new" },
+
+  // Noun Class 17: Animals
+  { id: "n161", term: "개", pos: "Noun", section: "Noun", level: "Beginner", category: "Animals", cls: 17, roman: "gae", pron: "gae (approximate)", def: "Dog.", ex: "개가 짖어요.", extr: "The dog barks.", status: "new" },
+  { id: "n162", term: "고양이", pos: "Noun", section: "Noun", level: "Beginner", category: "Animals", cls: 17, roman: "goyangi", pron: "go-yang-i (approximate)", def: "Cat.", ex: "고양이가 귀여워요.", extr: "The cat is cute.", status: "new" },
+  { id: "n163", term: "새", pos: "Noun", section: "Noun", level: "Beginner", category: "Animals", cls: 17, roman: "sae", pron: "sae (approximate)", def: "Bird.", ex: "새가 노래해요.", extr: "The bird sings.", status: "new" },
+  { id: "n164", term: "물고기", pos: "Noun", section: "Noun", level: "Beginner", category: "Animals", cls: 17, roman: "mulgogi", pron: "mul-go-gi (approximate)", def: "Fish.", ex: "물고기가 헤엄쳐요.", extr: "The fish swims.", status: "new" },
+  { id: "n165", term: "오리", pos: "Noun", section: "Noun", level: "Beginner", category: "Animals", cls: 17, roman: "ori", pron: "o-ri (approximate)", def: "Duck.", ex: "오리가 물에 있어요.", extr: "The duck is in the water.", status: "new" },
+  { id: "n166", term: "소", pos: "Noun", section: "Noun", level: "Beginner", category: "Animals", cls: 17, roman: "so", pron: "so (approximate)", def: "Cow.", ex: "소가 풀을 먹어요.", extr: "The cow eats grass.", status: "new" },
+  { id: "n167", term: "돼지", pos: "Noun", section: "Noun", level: "Beginner", category: "Animals", cls: 17, roman: "dwaeji", pron: "dwae-ji (approximate)", def: "Pig.", ex: "돼지가 뚱뚱해요.", extr: "The pig is chubby.", status: "new" },
+  { id: "n168", term: "닭", pos: "Noun", section: "Noun", level: "Beginner", category: "Animals", cls: 17, roman: "dak", pron: "dak (approximate)", def: "Chicken.", ex: "닭이 알을 낳아요.", extr: "The chicken lays eggs.", status: "new" },
+  { id: "n169", term: "토끼", pos: "Noun", section: "Noun", level: "Beginner", category: "Animals", cls: 17, roman: "tokki", pron: "to-kki (approximate)", def: "Rabbit.", ex: "토끼가 뛰어요.", extr: "The rabbit jumps.", status: "new" },
+  { id: "n170", term: "곰", pos: "Noun", section: "Noun", level: "Beginner", category: "Animals", cls: 17, roman: "gom", pron: "gom (approximate)", def: "Bear.", ex: "곰이 커요.", extr: "The bear is big.", status: "new" },
+
+  // Noun Class 18: Fruits & Vegetables
+  { id: "n171", term: "사과", pos: "Noun", section: "Noun", level: "Beginner", category: "Fruits & Vegetables", cls: 18, roman: "sagwa", pron: "sa-gwa (approximate)", def: "Apple.", ex: "사과를 먹어요.", extr: "I eat an apple.", status: "new" },
+  { id: "n172", term: "바나나", pos: "Noun", section: "Noun", level: "Beginner", category: "Fruits & Vegetables", cls: 18, roman: "banana", pron: "ba-na-na (approximate)", def: "Banana.", ex: "바나나가 노래요.", extr: "The banana is yellow.", status: "new" },
+  { id: "n173", term: "딸기", pos: "Noun", section: "Noun", level: "Beginner", category: "Fruits & Vegetables", cls: 18, roman: "ttalgi", pron: "ttal-gi (approximate)", def: "Strawberry.", ex: "딸기가 달아요.", extr: "The strawberry is sweet.", status: "new" },
+  { id: "n174", term: "포도", pos: "Noun", section: "Noun", level: "Beginner", category: "Fruits & Vegetables", cls: 18, roman: "podo", pron: "po-do (approximate)", def: "Grape.", ex: "포도를 좋아해요.", extr: "I like grapes.", status: "new" },
+  { id: "n175", term: "귤", pos: "Noun", section: "Noun", level: "Beginner", category: "Fruits & Vegetables", cls: 18, roman: "gyul", pron: "gyul (approximate)", def: "Tangerine.", ex: "겨울에 귤을 먹어요.", extr: "I eat tangerines in winter.", status: "new" },
+  { id: "n176", term: "감자", pos: "Noun", section: "Noun", level: "Beginner", category: "Fruits & Vegetables", cls: 18, roman: "gamja", pron: "gam-ja (approximate)", def: "Potato.", ex: "감자를 삶아요.", extr: "I boil potatoes.", status: "new" },
+  { id: "n177", term: "당근", pos: "Noun", section: "Noun", level: "Beginner", category: "Fruits & Vegetables", cls: 18, roman: "danggeun", pron: "dang-geun (approximate)", def: "Carrot.", ex: "당근이 맛있어요.", extr: "The carrot is tasty.", status: "new" },
+  { id: "n178", term: "양파", pos: "Noun", section: "Noun", level: "Beginner", category: "Fruits & Vegetables", cls: 18, roman: "yangpa", pron: "yang-pa (approximate)", def: "Onion.", ex: "양파를 썰어요.", extr: "I chop an onion.", status: "new" },
+  { id: "n179", term: "오이", pos: "Noun", section: "Noun", level: "Beginner", category: "Fruits & Vegetables", cls: 18, roman: "oi", pron: "o-i (approximate)", def: "Cucumber.", ex: "오이가 시원해요.", extr: "The cucumber is refreshing.", status: "new" },
+  { id: "n180", term: "토마토", pos: "Noun", section: "Noun", level: "Beginner", category: "Fruits & Vegetables", cls: 18, roman: "tomato", pron: "to-ma-to (approximate)", def: "Tomato.", ex: "토마토가 빨개요.", extr: "The tomato is red.", status: "new" },
+
+  // Noun Class 19: Clothes & Accessories
+  { id: "n181", term: "바지", pos: "Noun", section: "Noun", level: "Beginner", category: "Clothes & Accessories", cls: 19, roman: "baji", pron: "ba-ji (approximate)", def: "Pants.", ex: "바지를 입어요.", extr: "I wear pants.", status: "new" },
+  { id: "n182", term: "치마", pos: "Noun", section: "Noun", level: "Beginner", category: "Clothes & Accessories", cls: 19, roman: "chima", pron: "chi-ma (approximate)", def: "Skirt.", ex: "치마가 예뻐요.", extr: "The skirt is pretty.", status: "new" },
+  { id: "n183", term: "모자", pos: "Noun", section: "Noun", level: "Beginner", category: "Clothes & Accessories", cls: 19, roman: "moja", pron: "mo-ja (approximate)", def: "Hat.", ex: "모자를 써요.", extr: "I wear a hat.", status: "new" },
+  { id: "n184", term: "양말", pos: "Noun", section: "Noun", level: "Beginner", category: "Clothes & Accessories", cls: 19, roman: "yangmal", pron: "yang-mal (approximate)", def: "Socks.", ex: "양말을 신어요.", extr: "I wear socks.", status: "new" },
+  { id: "n185", term: "안경", pos: "Noun", section: "Noun", level: "Beginner", category: "Clothes & Accessories", cls: 19, roman: "angyeong", pron: "an-gyeong (approximate)", def: "Glasses.", ex: "안경을 써요.", extr: "I wear glasses.", status: "new" },
+  { id: "n186", term: "장갑", pos: "Noun", section: "Noun", level: "Beginner", category: "Clothes & Accessories", cls: 19, roman: "janggap", pron: "jang-gap (approximate)", def: "Gloves.", ex: "장갑을 껴요.", extr: "I wear gloves.", status: "new" },
+  { id: "n187", term: "외투", pos: "Noun", section: "Noun", level: "Beginner", category: "Clothes & Accessories", cls: 19, roman: "oetu", pron: "oe-tu (approximate)", def: "Coat.", ex: "겨울에 외투를 입어요.", extr: "I wear a coat in winter.", status: "new" },
+  { id: "n188", term: "셔츠", pos: "Noun", section: "Noun", level: "Beginner", category: "Clothes & Accessories", cls: 19, roman: "syeocheu", pron: "syeo-cheu (approximate)", def: "Shirt.", ex: "셔츠가 깨끗해요.", extr: "The shirt is clean.", status: "new" },
+  { id: "n189", term: "우산", pos: "Noun", section: "Noun", level: "Beginner", category: "Clothes & Accessories", cls: 19, roman: "usan", pron: "u-san (approximate)", def: "Umbrella.", ex: "우산을 써요.", extr: "I use an umbrella.", status: "new" },
+  { id: "n190", term: "지갑", pos: "Noun", section: "Noun", level: "Beginner", category: "Clothes & Accessories", cls: 19, roman: "jigap", pron: "ji-gap (approximate)", def: "Wallet.", ex: "지갑에 돈이 있어요.", extr: "There is money in the wallet.", status: "new" },
+
+  // Noun Class 20: Town & Public Places
+  { id: "n191", term: "은행", pos: "Noun", section: "Noun", level: "Beginner", category: "Town & Public Places", cls: 20, roman: "eunhaeng", pron: "eun-haeng (approximate)", def: "Bank.", ex: "은행에 가요.", extr: "I go to the bank.", status: "new" },
+  { id: "n192", term: "우체국", pos: "Noun", section: "Noun", level: "Beginner", category: "Town & Public Places", cls: 20, roman: "ucheguk", pron: "u-che-guk (approximate)", def: "Post office.", ex: "우체국에서 편지를 보내요.", extr: "I send a letter at the post office.", status: "new" },
+  { id: "n193", term: "약국", pos: "Noun", section: "Noun", level: "Beginner", category: "Town & Public Places", cls: 20, roman: "yakguk", pron: "yak-guk (approximate)", def: "Pharmacy.", ex: "약국에서 약을 사요.", extr: "I buy medicine at the pharmacy.", status: "new" },
+  { id: "n194", term: "빵집", pos: "Noun", section: "Noun", level: "Beginner", category: "Town & Public Places", cls: 20, roman: "ppangjip", pron: "ppang-jip (approximate)", def: "Bakery.", ex: "빵집에서 빵을 사요.", extr: "I buy bread at the bakery.", status: "new" },
+  { id: "n195", term: "서점", pos: "Noun", section: "Noun", level: "Beginner", category: "Town & Public Places", cls: 20, roman: "seojeom", pron: "seo-jeom (approximate)", def: "Bookstore.", ex: "서점에서 책을 사요.", extr: "I buy books at the bookstore.", status: "new" },
+  { id: "n196", term: "시장", pos: "Noun", section: "Noun", level: "Beginner", category: "Town & Public Places", cls: 20, roman: "sijang", pron: "si-jang (approximate)", def: "Market.", ex: "시장에 사람이 많아요.", extr: "There are many people at the market.", status: "new" },
+  { id: "n197", term: "극장", pos: "Noun", section: "Noun", level: "Beginner", category: "Town & Public Places", cls: 20, roman: "geukjang", pron: "geuk-jang (approximate)", def: "Movie theater.", ex: "극장에서 영화를 봐요.", extr: "I watch a movie at the theater.", status: "new" },
+  { id: "n198", term: "호텔", pos: "Noun", section: "Noun", level: "Beginner", category: "Town & Public Places", cls: 20, roman: "hotel", pron: "ho-tel (approximate)", def: "Hotel.", ex: "호텔이 깨끗해요.", extr: "The hotel is clean.", status: "new" },
+  { id: "n199", term: "신호등", pos: "Noun", section: "Noun", level: "Beginner", category: "Town & Public Places", cls: 20, roman: "sinhodeung", pron: "sin-ho-deung (approximate)", def: "Traffic light.", ex: "신호등이 빨개요.", extr: "The traffic light is red.", status: "new" },
+  { id: "n200", term: "건물", pos: "Noun", section: "Noun", level: "Beginner", category: "Town & Public Places", cls: 20, roman: "geonmul", pron: "geon-mul (approximate)", def: "Building.", ex: "건물이 높아요.", extr: "The building is tall.", status: "new" },
 
 
 
@@ -1961,7 +2080,9 @@ const CLASS_NAMES = {
     },
     "Noun": {
       1: "People & Family", 2: "Time", 3: "Day Parts & Order", 4: "Body & Health", 5: "Feelings & Ideas",
-      6: "Food & Shopping", 7: "Places & Home", 8: "World & Travel", 9: "Media & Tech", 10: "Position & Basics"
+      6: "Food & Shopping", 7: "Places & Home", 8: "World & Travel", 9: "Media & Tech", 10: "Position & Basics",
+     11: "Home & Furniture", 12: "Kitchen & Tableware", 13: "School & Study", 14: "Transportation", 15: "Nature & Landscape",
+     16: "Weather & Seasons", 17: "Animals", 18: "Fruits & Vegetables", 19: "Clothes & Accessories", 20: "Town & Public Places"
     },
     "Pronoun": {
       1: "Personal Pronouns", 2: "Possessive Pronouns", 3: "Demonstrative Pronouns", 4: "Interrogative & Indefinite", 5: "Reflexive Pronouns"
