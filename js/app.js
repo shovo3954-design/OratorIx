@@ -4,6 +4,7 @@ const KEY = "vocabvibe_words", PKEY = "vocabvibe_progress", SKEY = "vocabvibe_st
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const dayKey = d => { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }; // 2026-11-23
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
 
 /* ===== 2. LANGUAGE AND SAVING (each language has its own words and progress) ===== */
@@ -23,8 +24,10 @@ function save() { // saves only marks and progress, never the words
 }
 function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(t.h); t.h = setTimeout(() => t.classList.remove("show"), 2200); }
 /* ===== 3. STREAK AND PROGRESS NUMBERS ===== */
-function touch() { // daily streak
-  const today = new Date().toDateString(); if (prog.last === today) return;
+function touch() { // daily streak, and the list of days you studied (for the home calendar)
+  const now = new Date(), key = dayKey(now), today = now.toDateString(); prog.days = prog.days || []; let changed = false;
+  if (!prog.days.includes(key)) { prog.days = [...prog.days.slice(-120), key]; changed = true; }
+  if (prog.last === today) { if (changed) save(); return; }
   prog.streak = prog.last === new Date(Date.now() - 864e5).toDateString() ? prog.streak + 1 : 1; prog.last = today; save();
 }
 function stats() {
@@ -69,6 +72,7 @@ async function loopWord(w, btn, opt) { // opt = { term, def, n } lets verbs use 
 /* ===== 4. NAVIGATION (switch between Home, Learn, Flashcards, Quiz) ===== */
 function show(v, keep) { // keep = true: stay inside a class page (used by "New quiz" style buttons)
   stopLoop(); if (!keep) leaveAllCM();
+  if (v === "home") renderHome();
   ["home", "learn", "verbs", "flash", "quiz", "game", "speak", "class"].forEach(n => $("#v-" + n).hidden = n !== v);
   const hl = v === "class" ? CP.from : v; // on a class page the tab you came from stays lit
   document.querySelectorAll("[data-view]").forEach(b => b.classList.toggle("on", b.dataset.view === hl));
@@ -661,6 +665,130 @@ function renderWotd() { // shows a different word each day
 document.querySelectorAll("[data-go]").forEach(b => b.onclick = e => { e.preventDefault(); show(b.dataset.go); scrollTo(0, 0); }); // hero, footer, logo
 document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { setLang(b.dataset.lang); scrollTo(0, 0); }); // footer language links
 
+
+/* ===== 10c. HOME: BIG SECTIONS (explore by topic, your progress, daily challenge). Colors and layout change with the language (see style.css 18). ===== */
+const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const afterPaint = fn => requestAnimationFrame(() => requestAnimationFrame(fn));
+function countUp(el, to, suffix = "", ms = 1000) { // numbers that count up
+  if (!el) return; to = Math.round(+to || 0); const id = el._cu = (el._cu || 0) + 1;
+  if (reduced() || !to) { el.textContent = to + suffix; return; }
+  const t0 = performance.now();
+  const tick = now => { if (el._cu !== id) return; const p = Math.min(1, (now - t0) / ms); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))) + suffix; if (p < 1) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+const LEVELS = ["Beginner", "Intermediate", "Advanced"], RING = 339.29; // RING = length of the progress circle (2 x pi x 54)
+
+/* --- your progress --- */
+function studiedDays() { // days from the saved list, plus the days of the current streak (for people who studied before the calendar existed)
+  const set = new Set(prog.days || []);
+  if (prog.last && prog.streak > 0) { const d = new Date(prog.last); if (!isNaN(d)) for (let i = 0; i < prog.streak; i++) set.add(dayKey(new Date(d.getFullYear(), d.getMonth(), d.getDate() - i))); }
+  return set;
+}
+function renderProgress() {
+  const total = words.length, known = words.filter(w => w.status === "known").length, practice = words.filter(w => w.status === "practice").length;
+  const pct = total ? Math.round(known / total * 100) : 0;
+  const levels = LEVELS.map(l => { const ws = words.filter(w => (w.level || "Beginner") === l); return { l, total: ws.length, known: ws.filter(w => w.status === "known").length }; });
+  const now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()), dow = (t0.getDay() + 6) % 7, done = studiedDays();
+  const cells = Array.from({ length: 35 }, (_, i) => { const d = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() - dow - 28 + i), k = dayKey(d);
+    return `<span class="${done.has(k) ? "on " : ""}${k === dayKey(t0) ? "today " : ""}${d > t0 ? "future" : ""}" style="--d:${i}" title="${k}">${d.getDate()}</span>`; }).join("");
+  const num = (id, label) => `<div class="hxp-num"><b id="${id}">0</b><span>${label}</span></div>`;
+  $("#hx-progress-body").innerHTML = `<div class="hxp-wrap"><div class="hxp-top">
+      <div class="hxp-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="t" cx="60" cy="60" r="54"/><circle class="p" id="hxp-ring" cx="60" cy="60" r="54"/></svg><div class="hxp-pct"><span id="hxp-pct">0%</span><small>of words known</small></div></div>
+      <div class="hxp-nums">${num("hxn-total", "words")}${num("hxn-known", "known")}${num("hxn-practice", "need practice")}${num("hxn-new", "not started")}${num("hxn-streak", "day streak")}${num("hxn-best", "best quiz")}</div>
+    </div><div class="hxp-bottom">
+      <h3>By level</h3><div class="hxp-levels">${levels.map(x => `<div class="hxl"><span>${x.l}</span><div class="hxl-bar"><i data-w="${x.total ? x.known / x.total * 100 : 0}"></i></div><small class="muted">${x.total ? x.known + " / " + x.total : "no words yet"}</small></div>`).join("")}</div>
+      <h3>Last 5 weeks</h3><div class="hxcal-days" aria-hidden="true">${["M", "T", "W", "T", "F", "S", "S"].map(d => `<span>${d}</span>`).join("")}</div><div class="hxcal-grid" role="img" aria-label="Calendar of the days you studied">${cells}</div>
+    </div></div>`;
+  afterPaint(() => {
+    $("#hxp-ring").style.strokeDashoffset = RING * (1 - pct / 100);
+    document.querySelectorAll("#hx-progress-body .hxl-bar i").forEach(i => i.style.width = i.dataset.w + "%");
+  });
+  countUp($("#hxp-pct"), pct, "%", 1300);
+  [["hxn-total", total], ["hxn-known", known], ["hxn-practice", practice], ["hxn-new", total - known - practice], ["hxn-streak", prog.streak], ["hxn-best", prog.best, "%"]].forEach(([id, v, sfxText]) => countUp($("#" + id), v, sfxText || ""));
+}
+
+/* --- explore by topic --- */
+function renderExplore() {
+  const secs = SECTIONS.map(name => ({ name, ws: words.filter(w => sec(w) === name) })).filter(x => x.ws.length);
+  const cards = secs.map(x => ({ key: `data-sec="${esc(x.name)}"`, n: x.ws.length, name: x.name, small: `${new Set(x.ws.map(cl)).size} ${new Set(x.ws.map(cl)).size === 1 ? "class" : "classes"} · ${x.ws.filter(w => w.status === "known").length} known`, w: x.ws.filter(w => w.status === "known").length / x.ws.length * 100 }));
+  const vs = allVerbs(); if (vs.length) cards.push({ key: 'data-verbs="1"', n: vs.length, name: "Verbs", small: `${new Set(vs.map(v => v.level)).size} levels · present, past and future`, w: null });
+  $("#hx-explore-body").innerHTML = `<div class="hxc-grid">${cards.map((c, i) => `<button class="hxc" ${c.key} style="--i:${i}"><span class="hxc-n" data-n="${c.n}">0</span><strong>${esc(c.name)}</strong><small>${esc(c.small)}</small>${c.w === null ? "" : `<i class="hxc-bar"><b data-w="${c.w}"></b></i>`}<span class="hxc-go">Open →</span></button>`).join("")}</div>`;
+  document.querySelectorAll("#hx-explore-body .hxc-n").forEach(el => countUp(el, el.dataset.n, "", 1100));
+  afterPaint(() => document.querySelectorAll("#hx-explore-body .hxc-bar b").forEach(b => b.style.width = b.dataset.w + "%"));
+}
+$("#hx-explore-body").onclick = e => {
+  const b = e.target.closest(".hxc"); if (!b) return;
+  if (b.dataset.verbs) { show("verbs"); scrollTo(0, 0); return; }
+  PL.sec = b.dataset.sec; PL.cls = ""; PL.render(); renderLearn(); show("learn"); scrollTo(0, 0); // opens the Learn list with this section already open
+};
+
+/* --- daily challenge: 5 questions, the same set all day for each language --- */
+const DKEY = "vocabvibe_daily";
+let DC = { qs: [], i: 0, score: 0, opts: [], done: false, playing: false, lang: "", missed: [] };
+const dailySaved = () => { const s = load(DKEY + sfx(), {}); return s.date === dayKey() ? s : null; };
+function seeded(seed) { // small repeatable random generator: the same seed always gives the same numbers
+  let h = 1779033703 ^ seed.length; for (let i = 0; i < seed.length; i++) { h = Math.imul(h ^ seed.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; }
+  return () => { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
+}
+function dailyWords() {
+  const rnd = seeded(lang + dayKey()), pool = words.filter(w => w.def), out = [], used = new Set();
+  while (out.length < Math.min(5, pool.length)) { const w = pool[Math.floor(rnd() * pool.length)]; if (!used.has(w.id)) { used.add(w.id); out.push(w); } }
+  return out;
+}
+function dailyOptions(w) { // the right meaning and 3 wrong ones (same kind of word first)
+  const pool = shuffle(words.filter(x => x.def && x.id !== w.id)), same = pool.filter(x => x.pos === w.pos), seen = new Set([w.def.toLowerCase()]), out = [];
+  for (const x of [...same, ...pool]) { const k = x.def.toLowerCase(); if (!seen.has(k)) { seen.add(k); out.push(x.def); } if (out.length === 3) break; }
+  return shuffle([w.def, ...out]);
+}
+function renderDailySide() {
+  const s = dailySaved(), left = DC.playing && DC.lang === lang;
+  $("#hxd-side").innerHTML = `<p class="hxd-date muted">${esc(dayKey())}</p>` + (s
+    ? `<div class="hxd-score"><span id="hxd-today">0</span><small>/${s.total}</small></div><p>Your score today. Play again to try for a better one.</p>`
+    : `<p class="hxd-big">Five quick questions.</p><p class="muted">Pick the right meaning. A new set of words appears every day.</p>`) +
+    `<button class="btn green big" id="hxd-start">${left ? "Restart" : s ? "Play again" : "Start today's challenge"}</button>`;
+  if (s) countUp($("#hxd-today"), s.score, "", 900);
+  $("#hxd-start").onclick = startDaily;
+}
+function startDaily() {
+  DC = { qs: dailyWords(), i: 0, score: 0, opts: [], done: false, playing: true, lang, missed: [] };
+  if (!DC.qs.length) { toast("Add some words first."); return; }
+  renderDailySide(); askDaily();
+}
+function askDaily() {
+  const w = DC.qs[DC.i], n = DC.qs.length; DC.done = false; DC.opts = dailyOptions(w);
+  $("#hxd-play").innerHTML = `<div class="meter"><i id="hxd-bar" style="width:${DC.i / n * 100}%"></i></div><p class="muted">Question ${DC.i + 1} of ${n} · Score ${DC.score}</p>
+    <h3 class="hxd-q">${esc(w.term)}</h3><p class="muted">${esc([w.roman, w.pron].filter(Boolean).join(" · "))} <button class="mini" id="hxd-say">Listen</button></p>
+    <div class="opts" id="hxd-opts">${DC.opts.map((o, k) => `<button data-k="${k}">${esc(o)}</button>`).join("")}</div><div id="hxd-fb" class="fb" hidden role="status"></div><button class="btn green" id="hxd-next" hidden>Next</button>`;
+  $("#hxd-say").onclick = () => say(w.term);
+}
+$("#hxd-play").onclick = e => {
+  const b = e.target.closest("#hxd-opts button"), n = DC.qs.length;
+  if (b && !DC.done) {
+    DC.done = true; const w = DC.qs[DC.i], ok = DC.opts[b.dataset.k] === w.def;
+    [...$("#hxd-opts").children].forEach((x, k) => { x.disabled = true; if (DC.opts[k] === w.def) x.classList.add("right"); });
+    if (ok) DC.score++; else { b.classList.add("wrong"); DC.missed.push(w); }
+    $("#hxd-bar").style.width = (DC.i + 1) / n * 100 + "%"; // the bar moves
+    $("#hxd-fb").innerHTML = (ok ? "<b>Correct!</b> " : `<b>Not quite.</b> ${esc(w.term)} means: `) + esc(w.def) + `<br><em>${esc(w.ex)}${w.extr ? " (" + esc(w.extr) + ")" : ""}</em>`;
+    $("#hxd-fb").hidden = false; $("#hxd-next").hidden = false; $("#hxd-next").textContent = DC.i === n - 1 ? "See results" : "Next question";
+  } else if (e.target.id === "hxd-next") { if (++DC.i < n) askDaily(); else finishDaily(); }
+};
+function finishDaily() {
+  const n = DC.qs.length, s = load(DKEY + sfx(), {}), best = s.date === dayKey() ? Math.max(s.score || 0, DC.score) : DC.score;
+  localStorage.setItem(DKEY + sfx(), JSON.stringify({ date: dayKey(), score: best, total: n })); DC.playing = false; touch();
+  const msg = DC.score / n >= .8 ? "Excellent work!" : DC.score / n >= .5 ? "Good job. Keep going!" : "Nice try. Review these words and play again.";
+  $("#hxd-play").innerHTML = `<div class="meter"><i style="width:100%"></i></div><h3 class="hxd-q">${msg}</h3><div class="hxd-score"><span id="hxd-final">0</span><small>/${n}</small></div>` +
+    (DC.missed.length ? `<p class="muted">Words to review:</p><ul class="hxd-miss">${DC.missed.map(w => `<li><b>${esc(w.term)}</b> ${esc(w.def)}</li>`).join("")}</ul>` : "<p>Perfect! You got every question right.</p>");
+  countUp($("#hxd-final"), DC.score, "", 900); renderDailySide(); renderProgress();
+}
+
+function renderHome() { // draws the hero numbers and the three big sections (counting numbers and moving bars start here)
+  stats();
+  countUp($("#s-total"), words.length); countUp($("#s-known"), words.filter(w => w.status === "known").length); countUp($("#s-best"), prog.best, "%"); countUp($("#s-streak"), prog.streak);
+  renderExplore(); renderProgress();
+  if (!(DC.playing && DC.lang === lang)) { DC.playing = false; $("#hxd-play").innerHTML = '<div class="hxd-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><p class="muted">Press the button to start. Your questions appear here.</p>'; }
+  renderDailySide();
+}
+
 /* ===== 10b. HEADER: hides when you scroll down, slides back when you scroll up ===== */
 const topBar = $(".top"); let lastY = window.scrollY || 0;
 window.addEventListener("scroll", () => {
@@ -673,7 +801,7 @@ topBar.addEventListener("focusin", () => topBar.classList.remove("hide")); // ke
 /* ===== 11. LANGUAGE SWITCH AND START-UP (runs when the page opens) ===== */
 function setLang(l) {
   stopLoop();
-  lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); TENSES = lang === "en" ? TENSES_EN : TENSES_KO; document.querySelectorAll(".pp-note").forEach(e => e.hidden = lang !== "en"); $("#lang").value = l; document.querySelectorAll(".dlang").forEach(b => b.classList.toggle("on", b.dataset.lang === l));
+  lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); TENSES = lang === "en" ? TENSES_EN : TENSES_KO; document.body.dataset.lang = lang; /* the home page changes colors and layout with the language */ document.querySelectorAll(".pp-note").forEach(e => e.hidden = lang !== "en"); $("#lang").value = l; document.querySelectorAll(".dlang").forEach(b => b.classList.toggle("on", b.dataset.lang === l));
   PL.sec = PL.cls = PF.sec = PF.cls = PQ.sec = PQ.cls = PG.sec = PG.cls = PS.sec = PS.cls = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; renderPickers(); renderLearn(); stats(); renderWotd();
   const cur = ["home", "learn", "verbs", "flash", "quiz", "game", "speak", "class"].find(n => !$("#v-" + n).hidden) || "home";
   show(cur === "class" ? CP.from : cur);
