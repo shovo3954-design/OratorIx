@@ -50,7 +50,7 @@
     <button class="btn authbtn" id="auth-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4.2 4.2-6 8-6s7 1.8 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Sign in</span></button>
     <div class="acct" id="acct" hidden>
       <button class="acct-btn" id="acct-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu"><span class="avatar" id="acct-av"></span><span class="acct-name" id="acct-name"></span></button>
-      <div class="acct-menu" id="acct-menu" hidden><p class="acct-who"><b id="acct-dn"></b><small id="acct-em"></small></p><button class="btn" id="auth-out">Sign out</button></div>
+      <div class="acct-menu" id="acct-menu" hidden><p class="acct-who"><b id="acct-dn"></b><small id="acct-em"></small></p><button class="btn green" id="auth-profile">My profile</button><button class="btn" id="auth-out">Sign out</button></div>
     </div>
   </div>
 </header>
@@ -311,6 +311,13 @@
       <div class="row"><button class="btn coral" id="sp-retry">Retry missed words</button><button class="btn green" id="sp-again">New round</button></div>
     </div>
   </section>
+
+  <!-- ===== 6d. PROFILE PAGE (opens from the account menu; drawn by js/auth.js) ===== -->
+  <section id="v-profile" hidden>
+    <button class="btn" id="pf-back">← Back</button>
+    <div id="pf-body"></div>
+    <input type="file" id="pf-file" accept="image/*" hidden>
+  </section>
 </main>
 
 <!-- ===== 7. FOOTER: about, quick links, contact, social icons ===== -->
@@ -374,6 +381,18 @@
     <p id="auth-msg" class="auth-msg" role="alert" hidden></p>
     <button class="btn green big" id="auth-submit" type="submit">Sign in</button>
     <button class="link" type="button" id="auth-forgot">Forgot password?</button>
+  </form>
+</dialog>
+<!-- Delete account pop-up -->
+<dialog id="deldlg" aria-labelledby="del-title">
+  <button class="x" id="del-x" aria-label="Close">×</button>
+  <h2 id="del-title">Delete your account?</h2>
+  <p class="muted">This removes your account and the progress saved in it. It cannot be undone. Progress saved on this device stays.</p>
+  <form id="del-form" novalidate>
+    <label id="del-pass-l">Your password<input id="del-pass" type="password" autocomplete="current-password"></label>
+    <label>Type DELETE to confirm<input id="del-confirm" type="text" autocomplete="off"></label>
+    <p id="del-msg" class="pf-msg" role="alert" hidden></p>
+    <div class="row left"><button class="btn" id="del-cancel" type="button">Cancel</button><button class="btn coral" type="submit">Delete my account</button></div>
   </form>
 </dialog>
 <div id="toast" role="status" aria-live="polite"></div>

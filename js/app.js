@@ -21,6 +21,7 @@ function loadLang() { // words come from data.js; only marks and progress come f
 function save() { // saves only marks and progress, never the words
   localStorage.setItem(SKEY + sfx(), JSON.stringify(Object.fromEntries(words.filter(w => w.status !== "new").map(w => [w.id, w.status]))));
   localStorage.setItem(PKEY + sfx(), JSON.stringify(prog)); stats();
+  window.dispatchEvent(new Event("oratorix:changed")); // auth.js saves your progress to your account when you are signed in
 }
 function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(t.h); t.h = setTimeout(() => t.classList.remove("show"), 2200); }
 /* ===== 3. STREAK AND PROGRESS NUMBERS ===== */
@@ -73,8 +74,9 @@ async function loopWord(w, btn, opt) { // opt = { term, def, n } lets verbs use 
 function show(v, keep) { // keep = true: stay inside a class page (used by "New quiz" style buttons)
   stopLoop(); if (!keep) leaveAllCM();
   if (v === "home") renderHome();
-  ["home", "learn", "verbs", "flash", "quiz", "game", "speak", "class"].forEach(n => $("#v-" + n).hidden = n !== v);
-  const hl = v === "class" ? CP.from : v; // on a class page the tab you came from stays lit
+  ["home", "learn", "verbs", "flash", "quiz", "game", "speak", "class", "profile"].forEach(n => $("#v-" + n).hidden = n !== v);
+  if (v === "profile" && window.renderProfile) window.renderProfile();
+  const hl = v === "class" ? CP.from : v === "profile" ? "" : v; // on a class page the tab you came from stays lit
   document.querySelectorAll("[data-view]").forEach(b => b.classList.toggle("on", b.dataset.view === hl));
   ddBtn.classList.toggle("on", PRACTISE.includes(hl)); setDD(false);
   scrollTo(0, 0);
@@ -207,8 +209,10 @@ $("#cp-back").onclick = () => { if (history.state && history.state.cls) history.
 window.addEventListener("popstate", e => {
   const s = e.state;
   if (s && s.cls) { Object.assign(CP, { kind: s.kind, group: s.group, cls: s.n, from: s.kind === "verb" ? "verbs" : "learn" }); renderClassPage(); show("class"); }
+  else if (s && s.profile) show("profile");
   else if (s && s.cm) applyCM(s.cm, s.group, s.n);
   else if (CM) show(CM);
+  else if (!$("#v-profile").hidden) show(PROF_FROM);
   else if (!$("#v-class").hidden) show(CP.from);
 });
 $("#cp-grid").onclick = e => {
@@ -220,6 +224,15 @@ $("#cp-grid").onclick = e => {
   if (b.dataset.a === "ex") say(w.ex);
   if (b.dataset.a === "loop") loopWord(w, b);
 };
+
+/* ===== 5b2. PROFILE PAGE (content is drawn by auth.js). Back button and browser Back both return to where you were ===== */
+let PROF_FROM = "home";
+function openProfile() {
+  PROF_FROM = ["home", "learn", "verbs", "flash", "quiz", "game", "speak", "class"].find(n => !$("#v-" + n).hidden) || "home";
+  try { history.pushState({ profile: 1 }, ""); } catch (e) {}
+  show("profile"); scrollTo(0, 0);
+}
+$("#pf-back").onclick = () => { if (history.state && history.state.profile) history.back(); else show(PROF_FROM); };
 
 /* ===== 5c. CLASS PAGES FOR FLASHCARDS, QUIZ, GAME, SPEAK AND VERBS ===== */
 /* Picking a class hides the list and shows that class on its own page (Back button and browser Back return to the list). */
@@ -774,7 +787,7 @@ $("#hxd-play").onclick = e => {
 };
 function finishDaily() {
   const n = DC.qs.length, s = load(DKEY + sfx(), {}), best = s.date === dayKey() ? Math.max(s.score || 0, DC.score) : DC.score;
-  localStorage.setItem(DKEY + sfx(), JSON.stringify({ date: dayKey(), score: best, total: n })); DC.playing = false; touch();
+  localStorage.setItem(DKEY + sfx(), JSON.stringify({ date: dayKey(), score: best, total: n })); DC.playing = false; touch(); window.dispatchEvent(new Event("oratorix:changed"));
   const msg = DC.score / n >= .8 ? "Excellent work!" : DC.score / n >= .5 ? "Good job. Keep going!" : "Nice try. Review these words and play again.";
   $("#hxd-play").innerHTML = `<div class="meter"><i style="width:100%"></i></div><h3 class="hxd-q">${msg}</h3><div class="hxd-score"><span id="hxd-final">0</span><small>/${n}</small></div>` +
     (DC.missed.length ? `<p class="muted">Words to review:</p><ul class="hxd-miss">${DC.missed.map(w => `<li><b>${esc(w.term)}</b> ${esc(w.def)}</li>`).join("")}</ul>` : "<p>Perfect! You got every question right.</p>");
@@ -803,7 +816,7 @@ function setLang(l) {
   stopLoop();
   lang = l; localStorage.setItem("vocabvibe_lang", JSON.stringify(l)); loadLang(); TENSES = lang === "en" ? TENSES_EN : TENSES_KO; document.body.dataset.lang = lang; /* the home page changes colors and layout with the language */ document.querySelectorAll(".pp-note").forEach(e => e.hidden = lang !== "en"); $("#lang").value = l; document.querySelectorAll(".dlang").forEach(b => b.classList.toggle("on", b.dataset.lang === l));
   PL.sec = PL.cls = PF.sec = PF.cls = PQ.sec = PQ.cls = PG.sec = PG.cls = PS.sec = PS.cls = ""; VLV = ""; VCL = ""; gs.value = ""; gr.hidden = true; renderPickers(); renderLearn(); stats(); renderWotd();
-  const cur = ["home", "learn", "verbs", "flash", "quiz", "game", "speak", "class"].find(n => !$("#v-" + n).hidden) || "home";
+  const cur = ["home", "learn", "verbs", "flash", "quiz", "game", "speak", "class", "profile"].find(n => !$("#v-" + n).hidden) || "home";
   show(cur === "class" ? CP.from : cur);
 }
 $("#lang").onchange = e => setLang(e.target.value);
