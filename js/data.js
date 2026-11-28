@@ -1,4 +1,4 @@
-// Oratorix: data.js = the starter word lists.
+﻿// Oratorix: data.js = the starter word lists.
 // To add a word, copy one line, change the text, and keep every id unique.
 // Fields: term, pos (part of speech), level, category, pron, def (meaning), ex (example).
 // Known / Need practice marks are saved by the app, so you do not need a status field.
